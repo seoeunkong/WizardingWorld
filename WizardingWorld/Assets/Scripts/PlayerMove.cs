@@ -10,11 +10,15 @@ public class PlayerMove : MonoBehaviour
     Rigidbody rb;
     Animator ani;
 
+    public GameObject camera;
+    CameraMove cameraMove;
+
 
     void Start()
     {
         ani = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        cameraMove = camera.gameObject.GetComponent<CameraMove>();
     }
 
     
@@ -34,12 +38,14 @@ public class PlayerMove : MonoBehaviour
         float hAxis = Input.GetAxisRaw("Horizontal");
         float vAxis = Input.GetAxisRaw("Vertical");
 
-        Vector3 inputDir = new Vector3(hAxis, 0, vAxis).normalized;
-
-        transform.LookAt(transform.position + inputDir,Vector3.up);
-
         if(hAxis != 0 || vAxis != 0) //입력값이 주어진 경우 
         {
+            Vector3 inputDir = new Vector3(hAxis, 0, vAxis).normalized;
+
+            cameraMove.Rotate(transform.position + inputDir);
+
+            transform.LookAt(transform.position + inputDir, Vector3.up);
+
             ani.SetBool("isRun", true);
             transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
         }
