@@ -41,9 +41,7 @@ public class PlayerMove : MonoBehaviour
         if(hAxis != 0 || vAxis != 0) //입력값이 주어진 경우 
         {
             Vector3 inputDir = new Vector3(hAxis, 0, vAxis).normalized;
-
-            cameraMove.Rotate(transform.position + inputDir);
-
+            
             transform.LookAt(transform.position + inputDir, Vector3.up);
 
             ani.SetBool("isRun", true);
