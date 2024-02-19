@@ -7,38 +7,63 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CameraMove : MonoBehaviour
 {
-    public Transform targetTr;//타겟대상 
-    Transform camTr;
+    public Transform objectTofollow; //목표물 
+    public float followSpeed = 10f;
+    public float sensitivity = 100f;
+    public float clampAngle = 70f; //시야 제한 각도 
 
-    public float distance; //타겟 대상과의 거리
-    public float height; //높이 
-    public float damping; //카메라 반응속도 
+    //마우스 입력
+    private float rotX;
+    private float rotY;
+
+    public Transform realCam;
+    public Vector3 dirNormalized;
+    public Vector3 finalDir;
+    public float minDistance;
+    public float maxDistance;
+    public float finalDistance;
+    public float smoothness = 10f;
+
 
     private void Start()
     {
-       camTr = GetComponent<Transform>();
+        rotX = transform.localRotation.eulerAngles.x;
+        rotY =  transform.localRotation.eulerAngles.y;
+
+        dirNormalized = realCam.localPosition.normalized; //방향 
+        finalDistance = realCam.localPosition.magnitude;
+
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        UnityEngine.Cursor.visible = false;
+        
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        
- 
+        rotX += -(Input.GetAxis("Mouse Y")) * sensitivity * Time.deltaTime;
+        rotY += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+
+        rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
+        Quaternion rot = Quaternion.Euler(rotX, rotY, 0);
+        transform.rotation = rot;
     }
 
     private void LateUpdate()
     {
-        float hAxis = Input.GetAxisRaw("Horizontal");
-        float vAxis = Input.GetAxisRaw("Vertical");
+        transform.position = Vector3.MoveTowards(transform.position, objectTofollow.position, followSpeed * Time.deltaTime);
+        finalDir = transform.TransformPoint(dirNormalized * maxDistance);
 
-        if (hAxis != 0 || vAxis != 0)
+        RaycastHit hit;
+        if(Physics.Linecast(transform.position, finalDir, out hit))
         {
-            Vector3 pos = targetTr.position + (-targetTr.forward * distance) + (Vector3.up * height);
-            camTr.position = Vector3.Slerp(camTr.position, pos, Time.deltaTime * damping);
-            camTr.LookAt(targetTr.position);
+            finalDistance = Mathf.Clamp(hit.distance, minDistance, maxDistance);
         }
-
+        else
+        {
+            finalDistance = maxDistance;
+        }
+        realCam.localPosition = Vector3.Lerp(realCam.localPosition, dirNormalized * finalDistance, Time.deltaTime * smoothness);
          
     }
-
    
 }
