@@ -10,7 +10,7 @@ public class PlayerMove : MonoBehaviour
     public float jumpForce;
 
     public float groundCheckDistance = 0.1f;
-    bool isGrounded = true;
+    public bool isGrounded = true;
 
     Rigidbody _rb;
     Animator _ani;
@@ -20,7 +20,7 @@ public class PlayerMove : MonoBehaviour
 
     public bool toggleCameraRotation;
 
-    public float smoothness = 10f;
+    public float smoothness = 5f;
 
     float hAxis, vAxis;
 
@@ -36,21 +36,13 @@ public class PlayerMove : MonoBehaviour
     
     void Update()
     {
-        hAxis = Input.GetAxisRaw("Horizontal");
-        vAxis = Input.GetAxisRaw("Vertical");
 
         isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, groundCheckDistance, LayerMask.GetMask("Ground"));
 
-        if (isGrounded)
-        {
-             Run();
+        Run();
+        Jump();
 
-            if (Input.GetButtonDown("Jump"))
-            {
-             //   Jump();
-            }
-        }
-        
+        if (isGrounded) isJump = false;
 
         if(Input.GetKey(KeyCode.LeftAlt)) 
         {
@@ -60,7 +52,6 @@ public class PlayerMove : MonoBehaviour
         {
             toggleCameraRotation = false; //둘러보기 비활성화 
         }
-        
      
     }
 
@@ -72,7 +63,11 @@ public class PlayerMove : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!toggleCameraRotation && (hAxis == 0 && vAxis == 0))
+        hAxis = Input.GetAxisRaw("Horizontal");
+        vAxis = Input.GetAxisRaw("Vertical");
+
+        bool input = (hAxis == 0 && vAxis == 0) && !Input.GetButtonDown("Jump");
+        if (!toggleCameraRotation && input)
         {
             Vector3 playerRotate = Vector3.Scale(_camera.transform.forward, new Vector3(1, 0, 1));
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRotate), Time.deltaTime * smoothness);
@@ -81,25 +76,59 @@ public class PlayerMove : MonoBehaviour
 
     void Run() //키보드 입력을 통한 움직임 
     {
-        if(hAxis != 0 || vAxis != 0) //입력값이 주어진 경우 
+        if(!isGrounded) return;
+
+        hAxis = Input.GetAxisRaw("Horizontal");
+        vAxis = Input.GetAxisRaw("Vertical");
+
+        if (hAxis != 0 || vAxis != 0) //입력값이 주어진 경우 
         {
-            Vector3 inputDir = new Vector3(hAxis, 0, vAxis).normalized;
+            if(hAxis != 0 && vAxis == 0)
+            {
+                _ani.SetBool("isRun", false);
+              
+                transform.Translate(transform.right * hAxis * moveSpeed * Time.deltaTime, Space.World);
+               
+                if(hAxis < 0) _ani.SetBool("isLeft", true);
+                else _ani.SetBool("isRight", true);
+            }
+            else if(vAxis != 0)
+            {
+                _ani.SetBool("isLeft", false);
+                _ani.SetBool("isRight", false);
 
-            Vector3 moveVec = transform.position + inputDir;
-            transform.LookAt(moveVec, Vector3.up);
+                if (vAxis < 0)
+                {
+                    Vector3 playerRotate = _camera.transform.forward;
+                    playerRotate.y = 0;
+                    transform.rotation = Quaternion.LookRotation(playerRotate.normalized * vAxis);
+                }
 
-            _ani.SetBool("isRun", true);
-            transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+                transform.Translate(transform.forward * moveSpeed * Time.deltaTime, Space.World);
+               
+                _ani.SetBool("isRun", true);
+            }
         }
-        else _ani.SetBool("isRun", false);
+        else //입력값이 없는 경우 
+        {
+            _ani.SetBool("isRun", false);
+            _ani.SetBool("isLeft", false);
+            _ani.SetBool("isRight", false);
+        }
 
     }
 
     void Jump()
     {
-        isJump = true;
-        _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        _ani.SetTrigger("doJump");
+        if (!isGrounded) return;
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            isJump = true;
+            _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            _ani.SetTrigger("doJump");
+        }
+        
     }
 
 }
