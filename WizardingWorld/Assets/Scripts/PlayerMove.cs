@@ -9,7 +9,7 @@ public class PlayerMove : MonoBehaviour
     public float moveSpeed;
     public float jumpForce;
 
-    public float groundCheckDistance = 0.1f;
+    public float groundCheckDistance = 1f;
     private const float RAY_DISTANCE = 2f;
     public bool isGrounded = true;
     public bool forwardjump = false;
@@ -20,7 +20,7 @@ public class PlayerMove : MonoBehaviour
     Animator _ani;
     Camera _camera;
 
-    bool isJump = false;
+    public bool isJump = false;
 
     public bool toggleCameraRotation;
     public float smoothness = 5f;
@@ -34,7 +34,6 @@ public class PlayerMove : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _camera = Camera.main;
 
- 
     }
 
     
@@ -45,9 +44,13 @@ public class PlayerMove : MonoBehaviour
         CheckInput();
 
         Move();
-        Jump();
 
-        if (isGrounded) isJump = false;
+        if (isGrounded || IsOnSlope())
+        {
+            isJump = false;
+            if(hAxis == 0 && vAxis == 0) _rb.velocity = Vector3.zero;
+        }
+        
 
         if(Input.GetKey(KeyCode.LeftAlt)) 
         {
@@ -68,8 +71,6 @@ public class PlayerMove : MonoBehaviour
 
     private void LateUpdate()
     {
-       //CheckInput();
-
         bool input = (hAxis == 0 && vAxis == 0) && !Input.GetButtonDown("Jump");
         if (!toggleCameraRotation && input)
         {
@@ -86,9 +87,8 @@ public class PlayerMove : MonoBehaviour
 
     void Move() //키보드 입력을 통한 움직임 
     {
-        if (isJump) return;
-
-       // CheckInput();
+        bool isOnSlope = IsOnSlope();
+        if (!isGrounded && !isOnSlope) return;
 
         if (hAxis != 0 || vAxis != 0) //입력값이 주어진 경우 
         {
@@ -96,14 +96,13 @@ public class PlayerMove : MonoBehaviour
             _ani.SetBool("isLeft", false);
             _ani.SetBool("isRight", false);
 
-            bool isOnSlope = IsOnSlope();
+            Vector3 dir = Vector3.one;
 
             if (vAxis == 0) //좌우 이동 
             {
-                Vector3 dir = isOnSlope ? AdjustDirectionToSlope(transform.right * hAxis) : transform.right * hAxis;
-                transform.Translate(dir * moveSpeed * Time.deltaTime, Space.World);
-               
-                if(hAxis < 0) _ani.SetBool("isLeft", true);
+                dir = isOnSlope ? AdjustDirectionToSlope(transform.right * hAxis) : transform.right * hAxis;
+
+                if (hAxis < 0) _ani.SetBool("isLeft", true);
                 else _ani.SetBool("isRight", true);
             }
             else if(vAxis != 0) //앞뒤 이동 
@@ -115,11 +114,11 @@ public class PlayerMove : MonoBehaviour
                     transform.rotation = Quaternion.LookRotation(playerRotate.normalized * vAxis);
                 }
 
-                Vector3 dir = isOnSlope ? AdjustDirectionToSlope(transform.forward) : transform.forward;
-                transform.Translate(dir * moveSpeed * Time.deltaTime, Space.World);
-               
+                dir = isOnSlope ? AdjustDirectionToSlope(transform.forward) : transform.forward;
+
                 _ani.SetBool("isRun", true);
             }
+            _rb.velocity = dir * moveSpeed;
         }
         else //입력값이 없는 경우 
         {
@@ -128,24 +127,22 @@ public class PlayerMove : MonoBehaviour
             _ani.SetBool("isRight", false);
         }
 
+        Jump();
+
     }
 
     void Jump()
     {
-        if (Input.GetButtonDown("Jump") && !isJump)
+        if (Input.GetButtonDown("Jump"))
         {
-            isJump = true;
-
             Vector3 jumpVec = Vector3.zero;
 
-           // CheckInput();
             forwardjump = (hAxis != 0 || vAxis != 0);
 
             if (forwardjump) jumpVec = transform.forward.normalized + Vector3.up;
             else jumpVec = Vector3.up;
 
-            _rb.AddForce(jumpVec * jumpForce, ForceMode.Impulse);
-
+            _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 
             _ani.SetTrigger("doJump");
         }
@@ -158,7 +155,6 @@ public class PlayerMove : MonoBehaviour
         if (Physics.Raycast(ray, out _slopeHit, RAY_DISTANCE, LayerMask.GetMask("Ground")))
         {
             var angle = Vector3.Angle(Vector3.up, _slopeHit.normal);
-           // Debug.Log(angle);
             return angle != 0f && angle < maxSlopeAngle;
         }
         return false;
