@@ -9,6 +9,7 @@ public class CameraMove : MonoBehaviour
 {
     public Transform _objectTofollow; //목표물 
     public float followSpeed = 10f;
+    public float followjumpSpeed = 6f;
     public float sensitivity = 100f;
     public float clampAngle = 70f; //시야 제한 각도 
 
@@ -55,7 +56,7 @@ public class CameraMove : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(_playerMove.isGrounded) transform.position = Vector3.MoveTowards(transform.position, _objectTofollow.position, followSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, _objectTofollow.position, followSpeed * Time.deltaTime);
         finalDir = transform.TransformPoint(dirNormalized * maxDistance);
 
         RaycastHit hit;
