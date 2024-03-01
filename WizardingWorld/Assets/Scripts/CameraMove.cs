@@ -25,10 +25,9 @@ public class CameraMove : MonoBehaviour
     public float finalDistance;
     public float smoothness = 10f;
 
-    public GameObject _Player;
-    PlayerMove _playerMove;
+    //public GameObject _Player;
 
-
+    
     private void Start()
     {
         rotX = transform.localRotation.eulerAngles.x;
@@ -39,8 +38,6 @@ public class CameraMove : MonoBehaviour
 
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         UnityEngine.Cursor.visible = false;
-
-        _playerMove = _Player.GetComponent<PlayerMove>();
         
     }
 

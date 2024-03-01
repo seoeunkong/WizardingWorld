@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-
+    
     public float moveSpeed;
     public float jumpForce;
 
-    public float groundCheckDistance = 1f;
+    public float groundCheckDistance = 1.5f;
     private const float RAY_DISTANCE = 2f;
     public bool isGrounded = true;
     public bool forwardjump = false;
@@ -60,6 +60,8 @@ public class PlayerMove : MonoBehaviour
         {
             toggleCameraRotation = false; //둘러보기 비활성화 
         }
+
+        Debug.Log(Animator.StringToHash("Velocity"));
      
     }
 
@@ -135,6 +137,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
+
             Vector3 jumpVec = Vector3.zero;
 
             forwardjump = (hAxis != 0 || vAxis != 0);
