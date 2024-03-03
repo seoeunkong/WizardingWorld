@@ -59,7 +59,6 @@ public class Player : MonoBehaviour
    
     public void OnUpdateState(float maxHP, float currentHP, float moveSpeed, float jumpSpeed)
     {
-        Debug.Log(moveSpeed);
         this.maxHP = maxHP;
         this.currentHP = currentHP;
         this.moveSpeed = moveSpeed;
