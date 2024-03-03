@@ -7,9 +7,8 @@ public class MoveState : BaseState
 {
     enum MoveName
     {
-        MOVE = 1,
-        LEFT,
-        RIGHT
+        MOVE = 10,
+        DASH = 11
     }
 
 
@@ -31,8 +30,7 @@ public class MoveState : BaseState
     public override void OnFixedUpdateState()
     {
         Player.Instance._rigid.velocity = Controller.calculatedDirection + Controller.gravity;
-        int aniNum = GetAni(Controller.inputDirection.z != 0, Controller.inputDirection.x < 0, Controller.inputDirection.x > 0);
-        Player.Instance._animator.SetInteger("Move", aniNum);
+        Player.Instance._animator.SetInteger("Move", AnimatorNum(Player.Instance._CurrentSpeed));
 
     }
 
@@ -44,13 +42,15 @@ public class MoveState : BaseState
 
     }
 
-    private int GetAni(bool isRun, bool isLeft, bool isRight)
+    int AnimatorNum(float speed)
     {
-        if (isRun) return (int)MoveName.MOVE;
-        if (isLeft) return (int)MoveName.LEFT;
-        if (isRight) return (int) MoveName.RIGHT;
-       
-        return 0;  
+        if(Controller.calculatedDirection == Vector3.zero) return 0;
+        if(speed <= Player.Instance._MoveSpeed) return (int)MoveName.MOVE;
+        if (speed <= Player.Instance._DashSpeed) return (int)MoveName.DASH;
+        
+        return 0;
     }
+
+
 
 }

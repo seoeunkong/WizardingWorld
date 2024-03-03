@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -50,7 +51,9 @@ public class PlayerController : MonoBehaviour
         // 둘러보기 입력 받기
         toggleCameraRotationInput = Input.GetKey(KeyCode.LeftAlt);
 
-        calculatedDirection = GetDirection(player._MoveSpeed);
+        player._CurrentSpeed = IsDash();
+
+        calculatedDirection = GetDirection(player._CurrentSpeed);
         ControlGravity();
 
     }
@@ -84,31 +87,42 @@ public class PlayerController : MonoBehaviour
         return isGrounded;
     }
 
+    public float IsDash()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            return player._DashSpeed;
+        }
+        return player._MoveSpeed;
+    }
+
     Vector3 OnMoveInput()
     {
         inputDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
         if (inputDirection == Vector3.zero) return Vector3.zero; //입력값이 없으면 
 
-        Vector3 input = Vector3.zero;
+        LookAt(inputDirection.x, inputDirection.z);
 
-        if(inputDirection.x != 0)
-        {
-            input = transform.right * inputDirection.x;
-        }
-        else if(inputDirection.z != 0)
-        {
-            input = transform.forward;
-            if (inputDirection.z < 0) LookAt(inputDirection.z);
-        }
-
-        return input;
+        return transform.forward;
     }
 
-    void LookAt(float z)
+    void LookAt(float x, float z)
     {
-        Vector3 playerRotate = _camera.transform.forward;
+        Vector3 playerRotate = Vector3.zero;
+        float inputValue = 0;
+        
+        if (x!=0)
+        {
+            playerRotate = _camera.transform.right;
+            inputValue = x;
+        }
+        else if(z!=0)
+        {
+            playerRotate = _camera.transform.forward;
+            inputValue = z;
+        }
         playerRotate.y = 0;
-        transform.rotation = Quaternion.LookRotation(playerRotate.normalized * z);
+        transform.rotation = Quaternion.LookRotation(playerRotate.normalized * inputValue);
     }
 
     Vector3 GetDirection(float currentMoveSpeed)

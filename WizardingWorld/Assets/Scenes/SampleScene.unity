@@ -705,7 +705,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundLayer: 0
-  smoothness: 500
+  smoothness: 700
 --- !u!114 &190493876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -720,8 +720,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 0
   currentHP: 0
-  moveSpeed: 10
-  jumpSpeed: 15
+  moveSpeed: 9
+  dashSpeed: 15
 --- !u!4 &216981282 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4376657132610222105, guid: e133dac167ef59c40b7678ba58107c6a, type: 3}

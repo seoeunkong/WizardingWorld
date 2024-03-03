@@ -61,7 +61,21 @@ public class CameraMove : MonoBehaviour
     {
         Vector3 input = playerController.inputDirection;
         Vector3 followPos = _objectTofollow.position;
-        followPos += input.z < 0 ? -_objectTofollow.right : _objectTofollow.right;
+        
+        if(input.x != 0)
+        {
+            followPos = _objectTofollow.position - _objectTofollow.right;
+            followPos += _objectTofollow.forward * input.x;
+        }
+
+        if (input.z < 0)
+        {
+            followPos -= _objectTofollow.right;
+        }
+        else if (input.z >= 0)
+        {
+            followPos += _objectTofollow.right;
+        }
 
         transform.position = Vector3.MoveTowards(transform.position, followPos, followSpeed * Time.deltaTime);
         finalDir = transform.TransformPoint(dirNormalized * maxDistance);

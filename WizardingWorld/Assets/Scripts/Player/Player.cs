@@ -13,15 +13,18 @@ public class Player : MonoBehaviour
     public float _MaxHP { get { return maxHP; } }
     public float _CurrentHP { get { return currentHP; } }
     public float _MoveSpeed { get { return moveSpeed; } }
-    public float _JumpSpeed { get { return jumpSpeed; } }
+    public float _DashSpeed { get { return dashSpeed; } }
+    public float _CurrentSpeed { get { return currentSpeed; } set { currentSpeed = value; } }
 
 
     [Header("Ä³¸¯ÅÍ ½ºÅÈ")]
     [SerializeField] protected float maxHP;
     [SerializeField] protected float currentHP;
     [SerializeField] protected float moveSpeed;
-    [SerializeField] protected float jumpSpeed;
+    [SerializeField] protected float dashSpeed;
     #endregion
+
+    private float currentSpeed;
 
 
     void Awake()
@@ -32,6 +35,7 @@ public class Player : MonoBehaviour
             _rigid = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
         }
+
     }
 
     void Start()
@@ -57,11 +61,11 @@ public class Player : MonoBehaviour
     }
 
    
-    public void OnUpdateState(float maxHP, float currentHP, float moveSpeed, float jumpSpeed)
+    public void OnUpdateState(float maxHP, float currentHP, float moveSpeed, float dashSpeed)
     {
         this.maxHP = maxHP;
         this.currentHP = currentHP;
         this.moveSpeed = moveSpeed;
-        this.jumpSpeed = jumpSpeed;
+        this.dashSpeed = dashSpeed;
     }
 }
