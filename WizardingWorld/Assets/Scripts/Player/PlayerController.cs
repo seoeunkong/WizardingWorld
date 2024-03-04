@@ -15,19 +15,19 @@ public class PlayerController : MonoBehaviour
 
     #region #경사 체크 변수
     [Header("경사 지형 검사")]
-    float maxSlopeAngle = 50f;
+    private float _maxSlopeAngle = 50f;
 
     private const float RAY_DISTANCE = 2f;
     private const float GROUNDCHECK_DISTANCE = 1.5f;
-    private RaycastHit slopeHit;
-    private bool isOnSlope;
+    private RaycastHit _slopeHit;
+    private bool _isOnSlope;
     #endregion
 
     #region #바닥 체크 변수
     [Header("땅 체크")]
     [SerializeField, Tooltip("캐릭터가 땅에 붙어 있는지 확인하기 위한 CheckBox 시작 지점입니다.")]
-    private int groundLayer;
-    private bool isGrounded;
+    private int _groundLayer;
+    private bool _isGrounded;
     #endregion
 
     #region #입력값 
@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         player = GetComponent<Player>();
-        groundLayer = 1 << LayerMask.NameToLayer("Ground");
+        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
         _camera = Camera.main;
     }
 
@@ -51,9 +51,9 @@ public class PlayerController : MonoBehaviour
         // 둘러보기 입력 받기
         toggleCameraRotationInput = Input.GetKey(KeyCode.LeftAlt);
 
-        player._CurrentSpeed = IsDash();
+        player.CurrentSpeed = IsDash();
 
-        calculatedDirection = GetDirection(player._CurrentSpeed);
+        calculatedDirection = GetDirection(player.CurrentSpeed);
         ControlGravity();
 
     }
@@ -71,29 +71,29 @@ public class PlayerController : MonoBehaviour
 
     protected void ControlGravity()
     {
-        gravity = Vector3.down * MathF.Abs(player._rigid.velocity.y);
-        if(isGrounded && isOnSlope)
+        gravity = Vector3.down * MathF.Abs(player.rigid.velocity.y);
+        if(_isGrounded && _isOnSlope)
         {
             gravity = Vector3.zero;
-            player._rigid.useGravity = false;
+            player.rigid.useGravity = false;
             return;
         }
-        player._rigid.useGravity = true;
+        player.rigid.useGravity = true;
     }
 
     public bool IsGrounded()
     {
-        isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, GROUNDCHECK_DISTANCE, groundLayer);
-        return isGrounded;
+        _isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, GROUNDCHECK_DISTANCE, _groundLayer);
+        return _isGrounded;
     }
 
     public float IsDash()
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            return player._DashSpeed;
+            return player.DashSpeed;
         }
-        return player._MoveSpeed;
+        return player.MoveSpeed;
     }
 
     Vector3 OnMoveInput()
@@ -127,28 +127,28 @@ public class PlayerController : MonoBehaviour
 
     Vector3 GetDirection(float currentMoveSpeed)
     {
-        isOnSlope = IsOnSlope();
-        isGrounded = IsGrounded();
+        _isOnSlope = IsOnSlope();
+        _isGrounded = IsGrounded();
 
         Vector3 input = OnMoveInput();
 
-        calculatedDirection = (isOnSlope && isGrounded) ? AdjustDirectionToSlope(input): input;
+        calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(input): input;
         return calculatedDirection * currentMoveSpeed;
     }
 
     bool IsOnSlope() //경사 지형 체크 
     {
         Ray ray = new Ray(transform.position + Vector3.up, Vector3.down);
-        if (Physics.Raycast(ray, out slopeHit, RAY_DISTANCE, groundLayer))
+        if (Physics.Raycast(ray, out _slopeHit, RAY_DISTANCE, _groundLayer))
         {
-            var angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            return angle != 0f && angle < maxSlopeAngle;
+            var angle = Vector3.Angle(Vector3.up, _slopeHit.normal);
+            return angle != 0f && angle < _maxSlopeAngle;
         }
         return false;
     }
 
     Vector3 AdjustDirectionToSlope(Vector3 direction) //경사 지형에 맞는 이동 벡터 
     {
-        return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
+        return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
     }
 }

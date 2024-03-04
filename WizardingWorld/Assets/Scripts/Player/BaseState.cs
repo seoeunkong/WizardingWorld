@@ -2,11 +2,11 @@ using UnityEngine;
 
 public abstract class BaseState
 {
-    protected PlayerController Controller { get; private set; }
+    protected PlayerController _Controller { get; private set; }
 
     public BaseState(PlayerController controller)
     {
-        this.Controller = controller;
+        this._Controller = controller;
     }
 
     public abstract void OnEnterState();

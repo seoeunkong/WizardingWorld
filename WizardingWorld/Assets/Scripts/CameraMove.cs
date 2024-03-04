@@ -7,8 +7,8 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CameraMove : MonoBehaviour
 {
-    public Transform _objectTofollow; //목표물 
-    public Transform _realCam; //실제 카메라 위치 
+    public Transform objectTofollow; //목표물 
+    public Transform realCam; //실제 카메라 위치 
 
     [Header("카메라 동작 설정값 ")]
     public float followSpeed = 10f;
@@ -19,25 +19,25 @@ public class CameraMove : MonoBehaviour
     public float maxDistance;
 
     //마우스 입력
-    private float rotX;
-    private float rotY;
+    private float _rotX;
+    private float _rotY;
 
-    private Vector3 dirNormalized;
-    private Vector3 finalDir;
-    private float finalDistance;
+    private Vector3 _dirNormalized;
+    private Vector3 _finalDir;
+    private float _finalDistance;
 
-    private PlayerController playerController; 
+    private PlayerController _playerController; 
 
 
     private void Start()
     {
-        playerController = Player.Instance.GetComponent<PlayerController>();
+        _playerController = Player.Instance.GetComponent<PlayerController>();
 
-        rotX = transform.localRotation.eulerAngles.x;
-        rotY =  transform.localRotation.eulerAngles.y;
+        _rotX = transform.localRotation.eulerAngles.x;
+        _rotY =  transform.localRotation.eulerAngles.y;
 
-        dirNormalized = _realCam.localPosition.normalized; // 카메라 이동 방향 정규화
-        finalDistance = _realCam.localPosition.magnitude; // 카메라 최종 거리 설정
+        _dirNormalized = realCam.localPosition.normalized; // 카메라 이동 방향 정규화
+        _finalDistance = realCam.localPosition.magnitude; // 카메라 최종 거리 설정
 
         // 마우스 커서 설정
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
@@ -49,48 +49,48 @@ public class CameraMove : MonoBehaviour
     {
         //  마우스 입력값을 받아 카메라 시점을 조절
 
-        rotX += -(Input.GetAxis("Mouse Y")) * sensitivity * Time.deltaTime;
-        rotY += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+        _rotX += -(Input.GetAxis("Mouse Y")) * sensitivity * Time.deltaTime;
+        _rotY += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
 
-        rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
-        Quaternion rot = Quaternion.Euler(rotX, rotY, 0);
+        _rotX = Mathf.Clamp(_rotX, -clampAngle, clampAngle);
+        Quaternion rot = Quaternion.Euler(_rotX, _rotY, 0);
         transform.rotation = rot;
     }
 
     private void LateUpdate()
     {
-        Vector3 input = playerController.inputDirection;
-        Vector3 followPos = _objectTofollow.position;
+        Vector3 input = _playerController.inputDirection;
+        Vector3 followPos = objectTofollow.position;
         
         if(input.x != 0)
         {
-            followPos = _objectTofollow.position - _objectTofollow.right;
-            followPos += _objectTofollow.forward * input.x;
+            followPos = objectTofollow.position - objectTofollow.right;
+            followPos += objectTofollow.forward * input.x;
         }
 
         if (input.z < 0)
         {
-            followPos -= _objectTofollow.right;
+            followPos -= objectTofollow.right;
         }
         else if (input.z >= 0)
         {
-            followPos += _objectTofollow.right;
+            followPos += objectTofollow.right;
         }
 
         transform.position = Vector3.MoveTowards(transform.position, followPos, followSpeed * Time.deltaTime);
-        finalDir = transform.TransformPoint(dirNormalized * maxDistance);
+        _finalDir = transform.TransformPoint(_dirNormalized * maxDistance);
 
         // 장애물 감지 후 최종 거리 설정
         RaycastHit hit;
-        if(Physics.Linecast(transform.position, finalDir, out hit))
+        if(Physics.Linecast(transform.position, _finalDir, out hit))
         {
-            finalDistance = Mathf.Clamp(hit.distance, minDistance, maxDistance);
+            _finalDistance = Mathf.Clamp(hit.distance, minDistance, maxDistance);
         }
         else
         {
-            finalDistance = maxDistance;
+            _finalDistance = maxDistance;
         }
-        _realCam.localPosition = Vector3.Lerp(_realCam.localPosition, dirNormalized * finalDistance, Time.deltaTime * smoothness);
+        realCam.localPosition = Vector3.Lerp(realCam.localPosition, _dirNormalized * _finalDistance, Time.deltaTime * smoothness);
          
     }
    

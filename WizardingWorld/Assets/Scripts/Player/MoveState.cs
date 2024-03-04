@@ -29,24 +29,24 @@ public class MoveState : BaseState
 
     public override void OnFixedUpdateState()
     {
-        Player.Instance._rigid.velocity = Controller.calculatedDirection + Controller.gravity;
-        Player.Instance._animator.SetInteger("Move", AnimatorNum(Player.Instance._CurrentSpeed));
+        Player.Instance.rigid.velocity = _Controller.calculatedDirection + _Controller.gravity;
+        Player.Instance.animator.SetInteger("Move", AnimatorNum(Player.Instance.CurrentSpeed));
 
     }
 
     public override void OnExitState()
     {
-        Player.Instance._rigid.velocity = Vector3.zero;
-        Player.Instance._animator.SetInteger("Move", 0);
+        Player.Instance.rigid.velocity = Vector3.zero;
+        Player.Instance.animator.SetInteger("Move", 0);
 
 
     }
 
     int AnimatorNum(float speed)
     {
-        if(Controller.calculatedDirection == Vector3.zero) return 0;
-        if(speed <= Player.Instance._MoveSpeed) return (int)MoveName.MOVE;
-        if (speed <= Player.Instance._DashSpeed) return (int)MoveName.DASH;
+        if(_Controller.calculatedDirection == Vector3.zero) return 0;
+        if(speed <= Player.Instance.MoveSpeed) return (int)MoveName.MOVE;
+        if (speed <= Player.Instance.DashSpeed) return (int)MoveName.DASH;
         
         return 0;
     }
