@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
 using static UnityEditor.SceneView;
 using static UnityEngine.GraphicsBuffer;
 
@@ -49,8 +50,8 @@ public class CameraMove : MonoBehaviour
     {
         //  마우스 입력값을 받아 카메라 시점을 조절
 
-        _rotX += -(Input.GetAxis("Mouse Y")) * sensitivity * Time.deltaTime;
-        _rotY += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+        _rotX += -(UnityEngine.Input.GetAxis("Mouse Y")) * sensitivity * Time.deltaTime;
+        _rotY += UnityEngine.Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
 
         _rotX = Mathf.Clamp(_rotX, -clampAngle, clampAngle);
         Quaternion rot = Quaternion.Euler(_rotX, _rotY, 0);
@@ -59,23 +60,8 @@ public class CameraMove : MonoBehaviour
 
     private void LateUpdate()
     {
-        Vector3 input = _playerController.inputDirection;
-        Vector3 followPos = objectTofollow.position;
-        
-        if(input.x != 0)
-        {
-            followPos = objectTofollow.position - objectTofollow.right;
-            followPos += objectTofollow.forward * input.x;
-        }
-
-        if (input.z < 0)
-        {
-            followPos -= objectTofollow.right;
-        }
-        else if (input.z >= 0)
-        {
-            followPos += objectTofollow.right;
-        }
+        Vector3 inputDir = _playerController.inputDirection;
+        Vector3 followPos = CalcPos(inputDir);
 
         transform.position = Vector3.MoveTowards(transform.position, followPos, followSpeed * Time.deltaTime);
         _finalDir = transform.TransformPoint(_dirNormalized * maxDistance);
@@ -93,5 +79,27 @@ public class CameraMove : MonoBehaviour
         realCam.localPosition = Vector3.Lerp(realCam.localPosition, _dirNormalized * _finalDistance, Time.deltaTime * smoothness);
          
     }
-   
+
+    public Vector3 CalcPos(Vector3 inputDir)
+    {
+        Vector3 followPos = objectTofollow.position;
+
+        if (inputDir.x != 0)
+        {
+            followPos = objectTofollow.position - objectTofollow.right;
+            followPos += objectTofollow.forward * inputDir.x;
+        }
+
+        if (inputDir.z < 0)
+        {
+            followPos -= objectTofollow.right;
+        }
+        else if (inputDir.z >= 0)
+        {
+            followPos += objectTofollow.right;
+        }
+
+        return followPos;
+    }
+
 }

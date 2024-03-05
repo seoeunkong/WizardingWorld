@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -30,20 +29,25 @@ public class PlayerController : MonoBehaviour
     private bool _isGrounded;
     #endregion
 
-    #region #입력값 
+    #region #카메라 
+    [Header("카메라 속성")]
+    private Camera _camera;
+    public float smoothness;
     public bool toggleCameraRotationInput { get; private set; } // 둘러보기 입력 여부
     #endregion
 
-    #region #카메라 
-    private Camera _camera;
-    public float smoothness;
-    #endregion
+
+    [Header("Dash 속성")]
+    public float _currentdashTime;
+    public float setDashTime = 10f;
+
 
     void Start()
     {
         player = GetComponent<Player>();
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
         _camera = Camera.main;
+        _currentdashTime = setDashTime;
     }
 
     void Update()
@@ -89,10 +93,17 @@ public class PlayerController : MonoBehaviour
 
     public float IsDash()
     {
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && _currentdashTime >= 0)
         {
+            _currentdashTime -= Time.deltaTime;
             return player.DashSpeed;
         }
+
+        if(!Input.GetKey(KeyCode.LeftShift) && _currentdashTime < setDashTime)
+        {
+            _currentdashTime += Time.deltaTime;
+        }
+
         return player.MoveSpeed;
     }
 
