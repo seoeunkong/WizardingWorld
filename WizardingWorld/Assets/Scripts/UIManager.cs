@@ -7,12 +7,18 @@ public class UIManager : MonoBehaviour
 {
     public Slider dashSlider;
     private float _maxDashValue;
-
+    private PlayerController _playerController;
 
     void Start()
     {
-        _maxDashValue = Player.Instance.GetComponent<PlayerController>().setDashTime;
+        _playerController = Player.Instance.GetComponent<PlayerController>();
+        _maxDashValue = _playerController.setDashTime;
 
+        InitializeDashSlider();
+    }
+
+    private void InitializeDashSlider()
+    {
         dashSlider.value = _maxDashValue;
         dashSlider.maxValue = _maxDashValue;
         dashSlider.gameObject.SetActive(false);
@@ -21,33 +27,28 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        dashActivate(Player.Instance.GetComponent<PlayerController>());
+        UpdateDashSlider();
 
+    }
+
+    void UpdateDashSlider()
+    {
+        float currentDashValue = _playerController._currentdashTime;
+        dashSlider.value = currentDashValue;
+
+        if (_playerController.player.DashSpeed != _playerController.IsDash() && dashSlider.value == _maxDashValue && dashSlider.IsActive())
+        {
+            Invoke("dashActivateFalse", 0.5f);
+        }
+        if (_playerController.player.DashSpeed == _playerController.IsDash() && !dashSlider.IsActive())
+        {
+            dashSlider.gameObject.SetActive(true);
+        }
     }
 
     void dashActivateFalse()
     {
         dashSlider.gameObject.SetActive(false);
-    }
-
-    void dashActivateTrue()
-    {
-        dashSlider.gameObject.SetActive(true);
-    }
-
-    void dashActivate(PlayerController controller)
-    {
-        float currentDashValue = controller._currentdashTime;
-        dashSlider.value = currentDashValue;
-
-        if(controller.player.DashSpeed != controller.IsDash() && dashSlider.value == _maxDashValue && dashSlider.IsActive())
-        {
-            Invoke("dashActivateFalse", 0.5f);
-        }
-        if (controller.player.DashSpeed == controller.IsDash() && !dashSlider.IsActive())
-        {
-            dashSlider.gameObject.SetActive(true);
-        }
     }
 
 

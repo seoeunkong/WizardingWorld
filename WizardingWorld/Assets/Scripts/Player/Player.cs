@@ -57,7 +57,8 @@ public class Player : MonoBehaviour
     void InitStateMachine()
     {
         PlayerController controller = GetComponent<PlayerController>();
-        stateMachine = new StateMachine(StateName.MOVE,new MoveState(controller));
+        //stateMachine = new StateMachine(StateName.MOVE,new MoveState(controller));
+        stateMachine = new StateMachine(StateName.ATTACK, new AttackState(controller));
     }
 
    

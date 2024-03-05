@@ -4,8 +4,7 @@ using System.Diagnostics;
 public enum StateName
 {
     MOVE = 100,
-    JUMP,
-    FOWARDJUMP
+    ATTACK
 }
 
 public class StateMachine

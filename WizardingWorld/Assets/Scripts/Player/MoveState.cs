@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -45,7 +46,8 @@ public class MoveState : BaseState
     int AnimatorNum(float speed)
     {
         if(_Controller.calculatedDirection == Vector3.zero) return 0;
-        if(speed <= Player.Instance.MoveSpeed) return (int)MoveName.MOVE;
+        if(
+            speed <= Player.Instance.MoveSpeed) return (int)MoveName.MOVE;
         if (speed <= Player.Instance.DashSpeed) return (int)MoveName.DASH;
         
         return 0;

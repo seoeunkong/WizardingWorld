@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
     public float _currentdashTime;
     public float setDashTime = 10f;
 
+    public bool onAttack;
+
 
     void Start()
     {
@@ -59,6 +61,8 @@ public class PlayerController : MonoBehaviour
 
         calculatedDirection = GetDirection(player.CurrentSpeed);
         ControlGravity();
+
+        onAttack = OnAttack();
 
     }
 
@@ -161,5 +165,14 @@ public class PlayerController : MonoBehaviour
     Vector3 AdjustDirectionToSlope(Vector3 direction) //경사 지형에 맞는 이동 벡터 
     {
         return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
+    }
+
+    bool OnAttack()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            return true;
+        }
+        return false;
     }
 }
