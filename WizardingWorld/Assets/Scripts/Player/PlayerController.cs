@@ -171,6 +171,7 @@ public class PlayerController : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
+            player.stateMachine.ChangeState(StateName.PUNCHATTACK);
             return true;
         }
         return false;

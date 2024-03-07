@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public static Player Instance = null;
+    //public AttackManager attackManager {  get; private set; }
     public StateMachine stateMachine { get; private set; }
     public Rigidbody rigid { get; private set; }
     public Animator animator {  get; private set; }
@@ -26,12 +27,16 @@ public class Player : MonoBehaviour
 
     private float _currentSpeed;
 
+    [SerializeField]
+    private Transform rightHand;
+
 
     void Awake()
     {
         if(Instance == null)
         {
             Instance = this;
+           // attackManager = new AttackManager(rightHand);
             rigid = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>();
         }
@@ -57,8 +62,8 @@ public class Player : MonoBehaviour
     void InitStateMachine()
     {
         PlayerController controller = GetComponent<PlayerController>();
-        //stateMachine = new StateMachine(StateName.MOVE,new MoveState(controller));
-        stateMachine = new StateMachine(StateName.ATTACK, new AttackState(controller));
+        stateMachine = new StateMachine(StateName.MOVE,new MoveState(controller));
+        stateMachine.AddState(StateName.PUNCHATTACK, new PunchAttackState(controller));
     }
 
    
