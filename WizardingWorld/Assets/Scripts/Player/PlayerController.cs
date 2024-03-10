@@ -41,8 +41,12 @@ public class PlayerController : MonoBehaviour
     public float _currentdashTime;
     public float setDashTime = 10f;
 
-    public bool onAttack;
-
+    [Header("공격 속성")]
+    [SerializeField] private Transform _attackPos;
+    //
+    //public bool onAttack;
+    private RaycastHit hit;
+    [SerializeField] private float _maxDistance;
 
     void Start()
     {
@@ -62,7 +66,7 @@ public class PlayerController : MonoBehaviour
         calculatedDirection = GetDirection(player.CurrentSpeed);
         ControlGravity();
 
-        onAttack = OnAttack();
+        OnAttack();
 
     }
 
@@ -167,13 +171,31 @@ public class PlayerController : MonoBehaviour
         return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
     }
 
-    bool OnAttack()
+    bool hasWeapon()
+    {
+        //손에 무기가 있는지 체크 
+        foreach (Transform child in player.rightHand)
+        {
+            if (child.gameObject.activeSelf) return true;
+        }
+        return false;
+    }
+
+    void OnAttack()
     {
         if(Input.GetMouseButtonDown(0))
         {
-            player.stateMachine.ChangeState(StateName.PUNCHATTACK);
-            return true;
+            if(!hasWeapon())
+            {
+                player.stateMachine.ChangeState(StateName.PUNCHATTACK);
+            }
+
+            if (Physics.Raycast(_attackPos.position, _attackPos.forward, out hit, _maxDistance))
+            {
+                hit.collider.GetComponent<HitTest>().HP -= player.AttackPower;
+                //Debug.DrawRay(_attackPos.position, _attackPos.forward * hit.distance, Color.red);
+            }
         }
-        return false;
+
     }
 }

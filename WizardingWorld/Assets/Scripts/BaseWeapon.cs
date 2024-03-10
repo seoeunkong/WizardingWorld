@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseAttack : MonoBehaviour
+public abstract class BaseWeapon : MonoBehaviour
 {
     public bool HasWeapon { get { return _hasWeapon; } }
     public string Name { get { return _name; } }

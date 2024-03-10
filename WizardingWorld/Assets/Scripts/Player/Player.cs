@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public static Player Instance = null;
-    //public AttackManager attackManager {  get; private set; }
+    public WeaponManager weaponManager {  get; private set; }
     public StateMachine stateMachine { get; private set; }
     public Rigidbody rigid { get; private set; }
     public Animator animator {  get; private set; }
@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public float CurrentHP { get { return _currentHP; } }
     public float MoveSpeed { get { return _moveSpeed; } }
     public float DashSpeed { get { return _dashSpeed; } }
+    public float AttackPower { get { return _attackPower; } }
     public float CurrentSpeed { get { return _currentSpeed; } set { _currentSpeed = value; } }
 
 
@@ -23,12 +24,13 @@ public class Player : MonoBehaviour
     [SerializeField] protected float _currentHP;
     [SerializeField] protected float _moveSpeed;
     [SerializeField] protected float _dashSpeed;
+    [SerializeField] protected float _attackPower;
     #endregion
 
     private float _currentSpeed;
 
     [SerializeField]
-    private Transform rightHand;
+    public Transform rightHand;
 
 
     void Awake()
@@ -36,7 +38,8 @@ public class Player : MonoBehaviour
         if(Instance == null)
         {
             Instance = this;
-           // attackManager = new AttackManager(rightHand);
+            weaponManager = new WeaponManager(rightHand);
+            weaponManager.unRegisterWeapon = (weapon) => { Destroy(weapon); };
             rigid = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>();
         }
