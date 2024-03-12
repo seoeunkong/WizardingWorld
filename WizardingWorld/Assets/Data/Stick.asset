@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b5c8063694c29142bf642e93e20ec1f, type: 3}
   m_Name: Stick
   m_EditorClassIdentifier: 
-  localPosition: {x: 0.0042, y: 0.0062, z: -0.0045}
+  localPosition: {x: 0.0042, y: 0.0062, z: 0.00633}
   localRotation: {x: 90, y: 0, z: 0}
-  localScale: {x: 0.009, y: 0.007, z: 0.015}
+  localScale: {x: 0.009, y: 0.004, z: 0.015}

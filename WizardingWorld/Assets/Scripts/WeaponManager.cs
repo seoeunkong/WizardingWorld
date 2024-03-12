@@ -27,9 +27,9 @@ public class WeaponManager
         {
             BaseWeapon weaponInfo = weapon.GetComponent<BaseWeapon>();
             weapon.transform.SetParent(handPosition);
-            //weapon.transform.localPosition = weaponInfo.HandleData.localPosition;
-            //weapon.transform.localEulerAngles = weaponInfo.HandleData.localRotation;
-            //weapon.transform.localScale = weaponInfo.HandleData.localScale;
+            weapon.transform.localPosition = weaponInfo.handleData.localPosition;
+            weapon.transform.localEulerAngles = weaponInfo.handleData.localRotation;
+            weapon.transform.localScale = weaponInfo.handleData.localScale;
             weapons.Add(weapon);
             weapon.SetActive(false);
         }
@@ -54,7 +54,7 @@ public class WeaponManager
             Weapon = weapon.GetComponent<BaseWeapon>();
            
             weaponObject.SetActive(true);
-            //Player.Instance.animator.runtimeAnimatorController = Weapon.WeaponAnimator;
+            Player.Instance.animator.runtimeAnimatorController = Weapon.WeaponAnimator;
             return;
         }
 
@@ -65,7 +65,7 @@ public class WeaponManager
                 weaponObject = weapon;
                 weaponObject.SetActive(true);
                 Weapon = weapon.GetComponent<BaseWeapon>();
-               // Player.Instance.animator.runtimeAnimatorController = Weapon.WeaponAnimator;
+               Player.Instance.animator.runtimeAnimatorController = Weapon.WeaponAnimator;
                 continue;
             }
             weapons[i].SetActive(false);

@@ -4,7 +4,8 @@ using System.Diagnostics;
 public enum StateName
 {
     MOVE = 100,
-    PUNCHATTACK
+    PUNCHATTACK,
+    ATTACK
 }
 
 public class StateMachine

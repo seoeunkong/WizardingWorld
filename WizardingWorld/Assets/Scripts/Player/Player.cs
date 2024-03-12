@@ -67,6 +67,7 @@ public class Player : MonoBehaviour
         PlayerController controller = GetComponent<PlayerController>();
         stateMachine = new StateMachine(StateName.MOVE,new MoveState(controller));
         stateMachine.AddState(StateName.PUNCHATTACK, new PunchAttackState(controller));
+        stateMachine.AddState(StateName.ATTACK, new AttackState(controller));
     }
 
    

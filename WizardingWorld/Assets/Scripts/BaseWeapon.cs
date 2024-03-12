@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class BaseWeapon : MonoBehaviour
 {
     public WeaponHandleData handleData { get { return _weaponHandleData;  } }
+    public RuntimeAnimatorController WeaponAnimator { get { return _weaponAnimator;  } }
     public string Name { get { return _name; } }
     public float AttackDamage { get { return _attackDamage; } }
     public float AttackSpeed { get { return _attackSpeed; } }
@@ -14,7 +15,8 @@ public abstract class BaseWeapon : MonoBehaviour
     [Header("생성 정보"), Tooltip("해당 무기를 쥐었을 때의 local Transform 값 정보")]
     [SerializeField] protected WeaponHandleData _weaponHandleData;
 
-    [Header("공격 정보")]
+    [Header("무기 정보")]
+    [SerializeField] protected RuntimeAnimatorController _weaponAnimator;
     [SerializeField] protected bool _hasWeapon;
     [SerializeField] protected string _name;
     [SerializeField] protected float _attackDamage;

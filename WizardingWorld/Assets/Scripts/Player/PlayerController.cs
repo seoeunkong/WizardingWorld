@@ -189,6 +189,10 @@ public class PlayerController : MonoBehaviour
             {
                 player.stateMachine.ChangeState(StateName.PUNCHATTACK);
             }
+            else
+            {
+                player.stateMachine.ChangeState(StateName.ATTACK);
+            }
 
             if (Physics.Raycast(_attackPos.position, _attackPos.forward, out hit, _maxDistance))
             {
