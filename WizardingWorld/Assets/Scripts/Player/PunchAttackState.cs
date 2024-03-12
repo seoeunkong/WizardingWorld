@@ -27,8 +27,7 @@ public class PunchAttackState : BaseState
 
     public override void OnUpdateState()
     {
-        //if (!_Controller.onAttack) return;
-        //Player.Instance.animator.SetTrigger("onBasicAttack");
+
     }
 
     

@@ -5,30 +5,52 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("´ë½¬ UI")]
     public Slider dashSlider;
+
     private float _maxDashValue;
     private PlayerController _playerController;
+
+    [Header("Bag UI")]
+    public GameObject Bag;
+    public bool bagActive {  get; private set; }
+
+    private void Awake()
+    {
+        Bag.SetActive(false);
+    }
+
 
     void Start()
     {
         _playerController = Player.Instance.GetComponent<PlayerController>();
-        _maxDashValue = _playerController.setDashTime;
 
         InitializeDashSlider();
     }
 
-    private void InitializeDashSlider()
+    void Update()
     {
+        UpdateDashSlider();
+        ClickTab();
+
+    }
+
+    void InitializeDashSlider()
+    {
+        _maxDashValue = _playerController.setDashTime;
+
         dashSlider.value = _maxDashValue;
         dashSlider.maxValue = _maxDashValue;
         dashSlider.gameObject.SetActive(false);
     }
 
-
-    void Update()
+    void ClickTab()
     {
-        UpdateDashSlider();
-
+        bagActive = !Bag.activeSelf;
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            Bag.SetActive(bagActive);
+        }
     }
 
     void UpdateDashSlider()
