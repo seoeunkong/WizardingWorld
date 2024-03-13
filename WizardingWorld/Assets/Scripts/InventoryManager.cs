@@ -26,6 +26,8 @@ public class InventoryManager : MonoBehaviour
 
     private void Init()
     {
+        if (weaponObject == null) return;
+
         GameObject weapon = Instantiate(weaponObject);
         Player.Instance.weaponManager.RegisterWeapon(weapon);
         Player.Instance.weaponManager.SetWeapon(weapon);
