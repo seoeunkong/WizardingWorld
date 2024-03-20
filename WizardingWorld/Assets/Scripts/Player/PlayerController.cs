@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
+        //카메라 및 플레이어 회전 
         //키보드 입력값이 없는 경우에 둘러보기 활성화 
         bool input = (calculatedDirection == Vector3.zero);
         if (!toggleCameraRotationInput && input) 
@@ -185,21 +186,43 @@ public class PlayerController : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
-            if(!hasWeapon())
+            float attackPower = 0;
+
+            if(!hasWeapon()) //플레이어한테 무기가 없는 경우 
             {
                 player.stateMachine.ChangeState(StateName.PUNCHATTACK);
+                attackPower = player.AttackPower;
             }
-            else
+            else //무기가 있는 경우 
             {
                 player.stateMachine.ChangeState(StateName.ATTACK);
+                attackPower = player.weaponManager.Weapon.AttackDamage;
             }
 
             if (Physics.Raycast(_attackPos.position, _attackPos.forward, out hit, _maxDistance))
             {
-                hit.collider.GetComponent<HitTest>().HP -= player.AttackPower;
+                hit.collider.GetComponent<HitTest>().HP -= attackPower;
                 //Debug.DrawRay(_attackPos.position, _attackPos.forward * hit.distance, Color.red);
             }
         }
+
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Item/Weapon"))
+        {
+            Debug.Log("detected");
+        }
+    }
+
+    void CheckDropItem()
+    {
+
+    }
+
+    void GetDropItem()
+    {
 
     }
 }

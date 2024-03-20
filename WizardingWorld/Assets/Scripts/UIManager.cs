@@ -11,21 +11,16 @@ public class UIManager : MonoBehaviour
     private float _maxDashValue;
     private PlayerController _playerController;
 
-    [Header("Bag UI")]
-    public GameObject Bag;
-    public bool bagActive {  get; private set; }
-
-    private void Awake()
-    {
-        Bag.SetActive(false);
-    }
-
+    [Header("인벤토리 UI")]
+    public GameObject inventory;
+    public bool inventoryActive {  get; private set; }
 
     void Start()
     {
         _playerController = Player.Instance.GetComponent<PlayerController>();
 
         InitializeDashSlider();
+        inventory.SetActive(false);
     }
 
     void Update()
@@ -46,10 +41,10 @@ public class UIManager : MonoBehaviour
 
     void ClickTab()
     {
-        bagActive = !Bag.activeSelf;
+        inventoryActive = !inventory.activeSelf;
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            Bag.SetActive(bagActive);
+            inventory.SetActive(inventoryActive);
         }
     }
 
