@@ -7,8 +7,9 @@ public class ItemData : ScriptableObject
 {
     public int ID { get { return _id; } }
     public string Name { get { return _name; } }
-    public int MaxAmount { get { return _maxAmount; } }
+    public int MaxAmount { get { return _maxAmount; }}
     public Sprite IconSprite { get { return _iconSprite; } }
+
 
     [SerializeField] private int _id;
     [SerializeField] private string _name;    // 아이템 이름

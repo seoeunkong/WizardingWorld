@@ -36,17 +36,26 @@ public class PlayerController : MonoBehaviour
     public bool toggleCameraRotationInput { get; private set; } // 둘러보기 입력 여부
     #endregion
 
-
+    #region #대쉬
     [Header("Dash 속성")]
     public float _currentdashTime;
     public float setDashTime = 10f;
+    #endregion
 
+    #region #공격 
     [Header("공격 속성")]
     [SerializeField] private Transform _attackPos;
-    //
-    //public bool onAttack;
     private RaycastHit hit;
     [SerializeField] private float _maxDistance;
+    #endregion
+
+    #region #드랍 아이템 획득
+    [Header("드랍 아이템 획득")]
+    [SerializeField] private float _dropItemCheckDistance;
+    public Transform GetDropItemPos {  get; private set; }
+    public BaseObject baseObject {  get; private set; }
+
+    #endregion
 
     void Start()
     {
@@ -67,6 +76,8 @@ public class PlayerController : MonoBehaviour
         ControlGravity();
 
         OnAttack();
+
+        CheckDropItem();
 
     }
 
@@ -208,21 +219,35 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void CheckDropItem()
     {
-        if (collision.gameObject.CompareTag("Item/Weapon"))
+        Collider[] colls = Physics.OverlapSphere(transform.position, _dropItemCheckDistance);
+        bool foundItemWeapon = false; 
+
+        foreach (Collider coll in colls)
         {
-            Debug.Log("detected");
+            if (coll.CompareTag("Item/Weapon"))
+            {
+                GetDropItemPos = coll.transform; 
+                coll.transform.GetComponent<DropItem>().AddOutlineMat(true);
+                foundItemWeapon = true; 
+                baseObject = coll.GetComponent<BaseObject>();
+                break; 
+            }
+        }
+
+        if (!foundItemWeapon) // "Item/Weapon" 태그를 가진 객체를 찾지 못했다면
+        {
+            // 이전에 찾았던 아이템이 있고, 아웃라인이 적용되었다면 아웃라인을 제거
+            if (GetDropItemPos != null && GetDropItemPos.GetComponent<DropItem>() != null)
+            {
+                GetDropItemPos.GetComponent<DropItem>().AddOutlineMat(false);
+            }
+
+            GetDropItemPos = null; // GetDropItemPos를 null로 설정
         }
     }
 
-    void CheckDropItem()
-    {
 
-    }
 
-    void GetDropItem()
-    {
-
-    }
 }

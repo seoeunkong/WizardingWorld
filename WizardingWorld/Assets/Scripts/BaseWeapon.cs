@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseWeapon : MonoBehaviour
+public abstract class BaseWeapon : BaseObject
 {
     public WeaponData handleData { get { return _weaponData;  } }
     public RuntimeAnimatorController WeaponAnimator { get { return _weaponAnimator;  } }
@@ -20,6 +20,16 @@ public abstract class BaseWeapon : MonoBehaviour
     [SerializeField] protected float _attackSpeed;
     [SerializeField] protected float _attackRange;
     #endregion
+
+    private void Awake()
+    {
+        InitializeData(_weaponData);
+    }
+
+    public override void InitializeData(ItemData itemData)
+    {
+        _itemData = itemData;
+    }
 
     public abstract void Attack(BaseState state);
 

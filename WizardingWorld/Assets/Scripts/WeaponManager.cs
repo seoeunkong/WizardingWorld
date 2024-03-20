@@ -28,8 +28,6 @@ public class WeaponManager
             BaseWeapon weaponInfo = weapon.GetComponent<BaseWeapon>();
             weapon.transform.SetParent(handPosition);
 
-            weapon.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-
             weapon.transform.localPosition = weaponInfo.handleData.localPosition;
             weapon.transform.localEulerAngles = weaponInfo.handleData.localRotation;
             weapon.transform.localScale = weaponInfo.handleData.localScale;

@@ -9,5 +9,4 @@ public class MeleeStick : BaseWeapon
         Player.Instance.animator.SetTrigger("onAttack");
     }
 
-   
 }

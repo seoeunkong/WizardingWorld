@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stick
   m_EditorClassIdentifier: 
   _id: 0
-  _name: "\uB098\uBB34 \uC2A4\uD2F1"
+  _name: "\uB098\uBB34"
   _tooltip: "\uB098\uBB34 \uD68D\uB4DD \uC2DC \uC0AC\uC6A9 \uAC00\uB2A5."
   _iconSprite: {fileID: 21300000, guid: 06140cc248b05d2488fbb6493ce5fd11, type: 3}
   _maxAmount: 99
