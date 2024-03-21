@@ -232,6 +232,7 @@ public class PlayerController : MonoBehaviour
                 coll.transform.GetComponent<DropItem>().AddOutlineMat(true);
                 foundItemWeapon = true; 
                 baseObject = coll.GetComponent<BaseObject>();
+                GetDropItem(coll.gameObject);
                 break; 
             }
         }
@@ -245,6 +246,16 @@ public class PlayerController : MonoBehaviour
             }
 
             GetDropItemPos = null; // GetDropItemPos를 null로 설정
+        }
+    }
+
+    void GetDropItem(GameObject item)
+    {
+        if(item == null) return;
+
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            Inventory.Instance.AddItemToInv(item);
         }
     }
 

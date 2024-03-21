@@ -85,6 +85,7 @@ public class UIManager : MonoBehaviour
             Vector3 getDropItemPos = _playerController.GetDropItemPos.position;
             _fPopUpUi.transform.position = getDropItemPos + Vector3.up;
             _fPopUpUi.transform.rotation = Camera.main.transform.rotation;
+
             List<GameObject> PopUi = FindWithTag(_fPopUpUi, "UI/Text");
             PopUi[0].GetComponent<Text>().text = _playerController.baseObject._itemData.Name;
 

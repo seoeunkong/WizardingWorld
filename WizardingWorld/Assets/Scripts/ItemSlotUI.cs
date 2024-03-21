@@ -32,7 +32,8 @@ public class ItemSlotUI : MonoBehaviour
     {
         SetIndex(); 
     }
-
+    private void ShowIcon() => _iconImage.gameObject.SetActive(true);
+    private void HideIcon() => _iconImage.gameObject.SetActive(false);
     private void ShowText() => _amountText.gameObject.SetActive(true);
     private void HideText() => _amountText.gameObject.SetActive(false);
 
@@ -46,15 +47,36 @@ public class ItemSlotUI : MonoBehaviour
         }
     }
 
+    //슬롯에 아이템 등록
     public void SetItem(Sprite itemSprite)
     {
         if (itemSprite != null)
         {
             _iconImage.sprite = itemSprite;
-            float amount = float.Parse(_amountText.text) + 1;
-            _amountText.text = amount.ToString();
-            ShowText();
+            ShowIcon();
         }
+        else
+        {
+            RemoveItem();
+        }
+    }
+
+    //슬롯에서 아이템 제거 
+    public void RemoveItem()
+    {
+        _iconImage.sprite = null;
+        HideIcon();
+        HideText();
+    }
+
+    public void SetItemAmount(int amount)
+    {
+        if (HasItem && amount > 1)
+            ShowText();
+        else
+            HideText();
+
+        _amountText.text = amount.ToString();
     }
 
 }
