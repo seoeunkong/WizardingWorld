@@ -4679,7 +4679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dashSlider: {fileID: 323866310}
-  inventory: {fileID: 1622442733}
+  _inventory: {fileID: 1622442733}
   _fPopUpUi: {fileID: 1997332612}
 --- !u!1001 &1371185764
 PrefabInstance:

@@ -11,9 +11,11 @@ public class UIManager : MonoBehaviour
     private float _maxDashValue;
     private PlayerController _playerController;
 
-    //[Header("인벤토리 UI")]
-    public GameObject inventory;
-    public bool inventoryActive {  get; private set; }
+    [Header("인벤토리 UI")]
+    [SerializeField]private GameObject _inventory;
+    public void ShowInventory() => _inventory.SetActive(true);
+    public void HideInventory() => _inventory.SetActive(false);
+    private bool _inventoryActive;
 
     [Header("Z키 PopUp UI")]
     [SerializeField] private GameObject _fPopUpUi;
@@ -24,7 +26,7 @@ public class UIManager : MonoBehaviour
 
         InitializeDashSlider();
 
-        inventory.SetActive(false);
+        _inventory.SetActive(false);
 
         _fPopUpUi.SetActive(false);
     }
@@ -47,10 +49,10 @@ public class UIManager : MonoBehaviour
 
     void ClickTab()
     {
-        inventoryActive = !inventory.activeSelf;
+        _inventoryActive = !_inventory.activeSelf;
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            inventory.SetActive(inventoryActive);
+            _inventory.SetActive(_inventoryActive);
         }
     }
 

@@ -5,26 +5,33 @@ using UnityEngine;
 public class DropItem : MonoBehaviour
 {
     [SerializeField] private Material _OutlineMat;
-
+    private Renderer _renderer;
     private Material _material;
-    public BaseObject _Object { get; private set; }
 
     void Start()
     {
-        _material = this.GetComponent<Renderer>().material;
-        _Object = GetComponent<BaseObject>();
+        _renderer = GetComponent<Renderer>();
+        _material = _renderer.material;
     }
 
 
     public void AddOutlineMat(bool detectDropItem)
     {
+        var materials = _renderer.materials;
+
         if (detectDropItem)
         {
-            if (GetComponent<Renderer>().materials.Length < 2) this.GetComponent<Renderer>().materials = new Material[2] { _material, _OutlineMat };
+            if (materials.Length < 2) //아웃라인이 추가되지 않았다면 
+            {
+                _renderer.materials = new Material[2] { _material, _OutlineMat };
+            }
         }
         else
         {
-            if(GetComponent<Renderer>().materials.Length > 1) this.GetComponent<Renderer>().materials = new Material[1] { _material };
+            if(materials.Length > 1)  //아웃라인이 추가되었다면 
+            {
+                _renderer.materials = new Material[1] { _material };
+            }
         }
     }
 

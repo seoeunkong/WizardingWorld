@@ -22,7 +22,7 @@ public class Inventory : MonoBehaviour
 
     private void Awake()
     {
-        this.GetComponent<UIManager>().inventory.SetActive(true);
+        this.GetComponent<UIManager>().ShowInventory();
 
         if (Instance == null)
         {
@@ -81,7 +81,6 @@ public class Inventory : MonoBehaviour
         else
         {
             index = FindEmptySlot();
-            Debug.Log("Add: " + index);
 
         }
 
@@ -145,7 +144,6 @@ public class Inventory : MonoBehaviour
         {
             if (!slot.HasItem)
             {
-                Debug.Log(slot.Index + " " + slot.HasItem);
                 return slot.Index;
             }
         }
@@ -176,13 +174,15 @@ public class Inventory : MonoBehaviour
         if (index < 0) return;
 
         BaseObject obj = _baseObjects[index];
-        
-        if(obj == null) return;
 
+        if (obj == null)
+        {
+            _itemSlotUIs[index].RemoveItem();
+            return;
+        }
 
         // 아이콘 등록
         _itemSlotUIs[index].SetItemImg(obj._objData.IconSprite);
-        Debug.Log(_itemSlotUIs[index].HasItem);
 
         // 1. 셀 수 있는 아이템
         if (obj is CountableObject co)
@@ -205,8 +205,6 @@ public class Inventory : MonoBehaviour
         {
             _itemSlotUIs[index].HideItemAmountText();
         }
-
-
 
         // 아이콘 제거하기
         void RemoveIcon()
