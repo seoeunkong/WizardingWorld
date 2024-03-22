@@ -48,7 +48,7 @@ public class ItemSlotUI : MonoBehaviour
     }
 
     //슬롯에 아이템 등록
-    public void SetItem(Sprite itemSprite)
+    public void SetItemImg(Sprite itemSprite)
     {
         if (itemSprite != null)
         {
@@ -69,7 +69,7 @@ public class ItemSlotUI : MonoBehaviour
         HideText();
     }
 
-    public void SetItemAmount(int amount)
+    public void SetItemAmountTxt(int amount)
     {
         if (HasItem && amount > 1)
             ShowText();
@@ -79,4 +79,8 @@ public class ItemSlotUI : MonoBehaviour
         _amountText.text = amount.ToString();
     }
 
+    public void HideItemAmountText()
+    {
+        HideText();
+    }
 }

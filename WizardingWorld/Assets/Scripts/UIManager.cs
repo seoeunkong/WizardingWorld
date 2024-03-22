@@ -11,8 +11,8 @@ public class UIManager : MonoBehaviour
     private float _maxDashValue;
     private PlayerController _playerController;
 
-    [Header("인벤토리 UI")]
-    [SerializeField] private GameObject _inventory;
+    //[Header("인벤토리 UI")]
+    public GameObject inventory;
     public bool inventoryActive {  get; private set; }
 
     [Header("Z키 PopUp UI")]
@@ -23,7 +23,9 @@ public class UIManager : MonoBehaviour
         _playerController = Player.Instance.GetComponent<PlayerController>();
 
         InitializeDashSlider();
-        _inventory.SetActive(false);
+
+        inventory.SetActive(false);
+
         _fPopUpUi.SetActive(false);
     }
 
@@ -45,10 +47,10 @@ public class UIManager : MonoBehaviour
 
     void ClickTab()
     {
-        inventoryActive = !_inventory.activeSelf;
+        inventoryActive = !inventory.activeSelf;
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            _inventory.SetActive(inventoryActive);
+            inventory.SetActive(inventoryActive);
         }
     }
 
@@ -74,25 +76,23 @@ public class UIManager : MonoBehaviour
 
     void ActivateZPopUp()
     {
-        if (_playerController.GetDropItemPos == null) 
+        if (_playerController.DropItemPos == null) 
         {
             _fPopUpUi.SetActive(false);
             return;
         }
 
-        if(!_fPopUpUi.activeSelf)
+       if((_fPopUpUi.activeSelf && _fPopUpUi.transform.position != _playerController.DropItemPos.position) || !_fPopUpUi.activeSelf)
         {
-            Vector3 getDropItemPos = _playerController.GetDropItemPos.position;
+            Vector3 getDropItemPos = _playerController.DropItemPos.position;
             _fPopUpUi.transform.position = getDropItemPos + Vector3.up;
             _fPopUpUi.transform.rotation = Camera.main.transform.rotation;
 
             List<GameObject> PopUi = FindWithTag(_fPopUpUi, "UI/Text");
-            PopUi[0].GetComponent<Text>().text = _playerController.baseObject._itemData.Name;
+            PopUi[0].GetComponent<Text>().text = _playerController.DropItemPos.GetComponent<BaseObject>()._objData.Name;
 
             _fPopUpUi.SetActive(true);
         }
-
-
     }
 
     List<GameObject> FindWithTag(GameObject parent, string tag)

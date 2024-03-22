@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseWeapon : BaseObject
+public abstract class BaseWeapon : BaseObject 
 {
     public WeaponData handleData { get { return _weaponData;  } }
     public RuntimeAnimatorController WeaponAnimator { get { return _weaponAnimator;  } }
@@ -26,9 +26,9 @@ public abstract class BaseWeapon : BaseObject
         InitializeData(_weaponData);
     }
 
-    public override void InitializeData(ItemData itemData)
+    public override void InitializeData(ObjectData objData)
     {
-        _itemData = itemData;
+        _objData = objData;
     }
 
     public abstract void Attack(BaseState state);

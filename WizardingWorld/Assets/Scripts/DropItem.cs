@@ -15,12 +15,17 @@ public class DropItem : MonoBehaviour
         _Object = GetComponent<BaseObject>();
     }
 
+
     public void AddOutlineMat(bool detectDropItem)
     {
-        if(detectDropItem) 
+        if (detectDropItem)
         {
-            this.GetComponent<Renderer>().materials = new Material[2] { _material, _OutlineMat };
+            if (GetComponent<Renderer>().materials.Length < 2) this.GetComponent<Renderer>().materials = new Material[2] { _material, _OutlineMat };
         }
-        else this.GetComponent<Renderer>().materials = new Material[1] { _material};
+        else
+        {
+            if(GetComponent<Renderer>().materials.Length > 1) this.GetComponent<Renderer>().materials = new Material[1] { _material };
+        }
     }
+
 }

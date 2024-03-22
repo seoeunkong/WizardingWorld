@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class PlayerController : MonoBehaviour
 {
@@ -52,8 +54,9 @@ public class PlayerController : MonoBehaviour
     #region #드랍 아이템 획득
     [Header("드랍 아이템 획득")]
     [SerializeField] private float _dropItemCheckDistance;
-    public Transform GetDropItemPos {  get; private set; }
-    public BaseObject baseObject {  get; private set; }
+    public BaseObject baseObject { get; private set; }
+    public Transform DropItemPos { get; private set; }
+    private List<Transform> _detect = new List<Transform>();
 
     #endregion
 
@@ -63,6 +66,8 @@ public class PlayerController : MonoBehaviour
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
         _camera = Camera.main;
         _currentdashTime = setDashTime;
+
+        _detect = new List<Transform>();
     }
 
     void Update()
@@ -79,6 +84,8 @@ public class PlayerController : MonoBehaviour
 
         CheckDropItem();
 
+        GetDropItem();
+
     }
 
     private void LateUpdate()
@@ -86,7 +93,7 @@ public class PlayerController : MonoBehaviour
         //카메라 및 플레이어 회전 
         //키보드 입력값이 없는 경우에 둘러보기 활성화 
         bool input = (calculatedDirection == Vector3.zero);
-        if (!toggleCameraRotationInput && input) 
+        if (!toggleCameraRotationInput && input)
         {
             Vector3 playerRotate = Vector3.Scale(_camera.transform.forward, new Vector3(1, 0, 1));
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRotate), Time.deltaTime * smoothness);
@@ -96,7 +103,7 @@ public class PlayerController : MonoBehaviour
     protected void ControlGravity()
     {
         gravity = Vector3.down * MathF.Abs(player.rigid.velocity.y);
-        if(_isGrounded && _isOnSlope)
+        if (_isGrounded && _isOnSlope)
         {
             gravity = Vector3.zero;
             player.rigid.useGravity = false;
@@ -119,7 +126,7 @@ public class PlayerController : MonoBehaviour
             return player.DashSpeed;
         }
 
-        if(!Input.GetKey(KeyCode.LeftShift) && _currentdashTime < setDashTime)
+        if (!Input.GetKey(KeyCode.LeftShift) && _currentdashTime < setDashTime)
         {
             _currentdashTime += Time.deltaTime;
         }
@@ -141,13 +148,13 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 playerRotate = Vector3.zero;
         float inputValue = 0;
-        
-        if (x!=0)
+
+        if (x != 0)
         {
             playerRotate = _camera.transform.right;
             inputValue = x;
         }
-        else if(z!=0)
+        else if (z != 0)
         {
             playerRotate = _camera.transform.forward;
             inputValue = z;
@@ -163,7 +170,7 @@ public class PlayerController : MonoBehaviour
 
         Vector3 input = OnMoveInput();
 
-        calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(input): input;
+        calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(input) : input;
         return calculatedDirection * currentMoveSpeed;
     }
 
@@ -195,11 +202,11 @@ public class PlayerController : MonoBehaviour
 
     void OnAttack()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             float attackPower = 0;
 
-            if(!hasWeapon()) //플레이어한테 무기가 없는 경우 
+            if (!hasWeapon()) //플레이어한테 무기가 없는 경우 
             {
                 player.stateMachine.ChangeState(StateName.PUNCHATTACK);
                 attackPower = player.AttackPower;
@@ -219,46 +226,100 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    Transform FindCloseItem(List<Transform> newDetect)
+    {
+        Transform result = newDetect[0];
+        float distance = Vector3.Distance(player.transform.position, result.position);
+
+        foreach (Transform item in newDetect)
+        {
+            float dist = Vector3.Distance(player.transform.position, item.transform.position);
+            if (dist < distance)
+            {
+                distance = dist;
+                result = item.transform;
+            }
+        }
+
+        return result;
+    }
+
     void CheckDropItem()
     {
         Collider[] colls = Physics.OverlapSphere(transform.position, _dropItemCheckDistance);
-        bool foundItemWeapon = false; 
+        List<Transform> newdetect = new List<Transform>();
+
+        // 의사코드 
+        // 범위 내에 존재하는 모든 item/weapon을 newDetect 리스트에 저장하기
+        // newDetect 리스트에 저장되어 있는 데이터 중 플레이어와 가깝게 위치한 데이터 뽑아서 DropItemPos로 업데이트하기
+        // 이전에 저장한 _detectItemList와 newDetect 리스트 비교. _detectItemList에 존재하지만 newDetect에는 없는 아이템 아웃라인 비활성화하기.
+
 
         foreach (Collider coll in colls)
         {
-            if (coll.CompareTag("Item/Weapon"))
+            if (coll.GetComponent<DropItem>() != null)
             {
-                GetDropItemPos = coll.transform; 
-                coll.transform.GetComponent<DropItem>().AddOutlineMat(true);
-                foundItemWeapon = true; 
-                baseObject = coll.GetComponent<BaseObject>();
-                GetDropItem(coll.gameObject);
-                break; 
+                if(!_detect.Contains(coll.transform)) _detect.Add(coll.transform);
+                newdetect.Add(coll.transform);
             }
         }
 
-        if (!foundItemWeapon) // "Item/Weapon" 태그를 가진 객체를 찾지 못했다면
+        for(int i = _detect.Count - 1;  i >= 0; i--)
         {
-            // 이전에 찾았던 아이템이 있고, 아웃라인이 적용되었다면 아웃라인을 제거
-            if (GetDropItemPos != null && GetDropItemPos.GetComponent<DropItem>() != null)
+            if (!newdetect.Contains(_detect[i].transform))
             {
-                GetDropItemPos.GetComponent<DropItem>().AddOutlineMat(false);
+                _detect[i].GetComponent<DropItem>().AddOutlineMat(false);
+                _detect.Remove(_detect[i].transform);
             }
+        }
 
-            GetDropItemPos = null; // GetDropItemPos를 null로 설정
+        Transform closeItem = null;
+        if (_detect.Count > 0)
+        {
+            closeItem = FindCloseItem(_detect);
+        }
+
+
+        if (DropItemPos?.position != closeItem?.position) DropItemPos = closeItem;
+
+        if (closeItem != null)
+        {
+
+            DropItem closeDropItem = closeItem.GetComponent<DropItem>();
+
+            closeDropItem?.AddOutlineMat(true);
+            foreach (Transform item in _detect)
+            {
+                if (item != closeItem) item.GetComponent<DropItem>().AddOutlineMat(false);
+            }
+            GetDropItem();
         }
     }
 
-    void GetDropItem(GameObject item)
+    void GetDropItem()
     {
-        if(item == null) return;
+        if (DropItemPos == null) return;
 
-        if(Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            Inventory.Instance.AddItemToInv(item);
+            BaseObject bo = DropItemPos.GetComponent<BaseObject>();
+            Inventory.Instance.Add(bo);
+
+            DropItemPos.gameObject.SetActive(false);
+            Destroy(DropItemPos.gameObject); 
+
+            _detect.Remove(DropItemPos);
+            DropItemPos = null;
         }
     }
 
+    void ChangeWeapon()
+    {
+        if (Input.GetAxis("Mouse ScrollWheel") != 0)
+        {
+
+        }
+    }
 
 
 }
