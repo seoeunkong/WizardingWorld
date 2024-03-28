@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -12,10 +13,10 @@ public class Inventory : MonoBehaviour
     public GameObject weaponObject; //test
 
     [Header("인벤토리 설정")]
-    public GameObject inventoryContents;
+    public GameObject inventoryContents; //인벤토리 UI 
     private int _slotCount;
 
-    private ItemSlotUI[] _itemSlotUIs;
+    private ItemSlotUI[] _itemSlotUIs; //인벤토리 슬롯 UI 
 
     [SerializeField]
     private BaseObject[] _baseObjects;
@@ -31,7 +32,6 @@ public class Inventory : MonoBehaviour
             return;
         }
         DestroyImmediate(gameObject);
-
     }
 
     void Start()
@@ -55,6 +55,14 @@ public class Inventory : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        if(this.gameObject.activeSelf)
+        {
+           
+        }
+    }
+
     bool HasItem(int index)
     {
         return index >= 0 && _itemSlotUIs[index] != null && _baseObjects[index] != null;
@@ -63,6 +71,11 @@ public class Inventory : MonoBehaviour
     public bool isCountableObj(int index)
     {
         return HasItem(index) && _baseObjects[index] is CountableObject;
+    }
+
+    public bool isWeaponObj(int index)
+    {
+        return HasItem(index) && _baseObjects[index] is BaseWeapon;
     }
 
     public void Add(BaseObject baseObject, int amount = 1)
@@ -177,7 +190,7 @@ public class Inventory : MonoBehaviour
 
         if (obj == null)
         {
-            _itemSlotUIs[index].RemoveItem();
+            RemoveIcon();
             return;
         }
 
@@ -212,6 +225,47 @@ public class Inventory : MonoBehaviour
             _itemSlotUIs[index].RemoveItem();
             _itemSlotUIs[index].HideItemAmountText(); // 수량 텍스트 숨기기
         }
+
+        
+    }
+
+
+    public void Swap(int indexA, int indexB)
+    {
+        BaseObject itemA = _baseObjects[indexA];
+        BaseObject itemB = _baseObjects[indexB];
+
+        // 1. 셀 수 있는 아이템이고, 동일한 아이템일 경우
+        //    indexA -> indexB로 개수 합치기
+        if (itemA != null && itemB != null &&
+            itemA._objData.ID == itemB._objData.ID &&
+            itemA is CountableObject ciA && itemB is CountableObject ciB)
+        {
+            int maxAmount = ciB.MaxAmount;
+            int sum = ciA.Amount + ciB.Amount;
+
+            if (sum <= maxAmount)
+            {
+                ciA.SetAmount(0);
+                ciB.SetAmount(sum);
+            }
+            else
+            {
+                ciA.SetAmount(sum - maxAmount);
+                ciB.SetAmount(maxAmount);
+            }
+        }
+        // 2. 일반적인 경우 : 슬롯 교체
+        else
+        {
+            _baseObjects[indexA] = itemB;
+            _baseObjects[indexB] = itemA;
+        }
+
+        // 두 슬롯 정보 갱신
+        UpdateSlot(indexA);
+        UpdateSlot(indexB);
+        
     }
 
 

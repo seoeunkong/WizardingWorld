@@ -41,7 +41,7 @@ public class CameraMove : MonoBehaviour
         _finalDistance = realCam.localPosition.magnitude; // 카메라 최종 거리 설정
 
         // 마우스 커서 설정
-        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+       // UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         UnityEngine.Cursor.visible = false;
         
     }

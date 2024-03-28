@@ -20,6 +20,8 @@ public class ItemSlotUI : MonoBehaviour
     [Tooltip("하이라이트 소요 시간")]
     [SerializeField] private float _highlightFadeDuration = 0.2f;
 
+    private Button _btn;
+
     //슬롯의 인덱스
     public int Index { get; private set; }
 
@@ -27,15 +29,35 @@ public class ItemSlotUI : MonoBehaviour
 
     public bool HasItem => _iconImage.sprite != null;
 
+    public RectTransform SlotRect => _slotRect;
+    public RectTransform IconRect => _iconRect;
+
+    private RectTransform _slotRect;
+    private RectTransform _iconRect;
+    private RectTransform _highlightRect;
+
 
     void Start()
     {
         SetIndex(); 
+        HideIcon();
+        HideText();
+
+        InitRect();
+        
     }
+
     private void ShowIcon() => _iconImage.gameObject.SetActive(true);
     private void HideIcon() => _iconImage.gameObject.SetActive(false);
     private void ShowText() => _amountText.gameObject.SetActive(true);
     private void HideText() => _amountText.gameObject.SetActive(false);
+
+    void InitRect()
+    {
+        _slotRect = GetComponent<RectTransform>();
+        _iconRect = _iconImage.GetComponent<RectTransform>();
+
+    }
 
     private void SetIndex()
     {
@@ -82,5 +104,22 @@ public class ItemSlotUI : MonoBehaviour
     public void HideItemAmountText()
     {
         HideText();
+    }
+
+    /// <summary> 다른 슬롯과 아이템 아이콘 교환 </summary>
+    public void SwapOrMoveIcon(ItemSlotUI other)
+    {
+        if (other == null) return;
+        if (other == this) return; // 자기 자신과 교환 불가
+
+        var temp = _iconImage.sprite;
+
+        // 1. 대상에 아이템이 있는 경우 : 교환
+        if (other.HasItem) SetItemImg(other._iconImage.sprite);
+
+        // 2. 없는 경우 : 이동
+        else RemoveItem();
+
+        other.SetItemImg(temp);
     }
 }

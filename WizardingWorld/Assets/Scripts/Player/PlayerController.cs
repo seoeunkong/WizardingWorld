@@ -86,6 +86,8 @@ public class PlayerController : MonoBehaviour
 
         GetDropItem();
 
+        ChangeWeapon();
+
     }
 
     private void LateUpdate()
@@ -252,7 +254,7 @@ public class PlayerController : MonoBehaviour
         // 의사코드 
         // 범위 내에 존재하는 모든 item/weapon을 newDetect 리스트에 저장하기
         // newDetect 리스트에 저장되어 있는 데이터 중 플레이어와 가깝게 위치한 데이터 뽑아서 DropItemPos로 업데이트하기
-        // 이전에 저장한 _detectItemList와 newDetect 리스트 비교. _detectItemList에 존재하지만 newDetect에는 없는 아이템 아웃라인 비활성화하기.
+        // 이전에 저장한 _detec와 newDetect 리스트 비교. _detect에 존재하지만 newDetect에는 없는 아이템 아웃라인 비활성화하기.
 
 
         foreach (Collider coll in colls)
@@ -306,7 +308,7 @@ public class PlayerController : MonoBehaviour
             Inventory.Instance.Add(bo);
 
             DropItemPos.gameObject.SetActive(false);
-            Destroy(DropItemPos.gameObject); 
+            //Destroy(DropItemPos.gameObject); 
 
             _detect.Remove(DropItemPos);
             DropItemPos = null;
@@ -317,7 +319,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-
+          //  Debug.Log("Mouse");
         }
     }
 
