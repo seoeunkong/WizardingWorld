@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
 
         CheckDropItem();
 
-        GetDropItem();
+        //GetDropItem();
 
         ChangeWeapon();
 
@@ -261,12 +261,12 @@ public class PlayerController : MonoBehaviour
         {
             if (coll.GetComponent<DropItem>() != null)
             {
-                if(!_detect.Contains(coll.transform)) _detect.Add(coll.transform);
+                if (!_detect.Contains(coll.transform)) _detect.Add(coll.transform);
                 newdetect.Add(coll.transform);
             }
         }
 
-        for(int i = _detect.Count - 1;  i >= 0; i--)
+        for (int i = _detect.Count - 1; i >= 0; i--)
         {
             if (!newdetect.Contains(_detect[i].transform))
             {
@@ -286,7 +286,6 @@ public class PlayerController : MonoBehaviour
 
         if (closeItem != null)
         {
-
             DropItem closeDropItem = closeItem.GetComponent<DropItem>();
 
             closeDropItem?.AddOutlineMat(true);
@@ -294,19 +293,20 @@ public class PlayerController : MonoBehaviour
             {
                 if (item != closeItem) item.GetComponent<DropItem>().AddOutlineMat(false);
             }
-            GetDropItem();
+            GetDropItem(closeDropItem);
         }
     }
 
-    void GetDropItem()
+    void GetDropItem(DropItem close)
     {
-        if (DropItemPos == null) return;
+        if (DropItemPos == null || close == null) return;
 
         if (Input.GetKeyDown(KeyCode.F))
         {
             BaseObject bo = DropItemPos.GetComponent<BaseObject>();
             Inventory.Instance.Add(bo);
 
+            close.AddOutlineMat(false);
             DropItemPos.gameObject.SetActive(false);
             //Destroy(DropItemPos.gameObject); 
 
