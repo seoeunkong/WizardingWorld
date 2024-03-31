@@ -84,8 +84,6 @@ public class PlayerController : MonoBehaviour
 
         CheckDropItem();
 
-        GetDropItem();
-
         ChangeWeapon();
 
     }
@@ -294,16 +292,17 @@ public class PlayerController : MonoBehaviour
             {
                 if (item != closeItem) item.GetComponent<DropItem>().AddOutlineMat(false);
             }
-            GetDropItem();
+            GetDropItem(closeDropItem);
         }
     }
 
-    void GetDropItem()
+    void GetDropItem(DropItem item)
     {
-        if (DropItemPos == null) return;
+        if (DropItemPos == null || item == null) return;
 
         if (Input.GetKeyDown(KeyCode.F))
         {
+            item.AddOutlineMat(false);
             BaseObject bo = DropItemPos.GetComponent<BaseObject>();
             Inventory.Instance.Add(bo);
 

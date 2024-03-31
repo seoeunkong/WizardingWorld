@@ -20,6 +20,7 @@ public class Inventory : MonoBehaviour
 
     [SerializeField]
     private BaseObject[] _baseObjects;
+    private int _weaponIndex;
 
     private void Awake()
     {
@@ -41,11 +42,11 @@ public class Inventory : MonoBehaviour
 
     private void Init()
     {
-        if (weaponObject == null) return;
+        //if (weaponObject == null) return;
 
-        GameObject weapon = Instantiate(weaponObject);
-        Player.Instance.weaponManager.RegisterWeapon(weapon);
-        Player.Instance.weaponManager.SetWeapon(weapon);
+        //GameObject weapon = Instantiate(weaponObject);
+        //Player.Instance.weaponManager.RegisterWeapon(weapon);
+        //Player.Instance.weaponManager.SetWeapon(weapon);
 
         _itemSlotUIs = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
 
@@ -55,17 +56,18 @@ public class Inventory : MonoBehaviour
 
     }
 
-    private void Update()
-    {
-        if(this.gameObject.activeSelf)
-        {
-           
-        }
-    }
+    bool isWeaponCol(int index) => index % 6 == 5;
 
     bool HasItem(int index)
     {
         return index >= 0 && _itemSlotUIs[index] != null && _baseObjects[index] != null;
+    }
+
+    public bool isValidSwap(int from, int to)
+    {
+        if (!isWeaponCol(from) && !isWeaponCol(to)) return true;
+        if (HasItem(from) && HasItem(to)) return isWeaponObj(from) && isWeaponObj(to);
+        return isWeaponObj(from) || isWeaponObj(to);
     }
 
     public bool isCountableObj(int index)
@@ -76,6 +78,55 @@ public class Inventory : MonoBehaviour
     public bool isWeaponObj(int index)
     {
         return HasItem(index) && _baseObjects[index] is BaseWeapon;
+    }
+
+    void InitWeaponInstance(BaseObject baseObject)
+    {
+        if(baseObject == null) return;
+
+        GameObject weapon = Instantiate(baseObject.gameObject);
+
+        Collider collider = weapon.GetComponent<Collider>();
+        if (collider != null) collider.enabled = false;
+
+        DropItem item = weapon.GetComponent<DropItem>();
+        if (item != null) item.enabled = false;
+
+        Rigidbody rb = weapon.GetComponent<Rigidbody>();
+        if (rb != null) Destroy(rb);
+
+        Player.Instance.weaponManager.RegisterWeapon(weapon);
+        Player.Instance.weaponManager.SetWeapon(weapon);
+    }
+
+    void CheckWeaponCol()
+    {
+        if(_weaponIndex == 0)
+        {
+            for (int i = 5; i < _baseObjects.Length; i += 6)
+            {
+                if (HasItem(i))
+                {
+                    _weaponIndex = i;
+                    InitWeaponInstance(_baseObjects[i]);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 5; i < _baseObjects.Length; i += 6)
+            {
+                if (HasItem(i))
+                {
+                    return;
+                }
+            }
+            _weaponIndex = 0;
+        }
+        
+
+
     }
 
     public void Add(BaseObject baseObject, int amount = 1)
@@ -155,7 +206,7 @@ public class Inventory : MonoBehaviour
     {
         foreach (var slot in _itemSlotUIs)
         {
-            if (!slot.HasItem)
+            if (!slot.HasItem && !isWeaponCol(slot.Index))
             {
                 return slot.Index;
             }
@@ -226,7 +277,8 @@ public class Inventory : MonoBehaviour
             _itemSlotUIs[index].HideItemAmountText(); // 수량 텍스트 숨기기
         }
 
-        
+        CheckWeaponCol();
+
     }
 
 
