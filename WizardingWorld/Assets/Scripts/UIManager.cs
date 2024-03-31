@@ -236,16 +236,15 @@ public class UIManager : MonoBehaviour
     /// <summary> 두 슬롯의 아이템 교환 </summary>
     private void TrySwapItems(ItemSlotUI from, ItemSlotUI to)
     {
-        Inventory inv = GetComponent<Inventory>();
 
-        if (from == to || !inv.IsValidSwap(from.Index, to.Index))
+        if (from == to)
         {
             return;
         }
 
         from.SwapOrMoveIcon(to);
         
-       inv.Swap(from.Index, to.Index);
+       GetComponent<Inventory>().Swap(from.Index, to.Index);
     }
 
 }

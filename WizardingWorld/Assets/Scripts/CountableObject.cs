@@ -9,11 +9,6 @@ public class CountableObject : BaseObject
     [Header("수량이 존재하는 아이템"), Tooltip("개수 속성 정보")]
     [SerializeField] protected CountableData _countableData;
 
-    private void Awake()
-    {
-        InitializeData(_countableData);
-    }
-
     public override void InitializeData(ObjectData objData)
     {
         _objData = objData;
@@ -35,14 +30,5 @@ public class CountableObject : BaseObject
     public void SetAmount(int amount)
     {
         Amount = Mathf.Clamp(amount, 0, MaxAmount);
-    }
-
-    // 개수 추가 및 최대치 초과량 반환(초과량 없을 경우 0)
-    public int AddAmountAndGetExcess(int amount)
-    {
-        int nextAmount = Amount + amount;
-        SetAmount(nextAmount);
-
-        return (nextAmount > MaxAmount) ? (nextAmount - MaxAmount) : 0;
     }
 }

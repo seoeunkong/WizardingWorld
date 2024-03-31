@@ -28,8 +28,7 @@ public class DropItem : MonoBehaviour
         }
         else
         {
-            //Debug.Log(_renderer.materials[0] + " " + _renderer.materials[1]);
-            if (materials.Length > 1)  //아웃라인이 추가되었다면 
+            if(materials.Length > 1)  //아웃라인이 추가되었다면 
             {
                 _renderer.materials = new Material[1] { _material };
             }

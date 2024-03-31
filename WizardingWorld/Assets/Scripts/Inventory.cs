@@ -5,11 +5,12 @@ using Unity.VisualScripting;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using static UnityEditor.Progress;
-using static UnityEngine.Rendering.VolumeComponent;
 
 public class Inventory : MonoBehaviour
 {
     public static Inventory Instance { get; private set; }
+
+    public GameObject weaponObject; //test
 
     [Header("인벤토리 설정")]
     public GameObject inventoryContents; //인벤토리 UI 
@@ -19,9 +20,6 @@ public class Inventory : MonoBehaviour
 
     [SerializeField]
     private BaseObject[] _baseObjects;
-    private int _weaponHandIndex;
-
-    private List<BaseObject> _weaponList = new List<BaseObject>();
 
     private void Awake()
     {
@@ -43,6 +41,11 @@ public class Inventory : MonoBehaviour
 
     private void Init()
     {
+        if (weaponObject == null) return;
+
+        GameObject weapon = Instantiate(weaponObject);
+        Player.Instance.weaponManager.RegisterWeapon(weapon);
+        Player.Instance.weaponManager.SetWeapon(weapon);
 
         _itemSlotUIs = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
 
@@ -52,67 +55,17 @@ public class Inventory : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        if(this.gameObject.activeSelf)
+        {
+           
+        }
+    }
+
     bool HasItem(int index)
     {
-        return index >= 0 && index < _slotCount && _itemSlotUIs[index] != null && _baseObjects[index] != null;
-    }
-
-    bool CheckWeaponIndex(int index)
-    {
-        return index % 6 == 5;
-    }
-
-    void InitWeaponInstance(BaseObject baseObject)
-    {
-        if (baseObject == null) return;
-
-        GameObject weapon = null;
-
-        if (!_weaponList.Contains(baseObject))
-        {
-            weapon = Instantiate(baseObject.gameObject);
-            weapon.GetComponent<Collider>().enabled = false;
-            weapon.GetComponent<DropItem>().enabled = false;
-
-            Destroy(weapon.GetComponent<Rigidbody>());
-        }
-
-        Player.Instance.weaponManager.RegisterWeapon(weapon);
-        Player.Instance.weaponManager.SetWeapon(weapon);
-    }
-
-    //Swap 가능한지 체크 
-    public bool IsValidSwap(int from, int to)
-    {
-        if (!CheckWeaponIndex(from) && !CheckWeaponIndex(to))
-        {
-            return true;
-        }
-
-        if (HasItem(from) && HasItem(to))
-        {
-            return _baseObjects[from] is BaseWeapon && _baseObjects[to] is BaseWeapon;
-        }
-
-        if (HasItem(from) || HasItem(to))
-        {
-            
-            int index = HasItem(from) ? from : to;
-            return _baseObjects[index] is BaseWeapon;
-        }
-
-        return false;
-    }
-
-    public bool IsValidNextWeapon()
-    {
-        int nextWeapon = _weaponHandIndex + 6;
-        if(HasItem(nextWeapon))
-        {
-            _weaponHandIndex = nextWeapon;
-            return true;
-        }
-        return false;
+        return index >= 0 && _itemSlotUIs[index] != null && _baseObjects[index] != null;
     }
 
     public bool isCountableObj(int index)
@@ -130,33 +83,21 @@ public class Inventory : MonoBehaviour
         int index = -1;
 
         ObjectData objData = baseObject._objData;
-
-        if (objData is CountableData cd) //셀 수 있는 아이템인 경우
+        if (objData is CountableData cd)
         {
             index = FindItem(objData);
-
             if (index == -1) //아이템이 인벤토리 내에 없는 경우
             {
                 index = FindEmptySlot();
-                if (index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
-
-                CountableObject co = baseObject.gameObject.GetComponent<CountableObject>(); ;
-                co.SetAmount(1);
-            }
-            else //아이템이 인벤토리 내에 존재하는 경우 
-            {
-                CountableObject co = _baseObjects[index].gameObject.GetComponent<CountableObject>();
-                int current = co.Amount;
-                co.SetAmount(current + amount);
             }
         }
-        else //무기인 경우
+        else
         {
             index = FindEmptySlot();
-            if (index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
+
         }
 
-        
+        if(index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
         UpdateSlot(index);
     }
 
@@ -209,41 +150,12 @@ public class Inventory : MonoBehaviour
         return _baseObjects[index].name;
     }
 
-    // Weapon 열에 무기가 세팅된 경우 -> 무기 인덱스 업데이트
-    // Weapon 열에 무기가 없는 경우 -> 무기 인덱스 0으로 초기화 
-    void CheckWeaponCol()
-    {
-        if(_weaponHandIndex == 0)
-        {
-            for(int i = 5; i < _slotCount; i+=6)
-            {
-                if (HasItem(i))
-                {
-                    _weaponHandIndex = i;
-                    InitWeaponInstance(_baseObjects[_weaponHandIndex]);
-                    return;
-                }
-            }
-        }
-        else
-        {
-            for (int i = 5; i < _slotCount; i += 6)
-            {
-                if (HasItem(i))
-                {
-                    return;
-                }
-            }
-            _weaponHandIndex = 0;
-        }
-    }
-
     //비어있는 슬롯 중 첫번째 슬롯 찾기
     int FindEmptySlot()
     {
         foreach (var slot in _itemSlotUIs)
         {
-            if (!slot.HasItem && !CheckWeaponIndex(slot.Index))
+            if (!slot.HasItem)
             {
                 return slot.Index;
             }
@@ -282,11 +194,6 @@ public class Inventory : MonoBehaviour
             return;
         }
 
-        //foreach (var slot in _baseObjects)
-        //{
-        //    Debug.Log(slot);
-        //}
-
         // 아이콘 등록
         _itemSlotUIs[index].SetItemImg(obj._objData.IconSprite);
 
@@ -319,8 +226,7 @@ public class Inventory : MonoBehaviour
             _itemSlotUIs[index].HideItemAmountText(); // 수량 텍스트 숨기기
         }
 
-        CheckWeaponCol();
-      
+        
     }
 
 
