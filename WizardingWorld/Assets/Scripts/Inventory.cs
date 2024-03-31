@@ -127,9 +127,6 @@ public class Inventory : MonoBehaviour
             _weaponIndex = 0;
             InitWeaponInstance(null);
         }
-        
-
-
     }
 
     public void Add(BaseObject baseObject, int amount = 1)
