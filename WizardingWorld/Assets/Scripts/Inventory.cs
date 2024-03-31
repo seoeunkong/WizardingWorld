@@ -10,8 +10,6 @@ public class Inventory : MonoBehaviour
 {
     public static Inventory Instance { get; private set; }
 
-    public GameObject weaponObject; //test
-
     [Header("인벤토리 설정")]
     public GameObject inventoryContents; //인벤토리 UI 
     private int _slotCount;
@@ -82,7 +80,11 @@ public class Inventory : MonoBehaviour
 
     void InitWeaponInstance(BaseObject baseObject)
     {
-        if(baseObject == null) return;
+        if(baseObject == null)
+        {
+            Player.Instance.weaponManager.SetWeapon(null);
+            return;
+        }
 
         GameObject weapon = Instantiate(baseObject.gameObject);
 
@@ -123,6 +125,7 @@ public class Inventory : MonoBehaviour
                 }
             }
             _weaponIndex = 0;
+            InitWeaponInstance(null);
         }
         
 
@@ -140,15 +143,30 @@ public class Inventory : MonoBehaviour
             if (index == -1) //아이템이 인벤토리 내에 없는 경우
             {
                 index = FindEmptySlot();
+
+                if (index == -1) return;
+
+                // 새로운 아이템 생성
+                 _baseObjects[index] = baseObject;
+
+                CountableObject co = _baseObjects[index].gameObject.GetComponent<CountableObject>(); ;
+                co.SetAmount(1);
+
+            }
+            else //이미 해당 아이템이 인벤토리 내에 존재하는 경우
+            {
+                CountableObject co = _baseObjects[index].gameObject.GetComponent<CountableObject>(); ;
+                int curamount = co.Amount;
+                co.SetAmount(curamount + amount);
             }
         }
         else
         {
             index = FindEmptySlot();
-
+            if (index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
         }
 
-        if(index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
+        
         UpdateSlot(index);
     }
 
@@ -251,6 +269,7 @@ public class Inventory : MonoBehaviour
         // 1. 셀 수 있는 아이템
         if (obj is CountableObject co)
         {
+
             // 1-1. 수량이 0인 경우, 아이템 제거
             if (co.IsEmpty)
             {

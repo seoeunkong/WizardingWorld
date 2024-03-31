@@ -61,7 +61,7 @@ public class WeaponManager
 
         for (int i = 0; i < weapons.Count; i++)
         {
-            if (weapons[i].Equals(Weapon))
+            if (weapons[i].Equals(weapon))
             {
                 weaponObject = weapon;
                 weaponObject.SetActive(true);
