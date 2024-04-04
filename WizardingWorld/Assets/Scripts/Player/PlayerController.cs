@@ -259,7 +259,7 @@ public class PlayerController : MonoBehaviour
         {
             if (coll.GetComponent<DropItem>() != null)
             {
-                if(!_detect.Contains(coll.transform)) _detect.Add(coll.transform);
+                if(!_detect.Contains(coll.transform) && coll.gameObject != transform) _detect.Add(coll.transform);
                 newdetect.Add(coll.transform);
             }
         }
@@ -280,7 +280,11 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        if (DropItemPos?.position != closeItem?.position) DropItemPos = closeItem;
+        if (DropItemPos?.position != closeItem?.position)
+        {
+            DropItemPos = closeItem;
+        }
+        
 
         if (closeItem != null)
         {

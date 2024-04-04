@@ -138,8 +138,9 @@ public class UIManager : MonoBehaviour
             _fPopUpUi.SetActive(false);
             return;
         }
+        //Debug.Log(_playerController.DropItemPos);
 
-       if((_fPopUpUi.activeSelf && _fPopUpUi.transform.position != _playerController.DropItemPos.position) || !_fPopUpUi.activeSelf)
+        if ((_fPopUpUi.activeSelf && _fPopUpUi.transform.position != _playerController.DropItemPos.position) || !_fPopUpUi.activeSelf)
         {
             Vector3 getDropItemPos = _playerController.DropItemPos.position;
             _fPopUpUi.transform.position = getDropItemPos + Vector3.up;

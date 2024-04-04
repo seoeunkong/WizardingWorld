@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 3757249990797897502}
   - component: {fileID: 383427439314769294}
   - component: {fileID: 7690475886263102596}
-  - component: {fileID: 1010065315450539942}
   m_Layer: 0
-  m_Name: HandMeleeStick
+  m_Name: xMeleeStick
   m_TagString: Item/Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,20 +83,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1010065315450539942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893412738258418921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 169a61ee18888d84bb38748cc19a8b65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _weaponData: {fileID: 11400000, guid: 0bed4e71b7754594594549592cd9a5d7, type: 2}
-  _weaponAnimator: {fileID: 22100000, guid: 016c7e69a44a9754a9ab354b66b011d4, type: 2}
-  _attackDamage: 20
-  _attackSpeed: 0
-  _attackRange: 0
