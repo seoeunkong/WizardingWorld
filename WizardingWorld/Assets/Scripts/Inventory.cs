@@ -80,9 +80,9 @@ public class Inventory : MonoBehaviour
 
     void InitWeaponInstance(BaseObject baseObject)
     {
-        if(baseObject == null)
+        if (baseObject == null)
         {
-            Player.Instance.weaponManager.SetWeapon(null);
+            Player.Instance.weaponManager.UnSetWeapon();
             return;
         }
 
@@ -101,31 +101,37 @@ public class Inventory : MonoBehaviour
         Player.Instance.weaponManager.SetWeapon(weapon);
     }
 
-    void CheckWeaponCol()
+    //Weapon 열에 무기가 있는 칸 번호 반환
+    List<int> CheckWeapon()
     {
-        if(_weaponIndex == 0)
+        List<int> list = new List<int>();
+
+        for (int i = 0; i < _baseObjects.Length; i++)
         {
-            for (int i = 5; i < _baseObjects.Length; i += 6)
+            if (isWeaponCol(i) && HasItem(i))
             {
-                if (HasItem(i))
-                {
-                    _weaponIndex = i;
-                    InitWeaponInstance(_baseObjects[i]);
-                    return;
-                }
+                list.Add(i);
             }
+        }
+        return list;
+    }
+
+    void SetWeapon()
+    {
+        List<int> weaponCol = CheckWeapon();
+
+        if (weaponCol.Count == 0)
+        {
+            _weaponIndex = 0;
+            InitWeaponInstance(null);
         }
         else
         {
-            for (int i = 5; i < _baseObjects.Length; i += 6)
+            if (!weaponCol.Contains(_weaponIndex))
             {
-                if (HasItem(i))
-                {
-                    return;
-                }
+                _weaponIndex = weaponCol[0];
+                InitWeaponInstance(_baseObjects[_weaponIndex]);
             }
-            _weaponIndex = 0;
-            InitWeaponInstance(null);
         }
     }
 
@@ -216,6 +222,31 @@ public class Inventory : MonoBehaviour
         return _baseObjects[index].name;
     }
 
+    //Weapon 열에 있는 다음 무기 번호 반환 
+    BaseObject GetNextWeapon(int dir)
+    {
+        List<int> list = CheckWeapon();
+
+        if (list.Count <= 1) return null;
+       
+        int index = list.FindIndex(x => x == _weaponIndex);
+        if (index + dir < 0) index = list.Count - 1;
+        else if (index + dir > list.Count - 1) index = 0;
+        else index += dir;
+
+        _weaponIndex = list[index];
+
+        return _baseObjects[_weaponIndex];
+    }
+
+    public void SetNextWeapon(int dir)
+    {
+        BaseObject nextweapon = GetNextWeapon(dir);
+        if (nextweapon == null) return;
+
+        InitWeaponInstance(nextweapon);
+    }
+
     //비어있는 슬롯 중 첫번째 슬롯 찾기
     int FindEmptySlot()
     {
@@ -293,8 +324,7 @@ public class Inventory : MonoBehaviour
             _itemSlotUIs[index].HideItemAmountText(); // 수량 텍스트 숨기기
         }
 
-        CheckWeaponCol();
-
+        SetWeapon();
     }
 
 

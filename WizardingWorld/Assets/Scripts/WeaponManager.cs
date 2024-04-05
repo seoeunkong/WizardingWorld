@@ -72,4 +72,15 @@ public class WeaponManager
             weapons[i].SetActive(false);
         }
     }
+
+    public void UnSetWeapon()
+    {
+        Weapon = null;
+
+        for (int i = 0; i < weapons.Count; i++)
+        {
+            weapons[i].SetActive(false);
+        }
+    }
+
 }

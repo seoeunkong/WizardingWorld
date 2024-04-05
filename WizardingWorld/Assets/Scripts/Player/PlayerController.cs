@@ -322,7 +322,8 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-          //  Debug.Log("Mouse");
+            int dir = Input.GetAxis("Mouse ScrollWheel") < 0? -1 : 1;
+            Inventory.Instance.SetNextWeapon(dir);
         }
     }
 
