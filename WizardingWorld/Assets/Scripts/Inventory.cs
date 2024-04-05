@@ -120,13 +120,14 @@ public class Inventory : MonoBehaviour
     {
         List<int> weaponCol = CheckWeapon();
 
+        //무기 인벤토리에 무기가 없는 경우 
         if (weaponCol.Count == 0)
         {
             _weaponIndex = 0;
             InitWeaponInstance(null);
         }
         else
-        {
+        {   //플레이어 무기가 무기 인벤토리 내에 존재하지 않는 경우 
             if (!weaponCol.Contains(_weaponIndex))
             {
                 _weaponIndex = weaponCol[0];

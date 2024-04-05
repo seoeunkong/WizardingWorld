@@ -234,7 +234,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary> 두 슬롯의 아이템 교환 </summary>
+    //두 슬롯의 아이템 교환 
     private void TrySwapItems(ItemSlotUI from, ItemSlotUI to)
     {
         Inventory inv = GetComponent<Inventory>();
