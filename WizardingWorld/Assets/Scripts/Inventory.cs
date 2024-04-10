@@ -131,8 +131,8 @@ public class Inventory : MonoBehaviour
             if (!weaponCol.Contains(_weaponIndex))
             {
                 _weaponIndex = weaponCol[0];
-                InitWeaponInstance(_baseObjects[_weaponIndex]);
             }
+            InitWeaponInstance(_baseObjects[_weaponIndex]);
         }
     }
 

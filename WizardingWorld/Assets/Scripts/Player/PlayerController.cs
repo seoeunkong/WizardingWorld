@@ -86,6 +86,8 @@ public class PlayerController : MonoBehaviour
 
         ChangeWeapon();
 
+        ThrowSphere();
+
     }
 
     private void LateUpdate()
@@ -324,6 +326,14 @@ public class PlayerController : MonoBehaviour
         {
             int dir = Input.GetAxis("Mouse ScrollWheel") < 0? -1 : 1;
             Inventory.Instance.SetNextWeapon(dir);
+        }
+    }
+
+    void ThrowSphere()
+    {
+        if (Input.GetKey("q"))
+        {
+            player.animator.SetTrigger("onThrow");
         }
     }
 
