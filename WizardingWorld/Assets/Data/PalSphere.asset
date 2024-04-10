@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a54843d2fc521574c808c02e47978cc0, type: 3}
+  m_Name: PalSphere
+  m_EditorClassIdentifier: 
+  _id: 4
+  _name: "\uD330\uC2A4\uD53C\uC5B4"
+  _tooltip: "\uD330\uC744 \uC7A1\uB294 \uB3C4\uAD6C."
+  _iconSprite: {fileID: 21300000, guid: 99af61578a2317c449e29344b2b17479, type: 3}
+  _maxAmount: 99

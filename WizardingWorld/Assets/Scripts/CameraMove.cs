@@ -16,8 +16,9 @@ public class CameraMove : MonoBehaviour
     public float sensitivity = 100f; //마우스 감도 
     public float clampAngle = 70f; //시야 제한 각도 
     public float smoothness = 10f; //카메라 이동 시 전환 스피드 
-    public float minDistance;
-    public float maxDistance;
+    [SerializeField] private float _minDistance;
+    [SerializeField] private float _maxDistance;
+    private float _initmaxDistance;
 
     //마우스 입력
     private float _rotX;
@@ -27,7 +28,7 @@ public class CameraMove : MonoBehaviour
     private Vector3 _finalDir;
     private float _finalDistance;
 
-    private PlayerController _playerController; 
+    private PlayerController _playerController;
 
 
     private void Start()
@@ -39,6 +40,8 @@ public class CameraMove : MonoBehaviour
 
         _dirNormalized = realCam.localPosition.normalized; // 카메라 이동 방향 정규화
         _finalDistance = realCam.localPosition.magnitude; // 카메라 최종 거리 설정
+
+        _initmaxDistance = _maxDistance;
 
         // 마우스 커서 설정
        // UnityEngine.Cursor.lockState = CursorLockMode.Locked;
@@ -64,17 +67,17 @@ public class CameraMove : MonoBehaviour
         Vector3 followPos = CalcPos(inputDir);
 
         transform.position = Vector3.MoveTowards(transform.position, followPos, followSpeed * Time.deltaTime);
-        _finalDir = transform.TransformPoint(_dirNormalized * maxDistance);
+        _finalDir = transform.TransformPoint(_dirNormalized * _maxDistance);
 
         // 장애물 감지 후 최종 거리 설정
         RaycastHit hit;
         if(Physics.Linecast(transform.position, _finalDir, out hit))
         {
-            _finalDistance = Mathf.Clamp(hit.distance, minDistance, maxDistance);
+            _finalDistance = Mathf.Clamp(hit.distance, _minDistance, _maxDistance);
         }
         else
         {
-            _finalDistance = maxDistance;
+            _finalDistance = _maxDistance;
         }
         realCam.localPosition = Vector3.Lerp(realCam.localPosition, _dirNormalized * _finalDistance, Time.deltaTime * smoothness);
          
@@ -102,4 +105,13 @@ public class CameraMove : MonoBehaviour
         return followPos;
     }
 
+    public void ZoomIn()
+    {
+        if (_initmaxDistance == _maxDistance) _maxDistance -= 1.5f;
+    }
+
+    public void ZoomOut()
+    {
+        if (_initmaxDistance > _maxDistance) _maxDistance += 1.5f;
+    }
 }

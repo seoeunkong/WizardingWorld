@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.Progress;
+using static UnityEditor.SceneView;
 
 public class PlayerController : MonoBehaviour
 {
@@ -331,10 +332,25 @@ public class PlayerController : MonoBehaviour
 
     void ThrowSphere()
     {
+        CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
         if (Input.GetKey("q"))
         {
-            player.animator.SetTrigger("onThrow");
+            //player.animator.SetTrigger("onThrow");
+           
+            cameraMove.ZoomIn();
         }
+
+        if (Input.GetKeyUp("q"))
+        {
+            StartCoroutine(ZoomOut(cameraMove));
+        }
+    }
+
+    IEnumerator ZoomOut(CameraMove camera)
+    {
+        player.animator.SetTrigger("onThrow");
+        yield return new WaitForSeconds(0.2f);
+        camera.ZoomOut();
     }
 
 
