@@ -101,6 +101,14 @@ public class Inventory : MonoBehaviour
         Player.Instance.weaponManager.SetWeapon(weapon);
     }
 
+    public void InitSphereInstance(BaseObject baseObject)
+    {
+        ObjectData objData = baseObject._objData;
+        int index = FindItem(objData);
+        if (index == -1) return;
+
+    }
+
     //Weapon 열에 무기가 있는 칸 번호 반환
     List<int> CheckWeapon()
     {
@@ -174,22 +182,6 @@ public class Inventory : MonoBehaviour
         UpdateSlot(index);
     }
 
-    public void RemoveItem(GameObject item)
-    {
-        //int index = FindItem(item);
-        //if (index == -1) return;
-
-        //BaseObject removeItem = item.GetComponent<BaseObject>();
-        //if(!removeItem.IsEmpty)
-        //{
-        //    UpdateItemSlot(removeItem, index, removeItem.Amount - 1);
-        //}
-        //else
-        //{
-        //    _baseObjects[index] = null;
-        //    _itemSlotUIs[index].RemoveItem();
-        //}
-    }
 
     //해당 슬롯의 아이템 정보 리턴 
     public ObjectData GetObjData(int index)

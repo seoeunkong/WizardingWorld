@@ -5,7 +5,8 @@ public enum StateName
 {
     MOVE = 100,
     PUNCHATTACK,
-    ATTACK
+    ATTACK,
+    THROW
 }
 
 public class StateMachine

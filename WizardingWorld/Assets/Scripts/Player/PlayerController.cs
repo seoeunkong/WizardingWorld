@@ -336,7 +336,6 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey("q"))
         {
             //player.animator.SetTrigger("onThrow");
-           
             cameraMove.ZoomIn();
         }
 
@@ -348,7 +347,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator ZoomOut(CameraMove camera)
     {
-        player.animator.SetTrigger("onThrow");
+        player.stateMachine.ChangeState(StateName.THROW);
         yield return new WaitForSeconds(0.2f);
         camera.ZoomOut();
     }
