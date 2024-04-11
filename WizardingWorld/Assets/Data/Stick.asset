@@ -15,8 +15,7 @@ MonoBehaviour:
   _id: 0
   _name: "\uB098\uBB34"
   _tooltip: "\uB098\uBB34 \uD68D\uB4DD \uC2DC \uC0AC\uC6A9 \uAC00\uB2A5."
-  _iconSprite: {fileID: 21300000, guid: 06140cc248b05d2488fbb6493ce5fd11, type: 3}
-  _maxAmount: 99
-  localPosition: {x: 0.0042, y: 0.0062, z: 0.00633}
+  _iconSprite: {fileID: 21300000, guid: 7bacdee67de59be4b99c4ad4568a0cd8, type: 3}
+  localPosition: {x: -0.00554, y: -0.00132, z: 0.00987}
   localRotation: {x: 90, y: 0, z: 0}
   localScale: {x: 0.009, y: 0.004, z: 0.015}

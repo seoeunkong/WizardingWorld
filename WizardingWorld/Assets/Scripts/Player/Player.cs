@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     public static Player Instance = null;
     public WeaponManager weaponManager {  get; private set; }
+    public SphereManager sphereManager {  get; private set; }
     public StateMachine stateMachine { get; private set; }
     public Rigidbody rigid { get; private set; }
     public Animator animator {  get; private set; }
@@ -39,6 +40,7 @@ public class Player : MonoBehaviour
         {
             Instance = this;
             weaponManager = new WeaponManager(rightHand);
+            sphereManager = new SphereManager(rightHand);
             weaponManager.unRegisterWeapon = (weapon) => { Destroy(weapon); };
             rigid = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>();
@@ -79,4 +81,15 @@ public class Player : MonoBehaviour
         this._moveSpeed = moveSpeed;
         this._dashSpeed = dashSpeed;
     }
+
+    public bool hasWeapon()
+    {
+        //손에 무기가 있는지 체크 
+        foreach (Transform child in rightHand)
+        {
+            if (child.gameObject.activeSelf) return true;
+        }
+        return false;
+    }
+
 }

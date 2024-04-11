@@ -193,23 +193,13 @@ public class PlayerController : MonoBehaviour
         return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
     }
 
-    bool hasWeapon()
-    {
-        //손에 무기가 있는지 체크 
-        foreach (Transform child in player.rightHand)
-        {
-            if (child.gameObject.activeSelf) return true;
-        }
-        return false;
-    }
-
     void OnAttack()
     {
         if (Input.GetMouseButtonDown(0))
         {
             float attackPower = 0;
 
-            if (!hasWeapon()) //플레이어한테 무기가 없는 경우 
+            if (!player.hasWeapon()) //플레이어한테 무기가 없는 경우 
             {
                 player.stateMachine.ChangeState(StateName.PUNCHATTACK);
                 attackPower = player.AttackPower;
@@ -336,6 +326,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey("q"))
         {
             //player.animator.SetTrigger("onThrow");
+            Inventory.Instance.SetSphere();
             cameraMove.ZoomIn();
         }
 

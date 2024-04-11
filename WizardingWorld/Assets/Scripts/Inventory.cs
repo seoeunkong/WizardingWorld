@@ -40,18 +40,9 @@ public class Inventory : MonoBehaviour
 
     private void Init()
     {
-        //if (weaponObject == null) return;
-
-        //GameObject weapon = Instantiate(weaponObject);
-        //Player.Instance.weaponManager.RegisterWeapon(weapon);
-        //Player.Instance.weaponManager.SetWeapon(weapon);
-
         _itemSlotUIs = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
-
         _slotCount = _itemSlotUIs.Length;
-
         _baseObjects = new BaseObject[_slotCount];
-
     }
 
     bool isWeaponCol(int index) => index % 6 == 5;
@@ -78,7 +69,7 @@ public class Inventory : MonoBehaviour
         return HasItem(index) && _baseObjects[index] is BaseWeapon;
     }
 
-    void InitWeaponInstance(BaseObject baseObject)
+    void GetInstance(BaseObject baseObject)
     {
         if (baseObject == null)
         {
@@ -97,16 +88,31 @@ public class Inventory : MonoBehaviour
         Rigidbody rb = weapon.GetComponent<Rigidbody>();
         if (rb != null) Destroy(rb);
 
-        Player.Instance.weaponManager.RegisterWeapon(weapon);
-        Player.Instance.weaponManager.SetWeapon(weapon);
+        if(baseObject as BaseWeapon)
+        {
+            Player.Instance.weaponManager.RegisterWeapon(weapon);
+            Player.Instance.weaponManager.SetWeapon(weapon);
+        }
+        else if(baseObject as PalSphere)
+        {
+            Player.Instance.sphereManager.SetPalSphere(weapon);
+        }
     }
 
-    public void InitSphereInstance(BaseObject baseObject)
+    public void SetSphere()
     {
-        ObjectData objData = baseObject._objData;
-        int index = FindItem(objData);
+        int index = FindSphere();
         if (index == -1) return;
 
+        BaseObject sphere = _baseObjects[index];
+        if(sphere is PalSphere ps)
+        {
+            int amount = ps.Amount;
+            ps.SetAmount(amount-1);
+            GetInstance(_baseObjects[index]);
+        }
+
+        UpdateSlot(index);
     }
 
     //Weapon 열에 무기가 있는 칸 번호 반환
@@ -132,7 +138,7 @@ public class Inventory : MonoBehaviour
         if (weaponCol.Count == 0)
         {
             _weaponIndex = 0;
-            InitWeaponInstance(null);
+            GetInstance(null);
         }
         else
         {   //플레이어 무기가 무기 인벤토리 내에 존재하지 않는 경우 
@@ -140,7 +146,7 @@ public class Inventory : MonoBehaviour
             {
                 _weaponIndex = weaponCol[0];
             }
-            InitWeaponInstance(_baseObjects[_weaponIndex]);
+            GetInstance(_baseObjects[_weaponIndex]);
         }
     }
 
@@ -237,7 +243,7 @@ public class Inventory : MonoBehaviour
         BaseObject nextweapon = GetNextWeapon(dir);
         if (nextweapon == null) return;
 
-        InitWeaponInstance(nextweapon);
+        GetInstance(nextweapon);
     }
 
     //비어있는 슬롯 중 첫번째 슬롯 찾기
@@ -253,7 +259,7 @@ public class Inventory : MonoBehaviour
         return -1;
     }
 
-    //인벤토리에 저장되어 있는지 검사 
+    //인벤토리에 찾고자 하는 아이템이 저장되어 있는지 검사 
     int FindItem(ObjectData objectData)
     {
         foreach (var slot in _itemSlotUIs)
@@ -262,6 +268,23 @@ public class Inventory : MonoBehaviour
             {
                 int index = slot.Index;
                 if (_baseObjects[index]._objData.ID == objectData.ID)
+                {
+                    return index;
+                }
+            }
+        }
+        return -1;
+    }
+
+    //인벤토리에 스피어가 저장되어 있는지 검사 
+    int FindSphere()
+    {
+        foreach (var slot in _itemSlotUIs)
+        {
+            if (slot.HasItem)
+            {
+                int index = slot.Index;
+                if (_baseObjects[index]._objData as SphereData)
                 {
                     return index;
                 }
@@ -290,7 +313,6 @@ public class Inventory : MonoBehaviour
         // 1. 셀 수 있는 아이템
         if (obj is CountableObject co)
         {
-
             // 1-1. 수량이 0인 경우, 아이템 제거
             if (co.IsEmpty)
             {
