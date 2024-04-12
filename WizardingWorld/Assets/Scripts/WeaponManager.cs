@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using Unity.VisualScripting;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 
 public class WeaponManager
@@ -13,7 +15,11 @@ public class WeaponManager
     // 현재 내 무기 오브젝트
     private GameObject weaponObject;
     // 현재 WeaponManager에 등록된 무기 리스트
-    private List<GameObject> weapons = new List<GameObject>();
+    private List<BaseWeapon> weapons = new List<BaseWeapon>();
+    //private List<GameObject> weapons = new List<GameObject>();
+    private List<ObjectData> weaponsData = new List<ObjectData>();
+
+    public bool hasWeapon(BaseObject weapon) => weaponsData.Contains(weapon._objData);
 
     public WeaponManager(Transform hand)
     {
@@ -21,17 +27,22 @@ public class WeaponManager
     }
 
     // 무기 등록
-    public void RegisterWeapon(GameObject weapon)
+    public void RegisterWeapon(BaseWeapon weaponInfo)
     {
-        if (!weapons.Contains(weapon))
+        //BaseWeapon weaponInfo = weapon.GetComponent<BaseWeapon>();
+        if (weaponInfo == null) return;
+       
+        if (!weaponsData.Contains(weaponInfo.handleData))
         {
-            BaseWeapon weaponInfo = weapon.GetComponent<BaseWeapon>();
+            GameObject weapon = InitWeapon(weaponInfo);
             weapon.transform.SetParent(handPosition);
 
             weapon.transform.localPosition = weaponInfo.handleData.localPosition;
             weapon.transform.localEulerAngles = weaponInfo.handleData.localRotation;
             weapon.transform.localScale = weaponInfo.handleData.localScale;
-            weapons.Add(weapon);
+
+            weapons.Add(weaponInfo);
+            weaponsData.Add(weaponInfo.handleData);
             weapon.SetActive(false);
         }
     }
@@ -39,20 +50,22 @@ public class WeaponManager
     // 무기 삭제
     public void UnRegisterWeapon(GameObject weapon)
     {
-        if (weapons.Contains(weapon))
+        BaseWeapon weaponInfo = weapon.GetComponent<BaseWeapon>();
+        if (weaponsData.Contains(weaponInfo.handleData))
         {
-            weapons.Remove(weapon);
+            weapons.Remove(weaponInfo);
+            weaponsData.Remove(weaponInfo.handleData);
             unRegisterWeapon.Invoke(weapon);
         }
     }
 
     // 무기 변경
-    public void SetWeapon(GameObject weapon)
+    public void SetWeapon(BaseWeapon weaponInfo)
     {
         if (Weapon == null)
         {
-            weaponObject = weapon;
-            Weapon = weapon.GetComponent<BaseWeapon>();
+            weaponObject = weaponInfo.gameObject;
+            Weapon = weaponInfo;
            
             weaponObject.SetActive(true);
             Player.Instance.animator.runtimeAnimatorController = Weapon.WeaponAnimator;
@@ -61,25 +74,45 @@ public class WeaponManager
 
         for (int i = 0; i < weapons.Count; i++)
         {
-            if (weapons[i].Equals(weapon))
+            if (weaponsData[i].Equals(weaponInfo.handleData))
             {
-                weaponObject = weapon;
+                weaponObject = weapons[i].gameObject;
                 weaponObject.SetActive(true);
-                Weapon = weapon.GetComponent<BaseWeapon>();
+                Weapon = weaponInfo;
                Player.Instance.animator.runtimeAnimatorController = Weapon.WeaponAnimator;
                 continue;
             }
-            weapons[i].SetActive(false);
+            weapons[i].gameObject.SetActive(false); 
         }
+    }
+
+    GameObject InitWeapon(BaseObject baseObject)
+    {
+        GameObject weapon = baseObject.gameObject;
+
+        Collider collider = weapon.GetComponent<Collider>();
+        if (collider != null) collider.enabled = false;
+
+        DropItem item = weapon.GetComponent<DropItem>();
+        if (item != null) item.enabled = false;
+
+        Rigidbody rb = weapon.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+
+        return weapon;
     }
 
     public void UnSetWeapon()
     {
-        Weapon = null;
+        //Weapon = null;
 
         for (int i = 0; i < weapons.Count; i++)
         {
-            weapons[i].SetActive(false);
+            weapons[i].gameObject.SetActive(false);
         }
     }
 

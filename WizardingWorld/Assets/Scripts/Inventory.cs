@@ -69,7 +69,7 @@ public class Inventory : MonoBehaviour
         return HasItem(index) && _baseObjects[index] is BaseWeapon;
     }
 
-    void GetInstance(BaseObject baseObject)
+    void CreateInstance(BaseObject baseObject)
     {
         if (baseObject == null)
         {
@@ -77,25 +77,31 @@ public class Inventory : MonoBehaviour
             return;
         }
 
-        GameObject weapon = Instantiate(baseObject.gameObject);
 
-        Collider collider = weapon.GetComponent<Collider>();
-        if (collider != null) collider.enabled = false;
+        //GameObject weapon = baseObject.gameObject;
 
-        DropItem item = weapon.GetComponent<DropItem>();
-        if (item != null) item.enabled = false;
+        //Collider collider = weapon.GetComponent<Collider>();
+        //if (collider != null) collider.enabled = false;
 
-        Rigidbody rb = weapon.GetComponent<Rigidbody>();
-        if (rb != null) Destroy(rb);
+        //DropItem item = weapon.GetComponent<DropItem>();
+        //if (item != null) item.enabled = false;
 
-        if(baseObject as BaseWeapon)
+        //Rigidbody rb = weapon.GetComponent<Rigidbody>();
+        //if (rb != null)
+        //{
+        //    rb.useGravity = false;
+        //    rb.constraints = RigidbodyConstraints.FreezeAll;
+        //}
+
+        if(baseObject is BaseWeapon bs)
         {
-            Player.Instance.weaponManager.RegisterWeapon(weapon);
-            Player.Instance.weaponManager.SetWeapon(weapon);
+            Player.Instance.weaponManager.RegisterWeapon(bs);
+            Player.Instance.weaponManager.SetWeapon(bs);
         }
-        else if(baseObject as PalSphere)
+        else if(baseObject is PalSphere ps)
         {
-            Player.Instance.sphereManager.SetPalSphere(weapon);
+            //Player.Instance.sphereManager.SetPalSphere(weapon);
+            ps.SetPalSphere();
         }
     }
 
@@ -109,7 +115,7 @@ public class Inventory : MonoBehaviour
         {
             int amount = ps.Amount;
             ps.SetAmount(amount-1);
-            GetInstance(_baseObjects[index]);
+            CreateInstance(_baseObjects[index]);
         }
 
         UpdateSlot(index);
@@ -138,7 +144,7 @@ public class Inventory : MonoBehaviour
         if (weaponCol.Count == 0)
         {
             _weaponIndex = 0;
-            GetInstance(null);
+            CreateInstance(null);
         }
         else
         {   //플레이어 무기가 무기 인벤토리 내에 존재하지 않는 경우 
@@ -146,7 +152,7 @@ public class Inventory : MonoBehaviour
             {
                 _weaponIndex = weaponCol[0];
             }
-            GetInstance(_baseObjects[_weaponIndex]);
+            CreateInstance(_baseObjects[_weaponIndex]);
         }
     }
 
@@ -243,13 +249,14 @@ public class Inventory : MonoBehaviour
         BaseObject nextweapon = GetNextWeapon(dir);
         if (nextweapon == null) return;
 
-        GetInstance(nextweapon);
+        CreateInstance(nextweapon);
     }
 
     //비어있는 슬롯 중 첫번째 슬롯 찾기
     int FindEmptySlot()
     {
         foreach (var slot in _itemSlotUIs)
+
         {
             if (!slot.HasItem && !isWeaponCol(slot.Index))
             {
