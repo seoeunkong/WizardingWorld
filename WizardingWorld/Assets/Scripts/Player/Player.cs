@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     public float MoveSpeed { get { return _moveSpeed; } }
     public float DashSpeed { get { return _dashSpeed; } }
     public float AttackPower { get { return _attackPower; } }
+    public float ThrowPower { get { return _throwPower; } }
     public float CurrentSpeed { get { return _currentSpeed; } set { _currentSpeed = value; } }
 
 
@@ -25,13 +26,14 @@ public class Player : MonoBehaviour
     [SerializeField] protected float _moveSpeed;
     [SerializeField] protected float _dashSpeed;
     [SerializeField] protected float _attackPower;
+    [SerializeField] protected float _throwPower;
     #endregion
 
     private float _currentSpeed;
 
     [SerializeField]
     public Transform rightHand;
-
+    public Transform NotUsingWeapons;
 
     void Awake()
     {
@@ -80,14 +82,28 @@ public class Player : MonoBehaviour
         this._dashSpeed = dashSpeed;
     }
 
-    public Transform hasWeapon()
+    public PalSphere hasSphere()
     {
         //손에 무기가 있는지 체크 
         foreach (Transform child in rightHand)
         {
-            if (child.gameObject.activeSelf) return child;
+            if (child.gameObject.activeSelf)
+            {
+                BaseObject bo = child.GetComponent<BaseObject>();
+                if (bo is PalSphere ps) return ps;
+            }
         }
         return null;
+    }
+
+    public void UnSetSphere()
+    {
+        if(!hasSphere()) return;
+
+        foreach (Transform child in rightHand)
+        {
+            if (child.gameObject.activeSelf) child.gameObject.SetActive(false);
+        }
     }
 
 }

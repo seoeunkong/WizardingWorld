@@ -52,13 +52,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _maxDistance;
     #endregion
 
+
     #region #드랍 아이템 획득
     [Header("드랍 아이템 획득")]
     [SerializeField] private float _dropItemCheckDistance;
     public BaseObject baseObject { get; private set; }
     public Transform DropItemPos { get; private set; }
     private List<Transform> _detect = new List<Transform>();
-
     #endregion
 
     void Start()
@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour
         {
             float attackPower = 0;
 
-            if (!player.hasWeapon()) //플레이어한테 무기가 없는 경우 
+            if (!player.weaponManager.hasWeapon()) //플레이어한테 무기가 없는 경우 
             {
                 player.stateMachine.ChangeState(StateName.PUNCHATTACK);
                 attackPower = player.AttackPower;
@@ -250,7 +250,7 @@ public class PlayerController : MonoBehaviour
 
         foreach (Collider coll in colls)
         {
-            if (coll.GetComponent<DropItem>() != null)
+            if (coll.GetComponent<DropItem>() != null && coll.GetComponent<DropItem>().enabled == true)
             {
                 if(!_detect.Contains(coll.transform) && coll.gameObject != transform) _detect.Add(coll.transform);
                 newdetect.Add(coll.transform);
@@ -281,10 +281,10 @@ public class PlayerController : MonoBehaviour
 
         if (closeItem != null)
         {
-
             DropItem closeDropItem = closeItem.GetComponent<DropItem>();
+            if (closeDropItem == null) return;
 
-            closeDropItem?.AddOutlineMat(true);
+            closeDropItem.AddOutlineMat(true);
             foreach (Transform item in _detect)
             {
                 if (item != closeItem) item.GetComponent<DropItem>().AddOutlineMat(false);
@@ -325,12 +325,12 @@ public class PlayerController : MonoBehaviour
         CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
         if (Input.GetKey("q"))
         {
-            //player.animator.SetTrigger("onThrow");
             Inventory.Instance.SetSphere();
+            if (player.hasSphere() == null) return; //플레이어 손에 스피어가 장착 x 
             cameraMove.ZoomIn();
         }
 
-        if (Input.GetKeyUp("q"))
+        if (Input.GetKeyUp("q") && player.hasSphere())
         {
             StartCoroutine(ZoomOut(cameraMove));
         }

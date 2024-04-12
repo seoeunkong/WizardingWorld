@@ -16,10 +16,9 @@ public class WeaponManager
     private GameObject weaponObject;
     // 현재 WeaponManager에 등록된 무기 리스트
     private List<BaseWeapon> weapons = new List<BaseWeapon>();
-    //private List<GameObject> weapons = new List<GameObject>();
     private List<ObjectData> weaponsData = new List<ObjectData>();
 
-    public bool hasWeapon(BaseObject weapon) => weaponsData.Contains(weapon._objData);
+    public bool hasWeapon() => weaponObject != null;
 
     public WeaponManager(Transform hand)
     {
@@ -29,7 +28,6 @@ public class WeaponManager
     // 무기 등록
     public void RegisterWeapon(BaseWeapon weaponInfo)
     {
-        //BaseWeapon weaponInfo = weapon.GetComponent<BaseWeapon>();
         if (weaponInfo == null) return;
        
         if (!weaponsData.Contains(weaponInfo.handleData))
@@ -109,6 +107,7 @@ public class WeaponManager
     public void UnSetWeapon()
     {
         //Weapon = null;
+        weaponObject = null;
 
         for (int i = 0; i < weapons.Count; i++)
         {

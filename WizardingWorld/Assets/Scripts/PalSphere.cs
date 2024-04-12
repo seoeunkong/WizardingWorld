@@ -28,6 +28,7 @@ public class PalSphere : CountableObject
         _countableData = sphereData;
     }
 
+    //플레이어 손에 스피어 장착 
     public void SetPalSphere()
     {
         GameObject sphere = IniSphere(this);
@@ -43,6 +44,7 @@ public class PalSphere : CountableObject
         sphere.SetActive(true);
     }
 
+    //스피어 인스턴스화 
     GameObject IniSphere(BaseObject baseObject)
     {
         GameObject sphere = baseObject.gameObject;
@@ -63,12 +65,16 @@ public class PalSphere : CountableObject
         return sphere;
     }
 
-    public void Throw(GameObject sphere)
+    //플레이어가 스피어를 던지기 전에 스피어 속성 업데이트 
+    public void InitThrowSphere()
     {
-        Rigidbody rb = sphere.GetComponent<Rigidbody>();
-        rb.useGravity = true;
+        this.transform.SetParent(null);
+        this.GetComponent<Collider>().enabled = true;
 
-        
+        Rigidbody rb = this.GetComponent<Rigidbody>();
+        rb.useGravity = true;
+        rb.constraints = RigidbodyConstraints.None;
+
     }
 
 }

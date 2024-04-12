@@ -34,7 +34,7 @@ public class UIManager : MonoBehaviour
     public void HideInventory() => _inventory.SetActive(false);
     private bool _inventoryActive;
 
-    [Header("ZŰ PopUp UI")]
+    [Header("fŰ PopUp UI")]
     [SerializeField] private GameObject _fPopUpUi;
 
     private void Awake()
@@ -55,7 +55,7 @@ public class UIManager : MonoBehaviour
 
         ClickTab();
 
-        ActivateZPopUp();
+        ActivateFPopUp();
 
         OnPointerDown();
         OnPointerDrag();
@@ -131,7 +131,7 @@ public class UIManager : MonoBehaviour
         _dashSlider.gameObject.SetActive(false);
     }
 
-    void ActivateZPopUp()
+    void ActivateFPopUp()
     {
         if (_playerController.DropItemPos == null) 
         {

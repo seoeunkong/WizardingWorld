@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class PlayerAniEvents : MonoBehaviour
 {
-   public void OnFinishedAttack()
-    {
-        //PunchAttackState.IsAttack = false;
-        Player.Instance.stateMachine.ChangeState(StateName.MOVE);
+    public void OnFinishedAttack() => Player.Instance.stateMachine.ChangeState(StateName.MOVE);
+    public void ActivateThrowSphere() => ThrowState.throwSphere = true;
 
-    }
 }
 
