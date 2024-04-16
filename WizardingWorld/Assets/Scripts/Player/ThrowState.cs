@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ThrowState : BaseState
+public class ThrowState : BaseState<PlayerController>
 {
     public static bool throwSphere = false;
     private PalSphere _ps;

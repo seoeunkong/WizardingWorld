@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public abstract class BaseState
+public abstract class BaseState<TController> where TController : MonoBehaviour
 {
-    protected PlayerController _Controller { get; private set; }
+    protected TController _Controller { get; private set; }
 
-    public BaseState(PlayerController controller)
+    public BaseState(TController controller)
     {
         this._Controller = controller;
     }

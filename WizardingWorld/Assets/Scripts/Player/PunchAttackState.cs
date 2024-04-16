@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PunchAttackState : BaseState
+public class PunchAttackState : BaseState<PlayerController>
 {
     public static bool IsAttack = false;
     public PunchAttackState(PlayerController controller) : base(controller)

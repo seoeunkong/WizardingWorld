@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     public static Player Instance = null;
     public WeaponManager weaponManager {  get; private set; }
-    public StateMachine stateMachine { get; private set; }
+    public StateMachine<PlayerController> stateMachine { get; private set; }
     public Rigidbody rigid { get; private set; }
     public Animator animator {  get; private set; }
 
@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
     void InitStateMachine()
     {
         PlayerController controller = GetComponent<PlayerController>();
-        stateMachine = new StateMachine(StateName.MOVE,new MoveState(controller));
+        stateMachine = new StateMachine<PlayerController>(StateName.MOVE,new MoveState(controller));
         stateMachine.AddState(StateName.PUNCHATTACK, new PunchAttackState(controller));
         stateMachine.AddState(StateName.ATTACK, new AttackState(controller));
         stateMachine.AddState(StateName.THROW, new ThrowState(controller));

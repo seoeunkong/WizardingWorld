@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using UnityEngine;
 
 public enum StateName
 {
@@ -9,20 +10,19 @@ public enum StateName
     THROW
 }
 
-public class StateMachine
+public class StateMachine<TController> where TController : MonoBehaviour
 {
-    public BaseState CurrentState { get; private set; }  // 현재 상태
-    private Dictionary<StateName, BaseState> _states =
-                                        new Dictionary<StateName, BaseState>();
+    public BaseState<TController> CurrentState { get; private set; } //현재 상태 
+    private Dictionary<StateName, BaseState<TController>> _states = new Dictionary<StateName, BaseState<TController>>();
 
 
-    public StateMachine(StateName stateName, BaseState state)
+    public StateMachine(StateName stateName, BaseState<TController> state)
     {
         AddState(stateName, state);
         CurrentState = GetState(stateName);
     }
 
-    public void AddState(StateName stateName, BaseState state)  // 상태 등록
+    public void AddState(StateName stateName, BaseState<TController> state)  // 상태 등록
     {
         if (!_states.ContainsKey(stateName))
         {
@@ -30,9 +30,9 @@ public class StateMachine
         }
     }
 
-    public BaseState GetState(StateName stateName)  // 상태 꺼내오기
+    public BaseState<TController> GetState(StateName stateName)  // 상태 꺼내오기
     {
-        if (_states.TryGetValue(stateName, out BaseState state))
+        if (_states.TryGetValue(stateName, out BaseState<TController> state))
             return state;
         return null;
     }
@@ -48,7 +48,7 @@ public class StateMachine
     public void ChangeState(StateName nextStateName)    // 상태 전환
     {
         CurrentState?.OnExitState();   //현재 상태를 종료하는 메소드를 실행하고,
-        if (_states.TryGetValue(nextStateName, out BaseState newState)) // 상태 전환
+        if (_states.TryGetValue(nextStateName, out BaseState<TController> newState)) // 상태 전환
         {
             CurrentState = newState;
         }

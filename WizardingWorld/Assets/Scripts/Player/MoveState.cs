@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class MoveState : BaseState
+public class MoveState : BaseState<PlayerController>
 {
     enum MoveName
     {

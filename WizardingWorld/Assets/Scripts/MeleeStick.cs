@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MeleeStick : BaseWeapon
 {
-    public override void Attack(BaseState state)
+    public override void Attack(BaseState<PlayerController> state)
     {
         Player.Instance.animator.SetTrigger("onAttack");
     }

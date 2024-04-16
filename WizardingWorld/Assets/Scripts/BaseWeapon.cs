@@ -31,6 +31,6 @@ public abstract class BaseWeapon : BaseObject
         _objData = objData;
     }
 
-    public abstract void Attack(BaseState state);
+    public abstract void Attack(BaseState<PlayerController> state);
 
 }
