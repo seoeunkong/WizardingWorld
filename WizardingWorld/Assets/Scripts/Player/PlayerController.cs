@@ -212,7 +212,9 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(_attackPos.position, _attackPos.forward, out hit, _maxDistance))
             {
-                hit.collider.GetComponent<HitTest>().HP -= attackPower;
+                //hit.collider.GetComponent<HitTest>().HP -= attackPower;
+                MonsterController monster = hit.collider.GetComponent<MonsterController>();
+                monster.Hit(attackPower);
                 //Debug.DrawRay(_attackPos.position, _attackPos.forward * hit.distance, Color.red);
             }
         }

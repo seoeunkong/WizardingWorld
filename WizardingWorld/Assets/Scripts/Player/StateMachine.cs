@@ -7,7 +7,9 @@ public enum StateName
     MOVE = 100,
     PUNCHATTACK,
     ATTACK,
-    THROW
+    THROW,
+    IDLE,
+    MRUN
 }
 
 public class StateMachine<TController> where TController : MonoBehaviour

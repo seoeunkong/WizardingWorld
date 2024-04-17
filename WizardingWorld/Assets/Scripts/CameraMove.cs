@@ -28,6 +28,8 @@ public class CameraMove : MonoBehaviour
     private Vector3 _finalDir;
     private float _finalDistance;
 
+    private Vector3 followPos;
+
     private PlayerController _playerController;
 
 
@@ -52,20 +54,20 @@ public class CameraMove : MonoBehaviour
     private void Update()
     {
         //  마우스 입력값을 받아 카메라 시점을 조절
-
         _rotX += -(UnityEngine.Input.GetAxis("Mouse Y")) * sensitivity * Time.deltaTime;
         _rotY += UnityEngine.Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-
         _rotX = Mathf.Clamp(_rotX, -clampAngle, clampAngle);
+
         Quaternion rot = Quaternion.Euler(_rotX, _rotY, 0);
         transform.rotation = rot;
+
+       
+        Vector3 inputDir = _playerController.inputDirection;
+        followPos = CalcPos(inputDir);
     }
 
     private void LateUpdate()
     {
-        Vector3 inputDir = _playerController.inputDirection;
-        Vector3 followPos = CalcPos(inputDir);
-
         transform.position = Vector3.MoveTowards(transform.position, followPos, followSpeed * Time.deltaTime);
         _finalDir = transform.TransformPoint(_dirNormalized * _maxDistance);
 
@@ -85,24 +87,24 @@ public class CameraMove : MonoBehaviour
 
     public Vector3 CalcPos(Vector3 inputDir)
     {
-        Vector3 followPos = objectTofollow.position;
+        Vector3 targetPos = objectTofollow.position;
 
         if (inputDir.x != 0)
         {
-            followPos = objectTofollow.position - objectTofollow.right;
-            followPos += objectTofollow.forward * inputDir.x;
+            targetPos = objectTofollow.position - objectTofollow.right;
+            targetPos += objectTofollow.forward * inputDir.x;
         }
 
         if (inputDir.z < 0)
         {
-            followPos -= objectTofollow.right;
+            targetPos -= objectTofollow.right;
         }
         else if (inputDir.z >= 0)
         {
-            followPos += objectTofollow.right;
+            targetPos += objectTofollow.right;
         }
 
-        return followPos;
+        return targetPos;
     }
 
     public void ZoomIn()

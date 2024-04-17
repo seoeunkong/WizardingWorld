@@ -39,15 +39,12 @@ public class MoveState : BaseState<PlayerController>
     {
         Player.Instance.rigid.velocity = Vector3.zero;
         Player.Instance.animator.SetInteger("Move", 0);
-
-
     }
 
     int AnimatorNum(float speed)
     {
         if(_Controller.calculatedDirection == Vector3.zero) return 0;
-        if(
-            speed <= Player.Instance.MoveSpeed) return (int)MoveName.MOVE;
+        if(speed <= Player.Instance.MoveSpeed) return (int)MoveName.MOVE;
         if (speed <= Player.Instance.DashSpeed) return (int)MoveName.DASH;
         
         return 0;
