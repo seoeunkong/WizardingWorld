@@ -27,13 +27,13 @@ public class MRunState : BaseState<MonsterController>
 
     public override void OnFixedUpdateState()
     {
-        playerPos = _Controller.CheckPlayer(2);
-        if(playerPos == null )
+        playerPos = _Controller.CheckPlayer(MonsterController.runRadius);
+        if(playerPos == null ) //플레이어를 감지 영역 내에 못 찾은 경우 
         {
             _Controller.stateMachine.ChangeState(StateName.IDLE);
         }
 
-        if (_Controller.Sense)
+        if (_Controller.Sense) //플레이어와 반대 방향으로 도망 
         {
             _Controller.rigid.velocity = _Controller.CalcRunDir(playerPos, false) * _Controller.CurrentSpeed;
             _Controller.animator.SetFloat("Move", Mathf.Clamp(_Controller.CurrentSpeed * 0.2f, 1, 2.5f));

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -30,6 +31,10 @@ public class MonsterController : MonoBehaviour
     [SerializeField] protected float _attackPower;
     [SerializeField] protected float _currentSpeed;
     [SerializeField] protected float _rotateSpeed;
+    
+    public const float runRadius = 2;
+    public const float chaseRadius = 3;
+    public const float attackRadius = 0.1f;
 
     private float _fieldOfView = 90.0f; // 시야각 설정
     #endregion
@@ -42,6 +47,7 @@ public class MonsterController : MonoBehaviour
     [Header("플레이어 감지 속성")]
     [SerializeField] private float _checkDistance;
 
+    public void ChangeStateToChase() => stateMachine.ChangeState(StateName.MCHASE);
 
     #region #경사 체크 변수
     [Header("경사 지형 검사")]
@@ -66,6 +72,11 @@ public class MonsterController : MonoBehaviour
     public void SenseFalse() => Sense = false;
     #endregion
 
+    #region #공격
+    [Header("플레이어 공격 속성")]
+    [SerializeField] private float _attackCheckDistance;
+    #endregion
+
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -82,6 +93,8 @@ public class MonsterController : MonoBehaviour
     void Update()
     {
         stateMachine?.UpdateState();
+
+        Debug.Log(stateMachine.CurrentState);
     }
 
     void FixedUpdate()
@@ -95,8 +108,8 @@ public class MonsterController : MonoBehaviour
         MonsterController controller = GetComponent<MonsterController>();
         stateMachine = new StateMachine<MonsterController>(StateName.IDLE, new IdleState(controller));
         stateMachine.AddState(StateName.MRUN, new MRunState(controller));
-        //stateMachine.AddState(StateName.ATTACK, new AttackState(controller));
-        //stateMachine.AddState(StateName.THROW, new ThrowState(controller));
+        stateMachine.AddState(StateName.MCHASE, new MChaseState(controller));
+        stateMachine.AddState(StateName.MATTACK, new MAttackState(controller));
     }
 
     private void Init()
@@ -175,10 +188,10 @@ public class MonsterController : MonoBehaviour
         Collider[] colls = Physics.OverlapSphere(transform.position, _checkDistance * size);
         foreach (Collider coll in colls)
         {
-            if(coll.gameObject.CompareTag("Player"))
+            if (coll.gameObject.CompareTag("Player"))
             {
                 if (stateMachine.GetState(StateName.IDLE) == stateMachine.CurrentState && IsPlayerInSight(coll.transform.position)) return coll.transform;
-                if(stateMachine.GetState(StateName.MRUN) == stateMachine.CurrentState) return coll.transform;
+                if(stateMachine.GetState(StateName.IDLE) != stateMachine.CurrentState) return coll.transform;
             }
         }
         return null;
@@ -197,7 +210,13 @@ public class MonsterController : MonoBehaviour
 
     public void Hit(float damage)
     {
-        _currentHP -= damage;
+        if(_currentHP > 0)
+        {
+            _currentHP -= damage;
+            _currentHP = _currentHP > 0 ? _currentHP : 0;
+        }
+
+        animator.SetTrigger("onHit");
         Debug.Log("Ouch");
     }
 

@@ -4,26 +4,32 @@ using UnityEngine;
 
 public class MAttackState : BaseState<MonsterController> 
 {
+    Transform playerPos;
     public MAttackState(MonsterController controller) : base(controller) { }
-
 
     public override void OnEnterState()
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public override void OnExitState()
     {
-        throw new System.NotImplementedException();
+
     }
 
     public override void OnFixedUpdateState()
     {
-        throw new System.NotImplementedException();
+
     }
 
     public override void OnUpdateState()
     {
-        throw new System.NotImplementedException();
+        CheckToAttack();
+    }
+
+    void CheckToAttack()
+    {
+        playerPos = _Controller.CheckPlayer(MonsterController.attackRadius);
+        if (playerPos == null) _Controller.stateMachine.ChangeState(StateName.MCHASE);
     }
 }

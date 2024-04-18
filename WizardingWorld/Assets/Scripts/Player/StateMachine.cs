@@ -9,7 +9,9 @@ public enum StateName
     ATTACK,
     THROW,
     IDLE,
-    MRUN
+    MRUN,
+    MCHASE,
+    MATTACK
 }
 
 public class StateMachine<TController> where TController : MonoBehaviour

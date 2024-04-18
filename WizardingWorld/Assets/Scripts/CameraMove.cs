@@ -30,6 +30,7 @@ public class CameraMove : MonoBehaviour
 
     private Vector3 followPos;
 
+
     private PlayerController _playerController;
 
 
@@ -91,7 +92,7 @@ public class CameraMove : MonoBehaviour
 
         if (inputDir.x != 0)
         {
-            targetPos = objectTofollow.position - objectTofollow.right;
+            targetPos = objectTofollow.position - (inputDir.z != 0 ? inputDir.z : 1) * objectTofollow.right;
             targetPos += objectTofollow.forward * inputDir.x;
         }
 
