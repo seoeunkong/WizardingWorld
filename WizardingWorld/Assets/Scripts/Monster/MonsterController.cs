@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class MonsterController : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class MonsterController : MonoBehaviour
     [SerializeField] protected float _attackPower;
     [SerializeField] protected float _currentSpeed;
     [SerializeField] protected float _rotateSpeed;
+
+    private float _fieldOfView = 90.0f; // 시야각 설정
     #endregion
 
     [Header("몬스터 순찰 속성")]
@@ -57,6 +60,11 @@ public class MonsterController : MonoBehaviour
     private bool _isGrounded;
     #endregion
 
+    #region #몬스터 애니메이션
+    public bool Sense { get; private set; }
+    public void SenseTrue() => Sense = true;
+    public void SenseFalse() => Sense = false;
+    #endregion
 
     void Awake()
     {
@@ -167,9 +175,24 @@ public class MonsterController : MonoBehaviour
         Collider[] colls = Physics.OverlapSphere(transform.position, _checkDistance * size);
         foreach (Collider coll in colls)
         {
-            if(coll.gameObject.CompareTag("Player")) return coll.transform;
+            if(coll.gameObject.CompareTag("Player"))
+            {
+                if (stateMachine.GetState(StateName.IDLE) == stateMachine.CurrentState && IsPlayerInSight(coll.transform.position)) return coll.transform;
+                if(stateMachine.GetState(StateName.MRUN) == stateMachine.CurrentState) return coll.transform;
+            }
         }
         return null;
+    }
+
+    bool IsPlayerInSight(Vector3 playerPos)    // 계산된 각도를 통해 플레이어가 시야각 범위 내에 있는지 확인
+    {
+        Vector3 enemyToPlayer = playerPos - transform.position;
+        enemyToPlayer.Normalize();
+
+        float angle = Vector3.Angle(transform.forward, enemyToPlayer);
+
+        if (angle < _fieldOfView * 0.5f) return true;
+        else return false;
     }
 
     public void Hit(float damage)
@@ -179,13 +202,17 @@ public class MonsterController : MonoBehaviour
     }
 
 
-    public Vector3 CalcRunDir(Transform player) //플레이어와 반대 방향 계산 
+    //ChasePlayer이 true라면, 플레이어를 향해 쫓는다.
+    //ChasePlayer이 false라면, 플레이어의 반대 방향으로 도망.
+    public Vector3 CalcRunDir(Transform player, bool ChasePlayer) 
     {
+        int chase = ChasePlayer ? 1 : -1;
+
         if (player == null) return Vector3.zero; //플레이어를 감지 영역에서 발견하지 못한 경우 
 
         Vector3 playerPos = player.position;
 
-        Vector3 dir = Vector3.Scale((playerPos - transform.position), new Vector3(-1, 0, -1)).normalized;
+        Vector3 dir = Vector3.Scale((playerPos - transform.position), new Vector3(chase, 0, chase)).normalized;
         transform.rotation = Quaternion.LookRotation(dir);
 
         return GetDirection(dir);
@@ -200,7 +227,5 @@ public class MonsterController : MonoBehaviour
         Vector3 calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(dir) : dir;
         return calculatedDirection;
     }
-
-
 
 }

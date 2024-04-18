@@ -12,11 +12,14 @@ public class MRunState : BaseState<MonsterController>
 
     public override void OnEnterState()
     {
+        _Controller.CalcRunDir(Player.Instance.transform, true);
+        _Controller.animator.SetTrigger("onSense");
         _Controller.CurrentSpeed = _Controller.DashSpeed;
     }
 
     public override void OnExitState()
     {
+        _Controller.SenseFalse();
         _Controller.CurrentSpeed = _Controller.MoveSpeed;
         _Controller.animator.SetFloat("Move", 0);
         _Controller.rigid.velocity = Vector3.zero;
@@ -29,8 +32,12 @@ public class MRunState : BaseState<MonsterController>
         {
             _Controller.stateMachine.ChangeState(StateName.IDLE);
         }
-        _Controller.rigid.velocity = _Controller.CalcRunDir(playerPos) * _Controller.CurrentSpeed;
-        _Controller.animator.SetFloat("Move", Mathf.Clamp(_Controller.CurrentSpeed * 0.2f, 1, 2.5f));
+
+        if (_Controller.Sense)
+        {
+            _Controller.rigid.velocity = _Controller.CalcRunDir(playerPos, false) * _Controller.CurrentSpeed;
+            _Controller.animator.SetFloat("Move", Mathf.Clamp(_Controller.CurrentSpeed * 0.2f, 1, 2.5f));
+        }
     }
 
     public override void OnUpdateState()

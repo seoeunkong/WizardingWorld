@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private float _maxSlopeAngle = 50f;
 
     private const float RAY_DISTANCE = 2f;
-    private const float GROUNDCHECK_DISTANCE = 1.5f;
+    private const float GROUNDCHECK_DISTANCE = 1.0f;
     private RaycastHit _slopeHit;
     private bool _isOnSlope;
     #endregion
@@ -48,8 +48,9 @@ public class PlayerController : MonoBehaviour
     #region #공격 
     [Header("공격 속성")]
     [SerializeField] private Transform _attackPos;
-    private RaycastHit hit;
     [SerializeField] private float _maxDistance;
+    private RaycastHit hit;
+    public static bool IsAttack = false;
     #endregion
 
 
@@ -60,6 +61,8 @@ public class PlayerController : MonoBehaviour
     public Transform DropItemPos { get; private set; }
     private List<Transform> _detect = new List<Transform>();
     #endregion
+
+
 
     void Start()
     {
@@ -123,7 +126,7 @@ public class PlayerController : MonoBehaviour
 
     public float IsDash()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && _currentdashTime >= 0)
+        if (!IsAttack && Input.GetKey(KeyCode.LeftShift) && _currentdashTime >= 0)
         {
             _currentdashTime -= Time.deltaTime;
             return player.DashSpeed;
@@ -172,7 +175,6 @@ public class PlayerController : MonoBehaviour
         _isGrounded = IsGrounded();
 
         Vector3 input = OnMoveInput();
-
         calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(input) : input;
         return calculatedDirection * currentMoveSpeed;
     }
@@ -197,29 +199,24 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            float attackPower = 0;
-
-            if (!player.weaponManager.hasWeapon()) //플레이어한테 무기가 없는 경우 
-            {
-                player.stateMachine.ChangeState(StateName.PUNCHATTACK);
-                attackPower = player.AttackPower;
-            }
-            else //무기가 있는 경우 
-            {
-                player.stateMachine.ChangeState(StateName.ATTACK);
-                attackPower = player.weaponManager.Weapon.AttackDamage;
-            }
-
-            if (Physics.Raycast(_attackPos.position, _attackPos.forward, out hit, _maxDistance))
-            {
-                //hit.collider.GetComponent<HitTest>().HP -= attackPower;
-                MonsterController monster = hit.collider.GetComponent<MonsterController>();
-                monster.Hit(attackPower);
-                //Debug.DrawRay(_attackPos.position, _attackPos.forward * hit.distance, Color.red);
-            }
+            if (!player.weaponManager.hasWeapon()) player.stateMachine.ChangeState(StateName.PUNCHATTACK); //플레이어한테 무기가 없는 경우 
+            else player.stateMachine.ChangeState(StateName.ATTACK); //무기가 있는 경우     
         }
+    }
+
+    public void Attacking(float attackPower)
+    {
+        if (Physics.Raycast(_attackPos.position, _attackPos.forward, out hit, _maxDistance))
+        {
+            //hit.collider.GetComponent<HitTest>().HP -= attackPower;
+            MonsterController monster = hit.collider.GetComponent<MonsterController>();
+            monster?.Hit(attackPower);
+
+        }
+        Debug.DrawRay(_attackPos.position, _attackPos.forward * _maxDistance, Color.red);
 
     }
+
 
     Transform FindCloseItem(List<Transform> newDetect)
     {
@@ -254,12 +251,12 @@ public class PlayerController : MonoBehaviour
         {
             if (coll.GetComponent<DropItem>() != null && coll.GetComponent<DropItem>().enabled == true)
             {
-                if(!_detect.Contains(coll.transform) && coll.gameObject != transform) _detect.Add(coll.transform);
+                if (!_detect.Contains(coll.transform) && coll.gameObject != transform) _detect.Add(coll.transform);
                 newdetect.Add(coll.transform);
             }
         }
 
-        for(int i = _detect.Count - 1;  i >= 0; i--)
+        for (int i = _detect.Count - 1; i >= 0; i--)
         {
             if (!newdetect.Contains(_detect[i].transform))
             {
@@ -279,7 +276,7 @@ public class PlayerController : MonoBehaviour
         {
             DropItemPos = closeItem;
         }
-        
+
 
         if (closeItem != null)
         {
@@ -317,7 +314,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-            int dir = Input.GetAxis("Mouse ScrollWheel") < 0? -1 : 1;
+            int dir = Input.GetAxis("Mouse ScrollWheel") < 0 ? -1 : 1;
             Inventory.Instance.SetNextWeapon(dir);
         }
     }

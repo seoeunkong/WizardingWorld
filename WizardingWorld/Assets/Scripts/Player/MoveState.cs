@@ -4,15 +4,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum MoveName
+{
+    MOVE = 10,
+    DASH = 11
+}
+
 public class MoveState : BaseState<PlayerController>
 {
-    enum MoveName
-    {
-        MOVE = 10,
-        DASH = 11
-    }
-
-
     public MoveState(PlayerController controller) : base(controller)
     {
         
@@ -41,7 +40,7 @@ public class MoveState : BaseState<PlayerController>
         Player.Instance.animator.SetInteger("Move", 0);
     }
 
-    int AnimatorNum(float speed)
+    public int AnimatorNum(float speed)
     {
         if(_Controller.calculatedDirection == Vector3.zero) return 0;
         if(speed <= Player.Instance.MoveSpeed) return (int)MoveName.MOVE;
