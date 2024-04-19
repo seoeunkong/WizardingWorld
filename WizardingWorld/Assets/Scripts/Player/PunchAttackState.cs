@@ -25,7 +25,7 @@ public class PunchAttackState : BaseState<PlayerController>
     {
         Player.Instance.rigid.velocity = _Controller.calculatedDirection + _Controller.gravity;
         Player.Instance.animator.SetInteger("Move", Player.Instance.rigid.velocity != Vector3.zero ? (int)MoveName.MOVE : 0);
-        
+
     }
 
     public override void OnUpdateState()

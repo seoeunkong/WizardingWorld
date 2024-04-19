@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.Progress;
@@ -35,7 +36,7 @@ public class PlayerController : MonoBehaviour
     #region #카메라 
     [Header("카메라 속성")]
     private Camera _camera;
-    public float smoothness;
+    [SerializeField]private float smoothness;
     public bool toggleCameraRotationInput { get; private set; } // 둘러보기 입력 여부
     #endregion
 
@@ -96,12 +97,19 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
+        PlayerRotate();
+    }
+
+    void PlayerRotate()
+    {
         //카메라 및 플레이어 회전 
         //키보드 입력값이 없는 경우에 둘러보기 활성화 
         bool input = (calculatedDirection == Vector3.zero);
         if (!toggleCameraRotationInput && input)
         {
+            CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
             Vector3 playerRotate = Vector3.Scale(_camera.transform.forward, new Vector3(1, 0, 1));
+            
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRotate), Time.deltaTime * smoothness);
         }
     }
@@ -160,7 +168,7 @@ public class PlayerController : MonoBehaviour
             playerRotate = _camera.transform.right;
             inputValue = x;
         }
-        else if (z != 0)
+        if (z != 0)
         {
             playerRotate = _camera.transform.forward;
             inputValue = z;
@@ -175,8 +183,8 @@ public class PlayerController : MonoBehaviour
         _isGrounded = IsGrounded();
 
         Vector3 input = OnMoveInput();
-        calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(input) : input;
-        return calculatedDirection * currentMoveSpeed;
+        Vector3 calDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(input) : input;
+        return calDirection * currentMoveSpeed;
     }
 
     bool IsOnSlope() //경사 지형 체크 
@@ -197,7 +205,9 @@ public class PlayerController : MonoBehaviour
 
     void OnAttack()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (IsAttack) return;
+
+        if (inputDirection.z >= 0 && Input.GetMouseButtonDown(0))
         {
             if (!player.weaponManager.hasWeapon()) player.stateMachine.ChangeState(StateName.PUNCHATTACK); //플레이어한테 무기가 없는 경우 
             else player.stateMachine.ChangeState(StateName.ATTACK); //무기가 있는 경우     

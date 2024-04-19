@@ -93,8 +93,6 @@ public class MonsterController : MonoBehaviour
     void Update()
     {
         stateMachine?.UpdateState();
-
-        Debug.Log(stateMachine.CurrentState);
     }
 
     void FixedUpdate()

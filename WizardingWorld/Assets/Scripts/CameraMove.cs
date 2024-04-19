@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
@@ -25,10 +26,9 @@ public class CameraMove : MonoBehaviour
     private float _rotY;
 
     private Vector3 _dirNormalized;
-    private Vector3 _finalDir;
     private float _finalDistance;
-
-    private Vector3 followPos;
+    public float offset = 1f; // 플레이어를 화면 왼쪽에 위치시키기 위한 z축 오프셋
+    public Vector3 followPos {  get; private set; }
 
 
     private PlayerController _playerController;
@@ -39,7 +39,7 @@ public class CameraMove : MonoBehaviour
         _playerController = Player.Instance.GetComponent<PlayerController>();
 
         _rotX = transform.localRotation.eulerAngles.x;
-        _rotY =  transform.localRotation.eulerAngles.y;
+        _rotY = transform.localRotation.eulerAngles.y;
 
         _dirNormalized = realCam.localPosition.normalized; // 카메라 이동 방향 정규화
         _finalDistance = realCam.localPosition.magnitude; // 카메라 최종 거리 설정
@@ -47,9 +47,8 @@ public class CameraMove : MonoBehaviour
         _initmaxDistance = _maxDistance;
 
         // 마우스 커서 설정
-       // UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        // UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         UnityEngine.Cursor.visible = false;
-        
     }
 
     private void Update()
@@ -61,20 +60,24 @@ public class CameraMove : MonoBehaviour
 
         Quaternion rot = Quaternion.Euler(_rotX, _rotY, 0);
         transform.rotation = rot;
-
-       
-        Vector3 inputDir = _playerController.inputDirection;
-        followPos = CalcPos(inputDir);
     }
 
     private void LateUpdate()
     {
+        Vector3 inputDir = _playerController.inputDirection;
+
+        objectTofollow.localRotation = Quaternion.Euler(0, (-1) * inputDir.x * 90, 0);
+
+        followPos = objectTofollow.position + transform.right * offset; 
+        //followPos = objectTofollow.position + objectTofollow.right * offset; 
+
         transform.position = Vector3.MoveTowards(transform.position, followPos, followSpeed * Time.deltaTime);
-        _finalDir = transform.TransformPoint(_dirNormalized * _maxDistance);
 
         // 장애물 감지 후 최종 거리 설정
+        Vector3 _finalDir = transform.TransformPoint(_dirNormalized * _maxDistance);
+
         RaycastHit hit;
-        if(Physics.Linecast(transform.position, _finalDir, out hit))
+        if (Physics.Linecast(transform.position, _finalDir, out hit))
         {
             _finalDistance = Mathf.Clamp(hit.distance, _minDistance, _maxDistance);
         }
@@ -83,29 +86,7 @@ public class CameraMove : MonoBehaviour
             _finalDistance = _maxDistance;
         }
         realCam.localPosition = Vector3.Lerp(realCam.localPosition, _dirNormalized * _finalDistance, Time.deltaTime * smoothness);
-         
-    }
 
-    public Vector3 CalcPos(Vector3 inputDir)
-    {
-        Vector3 targetPos = objectTofollow.position;
-
-        if (inputDir.x != 0)
-        {
-            targetPos = objectTofollow.position - (inputDir.z != 0 ? inputDir.z : 1) * objectTofollow.right;
-            targetPos += objectTofollow.forward * inputDir.x;
-        }
-
-        if (inputDir.z < 0)
-        {
-            targetPos -= objectTofollow.right;
-        }
-        else if (inputDir.z >= 0)
-        {
-            targetPos += objectTofollow.right;
-        }
-
-        return targetPos;
     }
 
     public void ZoomIn()
