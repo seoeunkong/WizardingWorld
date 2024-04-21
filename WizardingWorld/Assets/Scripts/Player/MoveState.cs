@@ -19,7 +19,7 @@ public class MoveState : BaseState<PlayerController>
 
     public override void OnEnterState()
     {
-        
+
     }
 
     public override void OnUpdateState()
@@ -37,7 +37,7 @@ public class MoveState : BaseState<PlayerController>
     public override void OnExitState()
     {
         Player.Instance.rigid.velocity = Vector3.zero;
-        Player.Instance.animator.SetInteger("Move", 0);
+        //Player.Instance.animator.SetInteger("Move", 0);
     }
 
     public int AnimatorNum(float speed)

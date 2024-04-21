@@ -11,14 +11,19 @@ public class PunchAttackState : BaseState<PlayerController>
     public override void OnEnterState()
     {
         PlayerController.IsAttack = true;
-        Player.Instance.animator.SetTrigger("onPunch");
+       
+        if(_Controller.canAttackCombo) Player.Instance.animator.CrossFade("Punch(2)", 0.3f);
+        else Player.Instance.animator.SetTrigger("onPunch");
     }
 
     public override void OnExitState()
     {
         PlayerController.IsAttack = false;
         Player.Instance.rigid.velocity = Vector3.zero;
-        Player.Instance.animator.SetInteger("Move", 0);
+        Player.Instance.animator.CrossFade("Empty", 0.3f);
+        //Player.Instance.animator.SetInteger("Move", 0);
+
+        _Controller.CountAttackCombo();
     }
 
     public override void OnFixedUpdateState()
@@ -30,7 +35,9 @@ public class PunchAttackState : BaseState<PlayerController>
 
     public override void OnUpdateState()
     {
-        _Controller.Attacking(Player.Instance.AttackPower);
+        _Controller.CheckEnemy(Player.Instance.AttackPower);
+
+        if (!_Controller.IsLookFoward()) Player.Instance.stateMachine.ChangeState(StateName.MOVE);
     }
 
 

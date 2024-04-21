@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using UnityEditor;
@@ -36,7 +37,7 @@ public class PlayerController : MonoBehaviour
     #region #카메라 
     [Header("카메라 속성")]
     private Camera _camera;
-    [SerializeField]private float smoothness;
+    [SerializeField] private float smoothness;
     public bool toggleCameraRotationInput { get; private set; } // 둘러보기 입력 여부
     #endregion
 
@@ -50,8 +51,11 @@ public class PlayerController : MonoBehaviour
     [Header("공격 속성")]
     [SerializeField] private Transform _attackPos;
     [SerializeField] private float _maxDistance;
+    [SerializeField] private float _angleRange;
+    private const float _attackComboTime = 1.5f;
     private RaycastHit hit;
     public static bool IsAttack = false;
+    public bool canAttackCombo { get; private set; }
     #endregion
 
 
@@ -63,7 +67,9 @@ public class PlayerController : MonoBehaviour
     private List<Transform> _detect = new List<Transform>();
     #endregion
 
-
+    public bool IsLookFoward() => (inputDirection.x == 0 && inputDirection.z >= 0);
+    public void CountAttackCombo() => StartCoroutine(IsAttackCombo());
+    public void StopCountAttackCombo() => StopCoroutine(IsAttackCombo());
 
     void Start()
     {
@@ -109,7 +115,7 @@ public class PlayerController : MonoBehaviour
         {
             CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
             Vector3 playerRotate = Vector3.Scale(_camera.transform.forward, new Vector3(1, 0, 1));
-            
+
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRotate), Time.deltaTime * smoothness);
         }
     }
@@ -207,25 +213,62 @@ public class PlayerController : MonoBehaviour
     {
         if (IsAttack) return;
 
-        if (inputDirection.z >= 0 && Input.GetMouseButtonDown(0))
+        if (IsLookFoward() && Input.GetMouseButtonDown(0))
         {
             if (!player.weaponManager.hasWeapon()) player.stateMachine.ChangeState(StateName.PUNCHATTACK); //플레이어한테 무기가 없는 경우 
             else player.stateMachine.ChangeState(StateName.ATTACK); //무기가 있는 경우     
         }
     }
 
-    public void Attacking(float attackPower)
+    bool IsValidAttackTarget(Transform enemy)
+    {
+        Vector3 playerToEnemy = enemy.position - transform.position;
+        playerToEnemy.Normalize();
+
+        float dot = Vector3.Dot(playerToEnemy, transform.forward);
+        float theta = Mathf.Acos(dot);
+        float degree = Mathf.Rad2Deg * theta;
+
+        // 시야각 판별
+        if (degree <= _angleRange / 2f) return true;
+
+        return false;
+    }
+
+    public void CheckEnemy(float attackPower)
+    {
+        Collider[] colls = Physics.OverlapSphere(transform.position, _maxDistance);
+        foreach (Collider coll in colls)
+        {
+            if (coll.gameObject.CompareTag("Enemy"))
+            {
+                bool canAttack = IsValidAttackTarget(coll.transform);
+                if(canAttack)
+                {
+                    Attacking(coll.transform, attackPower);
+                }
+            }
+        }
+    }
+
+    void Attacking(Transform enemy, float attackPower)
     {
         if (!IsAttack) return;
 
-        if (Physics.Raycast(_attackPos.position, _attackPos.forward, out hit, _maxDistance))
-        {
-            MonsterController monster = hit.collider.GetComponent<MonsterController>();
-            monster?.Hit(attackPower);
-        }
+        MonsterController monster = enemy.GetComponent<MonsterController>();
+        monster?.Hit(attackPower);   
         IsAttack = false;
-        //Debug.DrawRay(_attackPos.position, _attackPos.forward * _maxDistance, Color.red);
     }
+
+    IEnumerator IsAttackCombo()
+    {
+        if (canAttackCombo || !IsAttack) yield return null;
+
+        canAttackCombo = true;
+        yield return new WaitForSeconds(_attackComboTime); 
+        canAttackCombo = false;
+    }
+
 
 
     Transform FindCloseItem(List<Transform> newDetect)

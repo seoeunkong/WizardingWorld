@@ -16,7 +16,7 @@ public class AttackState : BaseState<PlayerController>
     {
         PlayerController.IsAttack = false;
         Player.Instance.rigid.velocity = Vector3.zero;
-        Player.Instance.animator.SetInteger("Move", 0);
+        Player.Instance.animator.CrossFade("Empty", 0.5f);
     }
 
     public override void OnFixedUpdateState()
@@ -27,7 +27,8 @@ public class AttackState : BaseState<PlayerController>
 
     public override void OnUpdateState()
     {
-        _Controller.Attacking(Player.Instance.weaponManager.Weapon.AttackDamage);
+        _Controller.CheckEnemy(Player.Instance.weaponManager.Weapon.AttackDamage);
+        if (!_Controller.IsLookFoward()) Player.Instance.stateMachine.ChangeState(StateName.MOVE);
     }
 
    

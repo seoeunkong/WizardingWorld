@@ -186,7 +186,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Punch
-  m_Speed: 1.45
+  m_Speed: 1.6
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -6100637379119806915}
@@ -750,7 +750,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Punch(2)
-  m_Speed: 1.45
+  m_Speed: 1.6
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 8823783128629390353}
