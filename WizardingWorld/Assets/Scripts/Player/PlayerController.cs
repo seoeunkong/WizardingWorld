@@ -52,8 +52,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _attackPos;
     [SerializeField] private float _maxDistance;
     [SerializeField] private float _angleRange;
-    private const float _attackComboTime = 1.5f;
+    private const float _attackComboTime = 3f;
     private RaycastHit hit;
+    public static bool startAttackAni = false;
     public static bool IsAttack = false;
     public bool canAttackCombo { get; private set; }
     #endregion
@@ -211,7 +212,7 @@ public class PlayerController : MonoBehaviour
 
     void OnAttack()
     {
-        if (IsAttack) return;
+        if (IsAttack ) return;
 
         if (IsLookFoward() && Input.GetMouseButtonDown(0))
         {
@@ -220,7 +221,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    bool IsValidAttackTarget(Transform enemy)
+    bool IsValidAttackTarget(Transform enemy) //몬스터가 부채꼴 내부에 있는지 판단 
     {
         Vector3 playerToEnemy = enemy.position - transform.position;
         playerToEnemy.Normalize();
@@ -235,7 +236,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    public void CheckEnemy(float attackPower)
+    public void CheckEnemy(float attackPower) //플레이어 공격 영역에 있는 몬스터들 검출 
     {
         Collider[] colls = Physics.OverlapSphere(transform.position, _maxDistance);
         foreach (Collider coll in colls)
@@ -243,18 +244,13 @@ public class PlayerController : MonoBehaviour
             if (coll.gameObject.CompareTag("Enemy"))
             {
                 bool canAttack = IsValidAttackTarget(coll.transform);
-                if(canAttack)
-                {
-                    Attacking(coll.transform, attackPower);
-                }
+                if(canAttack) Attacking(coll.transform, attackPower);
             }
         }
     }
 
-    void Attacking(Transform enemy, float attackPower)
+    void Attacking(Transform enemy, float attackPower) //몬스터에게 데미지 주기 
     {
-        if (!IsAttack) return;
-
         MonsterController monster = enemy.GetComponent<MonsterController>();
         monster?.Hit(attackPower);   
         IsAttack = false;

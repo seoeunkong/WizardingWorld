@@ -9,14 +9,19 @@ public class AttackState : BaseState<PlayerController>
     public override void OnEnterState()
     {
         PlayerController.IsAttack = true;
-        Player.Instance.weaponManager.Weapon?.Attack(this);
+
+        if (_Controller.canAttackCombo) Player.Instance.animator.CrossFade("MeleeAttack2", 0.2f);
+        else Player.Instance.weaponManager.Weapon?.Attack(this);
     }
 
     public override void OnExitState()
     {
         PlayerController.IsAttack = false;
+        PlayerController.startAttackAni = false;
         Player.Instance.rigid.velocity = Vector3.zero;
-        Player.Instance.animator.CrossFade("Empty", 0.5f);
+        Player.Instance.animator.CrossFade("Empty", 0.3f);
+
+        _Controller.CountAttackCombo();
     }
 
     public override void OnFixedUpdateState()
@@ -27,7 +32,8 @@ public class AttackState : BaseState<PlayerController>
 
     public override void OnUpdateState()
     {
-        _Controller.CheckEnemy(Player.Instance.weaponManager.Weapon.AttackDamage);
+        if (!PlayerController.IsAttack) return;
+        if (!PlayerController.startAttackAni) _Controller.CheckEnemy(Player.Instance.weaponManager.Weapon.AttackDamage);
         if (!_Controller.IsLookFoward()) Player.Instance.stateMachine.ChangeState(StateName.MOVE);
     }
 

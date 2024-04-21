@@ -11,7 +11,8 @@ public enum StateName
     IDLE,
     MRUN,
     MCHASE,
-    MATTACK
+    MATTACK,
+    MDEAD
 }
 
 public class StateMachine<TController> where TController : MonoBehaviour

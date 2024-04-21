@@ -72,6 +72,8 @@ public class MonsterController : MonoBehaviour
     public void SenseFalse() => Sense = false;
     #endregion
 
+    public void MonsterDead() => transform.gameObject.SetActive(false);
+
     #region #공격
     [Header("플레이어 공격 속성")]
     [SerializeField] private float _attackCheckDistance;
@@ -108,6 +110,7 @@ public class MonsterController : MonoBehaviour
         stateMachine.AddState(StateName.MRUN, new MRunState(controller));
         stateMachine.AddState(StateName.MCHASE, new MChaseState(controller));
         stateMachine.AddState(StateName.MATTACK, new MAttackState(controller));
+        stateMachine.AddState(StateName.MDEAD, new MDeadState(controller));
     }
 
     private void Init()
@@ -212,10 +215,21 @@ public class MonsterController : MonoBehaviour
         {
             _currentHP -= damage;
             _currentHP = _currentHP > 0 ? _currentHP : 0;
+            if (_currentHP == 0)
+            {
+                StartCoroutine(OnDead());
+                return;
+            }
         }
 
         animator.SetTrigger("onHit");
         Debug.Log("Ouch");
+    }
+
+    IEnumerator OnDead()
+    {
+        yield return new WaitForSeconds(0.5f);
+        stateMachine.ChangeState(StateName.MDEAD);
     }
 
 
