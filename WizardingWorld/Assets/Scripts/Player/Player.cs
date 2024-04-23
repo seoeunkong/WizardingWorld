@@ -35,6 +35,8 @@ public class Player : MonoBehaviour
     public Transform rightHand;
     public Transform NotUsingWeapons;
 
+    public void SetHPValue(float hp) {  _currentHP = hp; }
+
     void Awake()
     {
         if(Instance == null)
@@ -51,6 +53,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         InitStateMachine();
+        SetHPValue(MaxHP);
     }
 
     void Update()

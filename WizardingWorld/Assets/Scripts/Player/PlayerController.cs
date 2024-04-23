@@ -59,6 +59,8 @@ public class PlayerController : MonoBehaviour
     public bool canAttackCombo { get; private set; }
     #endregion
 
+    [Header("스피어볼 던지기 속성")]
+    [SerializeField] private float _throwAngleRange;
 
     #region #드랍 아이템 획득
     [Header("드랍 아이템 획득")]
@@ -221,7 +223,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    bool IsValidAttackTarget(Transform enemy) //몬스터가 부채꼴 내부에 있는지 판단 
+    bool IsValidTarget(float angle, Transform enemy) //몬스터가 부채꼴 내부에 있는지 판단 
     {
         Vector3 playerToEnemy = enemy.position - transform.position;
         playerToEnemy.Normalize();
@@ -231,22 +233,38 @@ public class PlayerController : MonoBehaviour
         float degree = Mathf.Rad2Deg * theta;
 
         // 시야각 판별
-        if (degree <= _angleRange / 2f) return true;
+        if (degree <= angle / 2f) return true;
 
         return false;
     }
 
     public void CheckEnemy(float attackPower) //플레이어 공격 영역에 있는 몬스터들 검출 
     {
-        Collider[] colls = Physics.OverlapSphere(transform.position, _maxDistance);
+        // attackPower == 0 : 스피어볼 던지기
+        // attackPower > 0 : 일반 공격 
+
+        List<Transform> targets = new List<Transform>();
+        Collider[] colls = Physics.OverlapSphere(transform.position, _maxDistance * (attackPower > 0 ? 1 : 10f));
         foreach (Collider coll in colls)
         {
             if (coll.gameObject.CompareTag("Enemy"))
             {
-                bool canAttack = IsValidAttackTarget(coll.transform);
-                if(canAttack) Attacking(coll.transform, attackPower);
+                bool canAttack = IsValidTarget(_angleRange, coll.transform);
+                if(canAttack)
+                {
+                    Attacking(coll.transform, attackPower);
+                    targets.Add(coll.transform);
+                }
             }
         }
+
+        //스피어볼을 던질 수 있는 경우라면 
+        if (targets.Count > 0 && attackPower == 0)
+        {
+            Transform monster = FindCloseItem(targets);
+            Debug.Log(monster.name);
+        }
+        else Debug.Log("nothing");
     }
 
     void Attacking(Transform enemy, float attackPower) //몬스터에게 데미지 주기 
@@ -391,5 +409,14 @@ public class PlayerController : MonoBehaviour
         camera.ZoomOut();
     }
 
+    public void Hit(float damage)
+    {
+        float hp = player.CurrentHP - damage;
+        if(hp < 0) hp = 0;
+
+        player.SetHPValue(hp);
+        player.animator.SetTrigger("onHit");
+        player.rigid.AddForce(Vector3.Scale(transform.forward, new Vector3(-1,0,-1)) * 5f, ForceMode.Impulse);
+    }
 
 }

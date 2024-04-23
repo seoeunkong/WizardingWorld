@@ -14,24 +14,24 @@ public class MonsterController : MonoBehaviour
     public Animator animator { get; private set; }
     public Vector3 gravity { get; private set; }
 
+    [Header("몬스터 생성"), Tooltip("몬스터 스탯 정보")]
+    [SerializeField] protected MonsterData monsterData;
+
     #region #몬스터 스탯
-    public float MaxHP { get { return _maxHP; } }
     public float CurrentHP { get { return _currentHP; } }
-    public float MoveSpeed { get { return _moveSpeed; } }
-    public float DashSpeed { get { return _dashSpeed; } }
-    public float AttackPower { get { return _attackPower; } }
     public float CurrentSpeed { get { return _currentSpeed; } set { _currentSpeed = value; } }
 
 
     [Header("몬스터 스탯")]
-    [SerializeField] protected float _maxHP;
-    [SerializeField] protected float _currentHP;
-    [SerializeField] protected float _moveSpeed;
-    [SerializeField] protected float _dashSpeed;
-    [SerializeField] protected float _attackPower;
-    [SerializeField] protected float _currentSpeed;
-    [SerializeField] protected float _rotateSpeed;
-    
+    [SerializeField] private float _currentHP;
+    [SerializeField] private float _currentSpeed;
+    public float maxHP { get; private set; }
+    public float moveSpeed { get; private set; }
+    public float dashSpeed { get; private set; }
+    public float attackPower { get; private set; }
+    public float rotateSpeed { get; private set; }
+    public int level { get; private set; }
+
     public const float runRadius = 2;
     public const float chaseRadius = 3;
     public const float attackRadius = 0.1f;
@@ -47,7 +47,7 @@ public class MonsterController : MonoBehaviour
     [Header("플레이어 감지 속성")]
     [SerializeField] private float _checkDistance;
 
-    public void ChangeStateToChase() => stateMachine.ChangeState(StateName.MCHASE);
+    public void ChangeStateToChase() => this.stateMachine.ChangeState(StateName.MCHASE);
 
     #region #경사 체크 변수
     [Header("경사 지형 검사")]
@@ -77,6 +77,7 @@ public class MonsterController : MonoBehaviour
     #region #공격
     [Header("플레이어 공격 속성")]
     [SerializeField] private float _attackCheckDistance;
+    public bool IsAttack = false;
     #endregion
 
     void Awake()
@@ -88,8 +89,10 @@ public class MonsterController : MonoBehaviour
 
     void Start()
     {
+        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
+
         InitStateMachine();
-        Init();
+        OnUpdateState(monsterData.MaxHP, monsterData.AttackPower, monsterData.MoveSpeed, monsterData.DashSpeed, monsterData.Level, monsterData.RotateSpeed);
     }
 
     void Update()
@@ -113,20 +116,17 @@ public class MonsterController : MonoBehaviour
         stateMachine.AddState(StateName.MDEAD, new MDeadState(controller));
     }
 
-    private void Init()
+    public void OnUpdateState(float maxHP, float attackPower, float moveSpeed, float dashSpeed, int level, float rotateSpeed)
     {
-        _currentHP = MaxHP;
-        _currentSpeed = _moveSpeed;
-        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
-    }
+        this.maxHP = maxHP;
+        this.attackPower = attackPower;
+        this.moveSpeed = moveSpeed;
+        this.dashSpeed = dashSpeed;
+        this.level = level;
+        this.rotateSpeed = rotateSpeed;
 
-
-    public void OnUpdateState(float maxHP, float currentHP, float moveSpeed, float dashSpeed)
-    {
-        this._maxHP = maxHP;
-        this._currentHP = currentHP;
-        this._moveSpeed = moveSpeed;
-        this._dashSpeed = dashSpeed;
+        this._currentSpeed = moveSpeed;
+        this._currentHP = maxHP;
     }
 
     protected void ControlGravity()
@@ -181,7 +181,7 @@ public class MonsterController : MonoBehaviour
         Vector3 dir = (_patrolPoint - transform.position).normalized;
         rigid.velocity = GetDirection(dir) * CurrentSpeed;
         
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.Scale(dir, new Vector3(1, 0, 1))), Time.deltaTime * _rotateSpeed);
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.Scale(dir, new Vector3(1, 0, 1))), Time.deltaTime * rotateSpeed);
     }
 
     public Transform CheckPlayer(float size = 1) //감지 영역 내에 플레이어 존재 여부 체크 
@@ -257,6 +257,29 @@ public class MonsterController : MonoBehaviour
 
         Vector3 calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(dir) : dir;
         return calculatedDirection;
+    }
+
+    public void Attacking(Transform playerPos)
+    {
+        if (playerPos == null) return;
+        PlayerController player = playerPos.GetComponent<PlayerController>();
+
+        if (!IsAttack)
+        {
+            IsAttack = true;
+            StartCoroutine(AttackingCor(player));
+        }
+    }
+
+    IEnumerator AttackingCor(PlayerController player)
+    {
+        animator.SetBool("isAttack", true);
+        yield return new WaitForSeconds(0.4f);
+        player.Hit(attackPower);
+        yield return new WaitForSeconds(0.1f);
+        animator.SetBool("isAttack", false);
+        yield return new WaitForSeconds(1.5f);
+        IsAttack = false;
     }
 
 }

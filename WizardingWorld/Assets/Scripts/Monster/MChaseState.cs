@@ -9,13 +9,13 @@ public class MChaseState : BaseState<MonsterController>
 
     public override void OnEnterState()
     {
-        _Controller.CurrentSpeed = _Controller.DashSpeed;
+        _Controller.CurrentSpeed = _Controller.dashSpeed;
     }
 
     public override void OnExitState()
     {
-        _Controller.CurrentSpeed = _Controller.MoveSpeed;
-        _Controller.animator.SetFloat("Move", 0);
+        _Controller.CurrentSpeed = _Controller.moveSpeed;
+        _Controller.animator.SetFloat("Move", 0f);
         _Controller.rigid.velocity = Vector3.zero;
     }
 
@@ -28,8 +28,11 @@ public class MChaseState : BaseState<MonsterController>
 
     public override void OnUpdateState()
     {
-        CheckToAttack();
+        //CheckToAttack();
+        //Chase();
+
         Chase();
+        CheckToAttack();
     }
 
     void CheckToAttack()
