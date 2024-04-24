@@ -13,25 +13,10 @@ public class MonsterController : MonoBehaviour
     public Rigidbody rigid { get; private set; }
     public Animator animator { get; private set; }
     public Vector3 gravity { get; private set; }
-
-    [Header("몬스터 생성"), Tooltip("몬스터 스탯 정보")]
-    [SerializeField] protected MonsterData monsterData;
-
-    #region #몬스터 스탯
-    public float CurrentHP { get { return _currentHP; } }
-    public float CurrentSpeed { get { return _currentSpeed; } set { _currentSpeed = value; } }
+    public Monster monsterInfo { get; private set; }
 
 
-    [Header("몬스터 스탯")]
-    [SerializeField] private float _currentHP;
-    [SerializeField] private float _currentSpeed;
-    public float maxHP { get; private set; }
-    public float moveSpeed { get; private set; }
-    public float dashSpeed { get; private set; }
-    public float attackPower { get; private set; }
-    public float rotateSpeed { get; private set; }
-    public int level { get; private set; }
-
+    #region #몬스터 감지 영역
     public const float runRadius = 2;
     public const float chaseRadius = 3;
     public const float attackRadius = 0.1f;
@@ -84,7 +69,7 @@ public class MonsterController : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-
+        monsterInfo = GetComponent<Monster>();
     }
 
     void Start()
@@ -92,12 +77,12 @@ public class MonsterController : MonoBehaviour
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
 
         InitStateMachine();
-        OnUpdateState(monsterData.MaxHP, monsterData.AttackPower, monsterData.MoveSpeed, monsterData.DashSpeed, monsterData.Level, monsterData.RotateSpeed);
     }
 
     void Update()
     {
         stateMachine?.UpdateState();
+
     }
 
     void FixedUpdate()
@@ -113,20 +98,8 @@ public class MonsterController : MonoBehaviour
         stateMachine.AddState(StateName.MRUN, new MRunState(controller));
         stateMachine.AddState(StateName.MCHASE, new MChaseState(controller));
         stateMachine.AddState(StateName.MATTACK, new MAttackState(controller));
+        stateMachine.AddState(StateName.MHIT, new MHitState(controller));
         stateMachine.AddState(StateName.MDEAD, new MDeadState(controller));
-    }
-
-    public void OnUpdateState(float maxHP, float attackPower, float moveSpeed, float dashSpeed, int level, float rotateSpeed)
-    {
-        this.maxHP = maxHP;
-        this.attackPower = attackPower;
-        this.moveSpeed = moveSpeed;
-        this.dashSpeed = dashSpeed;
-        this.level = level;
-        this.rotateSpeed = rotateSpeed;
-
-        this._currentSpeed = moveSpeed;
-        this._currentHP = maxHP;
     }
 
     protected void ControlGravity()
@@ -179,9 +152,9 @@ public class MonsterController : MonoBehaviour
 
         //PatrolPoint을 기준으로 몬스터 이동 및 회전
         Vector3 dir = (_patrolPoint - transform.position).normalized;
-        rigid.velocity = GetDirection(dir) * CurrentSpeed;
+        rigid.velocity = GetDirection(dir) * monsterInfo.CurrentSpeed;
         
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.Scale(dir, new Vector3(1, 0, 1))), Time.deltaTime * rotateSpeed);
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.Scale(dir, new Vector3(1, 0, 1))), Time.deltaTime * monsterInfo.rotateSpeed);
     }
 
     public Transform CheckPlayer(float size = 1) //감지 영역 내에 플레이어 존재 여부 체크 
@@ -209,22 +182,6 @@ public class MonsterController : MonoBehaviour
         else return false;
     }
 
-    public void Hit(float damage)
-    {
-        if(_currentHP > 0)
-        {
-            _currentHP -= damage;
-            _currentHP = _currentHP > 0 ? _currentHP : 0;
-            if (_currentHP == 0)
-            {
-                StartCoroutine(OnDead());
-                return;
-            }
-        }
-
-        animator.SetTrigger("onHit");
-        Debug.Log("Ouch");
-    }
 
     IEnumerator OnDead()
     {
@@ -275,11 +232,21 @@ public class MonsterController : MonoBehaviour
     {
         animator.SetBool("isAttack", true);
         yield return new WaitForSeconds(0.4f);
-        player.Hit(attackPower);
+        player.Hit(monsterInfo.attackPower);
         yield return new WaitForSeconds(0.1f);
         animator.SetBool("isAttack", false);
         yield return new WaitForSeconds(1.5f);
         IsAttack = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Sphere")) Debug.Log("Hit By sphere");
+    }
+
+    public void HitBySphere()
+    {
+
     }
 
 }

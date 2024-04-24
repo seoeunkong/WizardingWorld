@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     public float DashSpeed { get { return _dashSpeed; } }
     public float AttackPower { get { return _attackPower; } }
     public float ThrowPower { get { return _throwPower; } }
+    public float CurrentAttackPower { get { return _currentAttackPower; } }
     public float CurrentSpeed { get { return _currentSpeed; } set { _currentSpeed = value; } }
 
 
@@ -29,6 +30,7 @@ public class Player : MonoBehaviour
     [SerializeField] protected float _throwPower;
     #endregion
 
+    private float _currentAttackPower;
     private float _currentSpeed;
 
     [SerializeField]
@@ -36,6 +38,7 @@ public class Player : MonoBehaviour
     public Transform NotUsingWeapons;
 
     public void SetHPValue(float hp) {  _currentHP = hp; }
+    public void SetAttackPower(float attackPower) { _currentAttackPower = attackPower; }
 
     void Awake()
     {

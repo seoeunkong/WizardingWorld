@@ -12,6 +12,7 @@ public enum StateName
     MRUN,
     MCHASE,
     MATTACK,
+    MHIT,
     MDEAD
 }
 

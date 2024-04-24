@@ -12,12 +12,16 @@ public class Inventory : MonoBehaviour
 
     [Header("인벤토리 설정")]
     public GameObject inventoryContents; //인벤토리 UI 
+    public GameObject monsterContents; //몬스터 인벤토리 UI 
     private int _slotCount;
+    private int _monsterCount;
 
     private ItemSlotUI[] _itemSlotUIs; //인벤토리 슬롯 UI 
+    private ItemSlotUI[] _monsterSlotUIs; //몬스터 인벤토리 슬롯 UI 
 
-    [SerializeField]
-    private BaseObject[] _baseObjects;
+
+    [SerializeField] private BaseObject[] _baseObjects;
+    [SerializeField] private Monster[] _monstersObjects;
     private int _weaponIndex;
 
     private void Awake()
@@ -41,8 +45,11 @@ public class Inventory : MonoBehaviour
     private void Init()
     {
         _itemSlotUIs = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
+        _monsterSlotUIs = monsterContents.GetComponentsInChildren<ItemSlotUI>();
         _slotCount = _itemSlotUIs.Length;
+        _monsterCount = _monsterSlotUIs.Length;
         _baseObjects = new BaseObject[_slotCount];
+        _monstersObjects = new Monster[_monsterCount];
     }
 
     bool isWeaponCol(int index) => index % 6 == 5;
@@ -238,9 +245,20 @@ public class Inventory : MonoBehaviour
     int FindEmptySlot()
     {
         foreach (var slot in _itemSlotUIs)
-
         {
             if (!slot.HasItem && !isWeaponCol(slot.Index))
+            {
+                return slot.Index;
+            }
+        }
+        return -1;
+    }
+
+    int FindEmptyMonsterSlot()
+    {
+        foreach (var slot in _monsterSlotUIs)
+        {
+            if (!slot.HasItem)
             {
                 return slot.Index;
             }
@@ -368,6 +386,19 @@ public class Inventory : MonoBehaviour
         UpdateSlot(indexA);
         UpdateSlot(indexB);
         
+    }
+
+    public void AddMonster(Monster monsterObject, int amount = 1)
+    {
+        ObjectData objData = monsterObject._objData;
+
+        int index = FindEmptyMonsterSlot();
+        Debug.Log("Find Empty: " + index);
+        //if (index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
+        
+
+
+        UpdateSlot(index);
     }
 
 

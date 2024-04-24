@@ -14,7 +14,7 @@ public class IdleState : BaseState<MonsterController>
 
     public override void OnFixedUpdateState()
     {
-        _Controller.animator.SetFloat("Move", _Controller.CurrentSpeed);
+        _Controller.animator.SetFloat("Move", _Controller.monsterInfo.CurrentSpeed);
         _Controller.Patrol();
     }
 

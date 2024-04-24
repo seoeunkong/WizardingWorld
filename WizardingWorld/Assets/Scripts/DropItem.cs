@@ -26,19 +26,6 @@ public class DropItem : MonoBehaviour
 
         if (detectDropItem)
         {
-            //if (materials.Length == _length) //아웃라인이 추가되지 않았다면 
-            //{
-            //    Material[] mat = new Material[_length + 1];
-            //    for(int i = 0; i < _length; i++)
-            //    {
-            //        mat[i] = materials[i];
-            //    }
-            //    mat[_length] = _OutlineMat;
-
-            //    _renderer.materials = mat;
-            //}
-
-
             Material[] mat = new Material[_length];
             for (int i = 0; i < _length; i++)
              {
@@ -48,11 +35,6 @@ public class DropItem : MonoBehaviour
         }
         else
         {
-            //if(materials.Length > _length)  //아웃라인이 추가되었다면 
-            //{
-            //    _renderer.materials = _materials;
-            //}
-
             _renderer.materials = _materials;
         }
     }

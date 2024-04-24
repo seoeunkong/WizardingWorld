@@ -9,12 +9,12 @@ public class MChaseState : BaseState<MonsterController>
 
     public override void OnEnterState()
     {
-        _Controller.CurrentSpeed = _Controller.dashSpeed;
+        _Controller.monsterInfo.CurrentSpeed = _Controller.monsterInfo.dashSpeed;
     }
 
     public override void OnExitState()
     {
-        _Controller.CurrentSpeed = _Controller.moveSpeed;
+        _Controller.monsterInfo.CurrentSpeed = _Controller.monsterInfo.moveSpeed;
         _Controller.animator.SetFloat("Move", 0f);
         _Controller.rigid.velocity = Vector3.zero;
     }
@@ -45,7 +45,7 @@ public class MChaseState : BaseState<MonsterController>
     {
         playerPos = _Controller.CheckPlayer(MonsterController.chaseRadius);
         if (playerPos == null) _Controller.stateMachine.ChangeState(StateName.IDLE);
-        _Controller.rigid.velocity = _Controller.CalcRunDir(playerPos, true) * _Controller.CurrentSpeed;
-        _Controller.animator.SetFloat("Move", Mathf.Clamp(_Controller.CurrentSpeed * 0.2f, 1, 2.5f));
+        _Controller.rigid.velocity = _Controller.CalcRunDir(playerPos, true) * _Controller.monsterInfo.CurrentSpeed;
+        _Controller.animator.SetFloat("Move", Mathf.Clamp(_Controller.monsterInfo.CurrentSpeed * 0.2f, 1, 2.5f));
     }
 }

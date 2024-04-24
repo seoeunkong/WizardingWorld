@@ -8,6 +8,7 @@ TagManager:
   - UI/Text
   - UI/Slot
   - Enemy
+  - Sphere
   layers:
   - Default
   - TransparentFX

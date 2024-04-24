@@ -35,8 +35,8 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region #카메라 
+    public Camera _camera { get; private set; }
     [Header("카메라 속성")]
-    private Camera _camera;
     [SerializeField] private float smoothness;
     public bool toggleCameraRotationInput { get; private set; } // 둘러보기 입력 여부
     #endregion
@@ -58,6 +58,8 @@ public class PlayerController : MonoBehaviour
     public static bool IsAttack = false;
     public bool canAttackCombo { get; private set; }
     #endregion
+
+    public Transform closeMonster{  get; private set; }
 
     [Header("스피어볼 던지기 속성")]
     [SerializeField] private float _throwAngleRange;
@@ -238,39 +240,39 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    public void CheckEnemy(float attackPower) //플레이어 공격 영역에 있는 몬스터들 검출 
+    public void CheckEnemy(bool attackFlag) //플레이어 공격 영역에 있는 몬스터들 검출 
     {
-        // attackPower == 0 : 스피어볼 던지기
-        // attackPower > 0 : 일반 공격 
+        // attackFlag == false : 스피어볼 던지기
+        // attackFlag == true : 일반 공격 
 
         List<Transform> targets = new List<Transform>();
-        Collider[] colls = Physics.OverlapSphere(transform.position, _maxDistance * (attackPower > 0 ? 1 : 10f));
+        Collider[] colls = Physics.OverlapSphere(transform.position, _maxDistance * (attackFlag ? 1 : 5f));
         foreach (Collider coll in colls)
         {
             if (coll.gameObject.CompareTag("Enemy"))
             {
-                bool canAttack = IsValidTarget(_angleRange, coll.transform);
+                bool canAttack = IsValidTarget((attackFlag ? _angleRange : _throwAngleRange), coll.transform);
                 if(canAttack)
                 {
-                    Attacking(coll.transform, attackPower);
+                    Attacking(coll.transform);
                     targets.Add(coll.transform);
                 }
             }
         }
 
-        //스피어볼을 던질 수 있는 경우라면 
-        if (targets.Count > 0 && attackPower == 0)
+        if (targets.Count > 0)
         {
-            Transform monster = FindCloseItem(targets);
-            Debug.Log(monster.name);
+            if (!attackFlag) closeMonster = FindCloseItem(targets); //스피어볼을 던질 수 있는 경우라면 
         }
-        else Debug.Log("nothing");
+        else closeMonster = null;
     }
 
-    void Attacking(Transform enemy, float attackPower) //몬스터에게 데미지 주기 
+    void Attacking(Transform enemy) //몬스터에게 데미지 주기 
     {
         MonsterController monster = enemy.GetComponent<MonsterController>();
-        monster?.Hit(attackPower);   
+        if (monster == null) return;
+        monster.stateMachine.ChangeState(StateName.MHIT);
+
         IsAttack = false;
     }
 
