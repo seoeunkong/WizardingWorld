@@ -241,7 +241,12 @@ public class MonsterController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Sphere")) HitBySphere();
+        if (collision.gameObject.CompareTag("Sphere"))
+        {
+            PalSphere sphere = collision.gameObject.GetComponent<PalSphere>();
+            Debug.Log(sphere.isToCaptureMonster());
+            if(sphere.isToCaptureMonster()) HitBySphere();
+        }
     }
 
     void HitBySphere()
@@ -250,6 +255,7 @@ public class MonsterController : MonoBehaviour
         Inventory.Instance.Add(mon);
 
         transform.gameObject.SetActive(false);
+        Debug.Log("!!");
     }
 
 }

@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
 
         ThrowSphere();
 
-        ThrowMonsterSphere();
+        ThrowMonster();
 
     }
 
@@ -406,7 +406,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void ThrowMonsterSphere() //∆Á ≈ı√¥ 
+    void ThrowMonster() //∆Á ≈ı√¥ 
     {
         CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
         if (Input.GetKey("e"))
@@ -419,7 +419,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp("e"))
         {
-            //StartCoroutine(ZoomOut(cameraMove));
+            StartCoroutine(ZoomOut(cameraMove));
         }
     }
 

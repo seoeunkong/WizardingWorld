@@ -36,21 +36,28 @@ public class ThrowState : BaseState<PlayerController>
             if (_ps != null) //플레이어 손에 스피어가 있다면 
             {
                 _ps.InitThrowSphere();
-
                 _sphereRb = _ps.GetComponent<Rigidbody>();
 
-                _Controller.CheckEnemy(false);
-
-                Vector3 dir = Player.Instance.transform.forward;
-                if (_Controller.closeMonster != null)
+                if(_ps.isToCaptureMonster()) //스피어 투척
                 {
-                    Vector3 cam = _Controller._camera.transform.position - new Vector3(0,2f,0);
-                    dir = (_Controller.closeMonster.position - cam).normalized;
+                    _Controller.CheckEnemy(false);
 
-                    _sphereRb.AddForce(dir * Player.Instance.ThrowPower, ForceMode.Impulse);
+                    Vector3 dir = Player.Instance.transform.forward;
+                    if (_Controller.closeMonster != null) // 목표물 발견 
+                    {
+                        Vector3 cam = _Controller._camera.transform.position - new Vector3(0, 2f, 0);
+                        dir = (_Controller.closeMonster.position - cam).normalized;
 
+                        _sphereRb.AddForce(dir * Player.Instance.ThrowPower, ForceMode.Impulse);
+
+                    }
+                    else _sphereRb.AddForce(_Controller._camera.transform.forward * Player.Instance.ThrowPower, ForceMode.Impulse);
                 }
-                else _sphereRb.AddForce(_Controller._camera.transform.forward * Player.Instance.ThrowPower, ForceMode.Impulse);
+                else //팰 투척 
+                {
+                    _sphereRb.AddForce(_Controller._camera.transform.forward * Player.Instance.ThrowPower, ForceMode.Impulse);
+                }
+               
             }
             throwSphere = false;
         }

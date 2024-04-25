@@ -9,6 +9,7 @@ TagManager:
   - UI/Slot
   - Enemy
   - Sphere
+  - Ground
   layers:
   - Default
   - TransparentFX

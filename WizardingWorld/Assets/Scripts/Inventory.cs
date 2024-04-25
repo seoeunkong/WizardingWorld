@@ -18,10 +18,11 @@ public class Inventory : MonoBehaviour
 
     private ItemSlotUI[] _itemSlotUIs; //인벤토리 슬롯 UI 
 
-    public GameObject sphereObject;
+    private GameObject _sphereObject;
 
     [SerializeField] private BaseObject[] _baseObjects;
     private int _weaponIndex;
+    private int _monsterIndex = -1;
 
     private void Awake()
     {
@@ -43,8 +44,6 @@ public class Inventory : MonoBehaviour
 
     private void Init()
     {
-        // _itemSlotUIs = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
-        //  _monsterSlotUIs = monsterContents.GetComponentsInChildren<ItemSlotUI>();
         ItemSlotUI[] items = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
         ItemSlotUI[] mons = monsterContents.GetComponentsInChildren<ItemSlotUI>();
 
@@ -70,8 +69,8 @@ public class Inventory : MonoBehaviour
 
     public bool isValidSwap(int from, int to)
     {
-        if(isMonsterInventory(from) || isMonsterInventory(to)) return false;
-
+        if (isMonsterInventory(from) && isMonsterInventory(to)) return true;
+        if (isMonsterInventory(from) || isMonsterInventory(to)) return false;
         if (!isWeaponCol(from) && !isWeaponCol(to)) return true;
         if (HasItem(from) && HasItem(to)) return isWeaponObj(from) && isWeaponObj(to);
         return isWeaponObj(from) || isWeaponObj(to);
@@ -86,6 +85,8 @@ public class Inventory : MonoBehaviour
     {
         return HasItem(index) && _baseObjects[index] is BaseWeapon;
     }
+
+    public BaseObject GetCurrentPal() => HasItem(_monsterIndex)? _baseObjects[_monsterIndex] : null;
 
     void CreateInstance(BaseObject baseObject)
     {
@@ -110,6 +111,12 @@ public class Inventory : MonoBehaviour
             if (index == -1) return;
 
             BaseObject sphere = _baseObjects[index];
+            if(_sphereObject == null)
+            {
+                _sphereObject = Instantiate(sphere.gameObject);
+                _sphereObject.GetComponent<PalSphere>().ChangeSphereMode();
+            }
+
             if (sphere is PalSphere ps)
             {
                 //플레이어가 무기를 들고 있는 경우 -> 스피어로 교체 
@@ -119,7 +126,7 @@ public class Inventory : MonoBehaviour
         }
         else // 펠 투척을 위해
         {
-            BaseObject sphere = sphereObject.GetComponent<BaseObject>();
+            BaseObject sphere = _sphereObject.GetComponent<BaseObject>();
             if(sphere != null) CreateInstance(sphere);
         }
     }
@@ -135,6 +142,18 @@ public class Inventory : MonoBehaviour
             {
                 list.Add(i);
             }
+        }
+        return list;
+    }
+
+    //팰로 등록시킨 몬스터 칸 번호 반환
+    List<int> CheckPal()
+    {
+        List<int> list = new List<int>();
+
+        for (int i = _baseObjects.Length - 5; i < _baseObjects.Length; i++)
+        {
+            if (HasItem(i)) list.Add(i);
         }
         return list;
     }
@@ -162,6 +181,36 @@ public class Inventory : MonoBehaviour
 
             CreateInstance(_baseObjects[_weaponIndex]);
         }
+    }
+
+    void SetPal()
+    {
+        List<int> pals = CheckPal();
+        if (pals.Count == 0) _monsterIndex = -1;
+        else
+        {
+            if(!pals.Contains(_monsterIndex))
+            {
+                //팰 인덱스 업데이트 
+                _monsterIndex = pals[0];
+            }
+        }
+
+        //팰 이미지 새롭게 등록 
+        ObjectData ob = GetObjData(_monsterIndex);
+        UIManager uIManager = GetComponent<UIManager>();
+
+        if(ob == null) uIManager.SetPalImg(null); //등록한 팰이 없다면 
+        else uIManager.SetPalImg(ob.IconSprite);
+    }
+
+    public BaseObject SetNextPal(int dir)
+    {
+        int index = _monsterIndex + dir;
+        if (index < _itemSlotUIs.Length - 5) index = _itemSlotUIs.Length - 1;
+        else if (index >= _itemSlotUIs.Length) index = _itemSlotUIs.Length - 5;
+
+        return HasItem(index)? _baseObjects[index] : null;
     }
 
     public void Add(BaseObject baseObject, int amount = 1)
@@ -278,7 +327,7 @@ public class Inventory : MonoBehaviour
 
     int FindEmptyMonsterSlot()
     {
-        for (int i = _slotCount; i < _itemSlotUIs.Length; i++)
+        for (int i = _slotCount; i < _itemSlotUIs.Length - 5; i++)
         {
             ItemSlotUI slot = _itemSlotUIs[i];
             if (!slot.HasItem)
@@ -370,6 +419,7 @@ public class Inventory : MonoBehaviour
         }
 
         SetWeapon();
+        SetPal();
     }
 
 

@@ -14,8 +14,12 @@ public class UIManager : MonoBehaviour
 
     [Header("ÀÎº¥Åä¸® UI")]
     [SerializeField] private GameObject _canvas;
-    [SerializeField]private GameObject _inventory;
+    [SerializeField] private GameObject _inventory;
     private ItemSlotUI[] _itemSlotUIs; //ÀÎº¥Åä¸® ½½·Ô UI 
+
+    [Header("ÆÓ UI")]
+    [SerializeField] private GameObject _palPanel;
+    [SerializeField] private Image _palImg;
 
     #region #µå·¡±×¾Øµå·Ó
     private GraphicRaycaster _gr;
@@ -36,6 +40,8 @@ public class UIManager : MonoBehaviour
 
     [Header("fÅ° PopUp UI")]
     [SerializeField] private GameObject _fPopUpUi;
+    private void ShowIcon() => _palImg.gameObject.SetActive(true);
+    private void HideIcon() => _palImg.gameObject.SetActive(false);
 
     private void Awake()
     {
@@ -44,7 +50,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        
+
         InitUI();
 
     }
@@ -60,6 +66,14 @@ public class UIManager : MonoBehaviour
         OnPointerDown();
         OnPointerDrag();
         OnPointerUp();
+
+        ShowPalPanel();
+    }
+
+    void ShowPalPanel()
+    {
+        if (_inventory.activeSelf) _palPanel.SetActive(false);
+        else _palPanel.SetActive(true);
     }
 
     private T RaycastAndGetFirstComponent<T>() where T : Component
@@ -90,6 +104,8 @@ public class UIManager : MonoBehaviour
         _itemSlotUIs = GetComponentsInChildren<ItemSlotUI>();
 
         InitializeDashSlider();
+        HideIcon();
+
     }
 
     void InitializeDashSlider()
@@ -132,7 +148,7 @@ public class UIManager : MonoBehaviour
 
     void ActivateFPopUp()
     {
-        if (_playerController.DropItemPos == null) 
+        if (_playerController.DropItemPos == null)
         {
             _fPopUpUi.SetActive(false);
             return;
@@ -238,14 +254,28 @@ public class UIManager : MonoBehaviour
     {
         Inventory inv = GetComponent<Inventory>();
 
-        if (from == to || !inv.isValidSwap(from.Index,to.Index))
+        if (from == to || !inv.isValidSwap(from.Index, to.Index))
         {
             return;
         }
 
         from.SwapOrMoveIcon(to);
-        
-       GetComponent<Inventory>().Swap(from.Index, to.Index);
+
+        inv.Swap(from.Index, to.Index);
+    }
+
+    //ÆÓ µî·Ï
+    public void SetPalImg(Sprite itemSprite)
+    {
+        if (itemSprite != null)
+        {
+            _palImg.sprite = itemSprite;
+            ShowIcon();
+        }
+        else
+        {
+            HideIcon();
+        }
     }
 
 }

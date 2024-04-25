@@ -5,12 +5,14 @@ using UnityEngine;
 public class PalSphere : CountableObject
 {
     public SphereData sphereData { get { return _sphereData; } }
+    public bool isToCaptureMonster() => toCaptureMonster;
+    public void ChangeSphereMode() => toCaptureMonster = !toCaptureMonster; 
 
     [Header("팰 스피어 정보"), Tooltip("해당 무기를 쥐었을 때의 local Transform 값 정보 등")]
     [SerializeField] protected SphereData _sphereData;
 
-    // 스피어를 쥐는 손의 트랜스폼
-    private Transform handPosition;
+    private Transform handPosition;     // 스피어를 쥐는 손의 트랜스폼
+    private bool toCaptureMonster = true; //팰 투척용 or 스피어 투척용 
 
     private void Awake()
     {
@@ -75,6 +77,23 @@ public class PalSphere : CountableObject
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.None;
 
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            if (!toCaptureMonster)
+            {
+                BaseObject pal = Inventory.Instance.GetCurrentPal();
+                if(pal != null)
+                {
+                    pal.transform.position = transform.position;
+                    pal.gameObject.SetActive(true);
+                }
+               // transform.gameObject.SetActive(false);
+            }
+        }
     }
 
 }
