@@ -104,6 +104,8 @@ public class PlayerController : MonoBehaviour
 
         ThrowSphere();
 
+        ThrowMonsterSphere();
+
     }
 
     private void LateUpdate()
@@ -388,12 +390,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void ThrowSphere()
+    void ThrowSphere() //스피어볼 투척
     {
         CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
         if (Input.GetKey("q"))
         {
-            Inventory.Instance.SetSphere();
+            Inventory.Instance.SetSphere(true);
             if (player.hasSphere() == null) return; //플레이어 손에 스피어가 장착 x 
             cameraMove.ZoomIn();
         }
@@ -401,6 +403,23 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyUp("q") && player.hasSphere())
         {
             StartCoroutine(ZoomOut(cameraMove));
+        }
+    }
+
+    void ThrowMonsterSphere() //펠 투척 
+    {
+        CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
+        if (Input.GetKey("e"))
+        {
+            int index = Inventory.Instance.FindItemOfType<MonsterData>();
+            if (index == -1) return; //인벤토리에 몬스터 없는 경우 
+            Inventory.Instance.SetSphere(false);
+            cameraMove.ZoomIn();
+        }
+
+        if (Input.GetKeyUp("e"))
+        {
+            //StartCoroutine(ZoomOut(cameraMove));
         }
     }
 

@@ -73,8 +73,7 @@ public class UIManager : MonoBehaviour
         if (_rrList.Count == 0)
             return null;
 
-        if (_rrList[0].gameObject.CompareTag("UI/Slot"))
-            return _rrList[0].gameObject.GetComponent<T>();
+        if (_rrList[0].gameObject.CompareTag("UI/Slot")) return _rrList[0].gameObject.GetComponent<T>();
 
         return _rrList[1].gameObject.GetComponent<T>();
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "Monster_", menuName = "Scriptable Object/Inventory System/Monster", order = 4)]
 
-public class MonsterData : CountableData
+public class MonsterData : ObjectData
 {
     public float MaxHP { get { return _maxHP; } }
     public float MoveSpeed { get { return _moveSpeed; } }

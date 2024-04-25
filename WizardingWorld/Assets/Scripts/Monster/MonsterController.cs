@@ -241,12 +241,15 @@ public class MonsterController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Sphere")) Debug.Log("Hit By sphere");
+        if (collision.gameObject.CompareTag("Sphere")) HitBySphere();
     }
 
-    public void HitBySphere()
+    void HitBySphere()
     {
+        Monster mon = GetComponent<Monster>();
+        Inventory.Instance.Add(mon);
 
+        transform.gameObject.SetActive(false);
     }
 
 }

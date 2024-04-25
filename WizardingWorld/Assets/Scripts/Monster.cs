@@ -28,9 +28,9 @@ public class Monster : BaseObject
         InitializeData(monsterData);
     }
 
-    public override void InitializeData(ObjectData itemData)
+    public override void InitializeData(ObjectData monsterData)
     {
-        itemData = monsterData;
+        _objData = monsterData;
         OnUpdateState();
     }
 

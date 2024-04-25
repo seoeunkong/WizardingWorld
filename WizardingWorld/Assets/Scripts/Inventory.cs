@@ -17,11 +17,10 @@ public class Inventory : MonoBehaviour
     private int _monsterCount;
 
     private ItemSlotUI[] _itemSlotUIs; //인벤토리 슬롯 UI 
-    private ItemSlotUI[] _monsterSlotUIs; //몬스터 인벤토리 슬롯 UI 
 
+    public GameObject sphereObject;
 
     [SerializeField] private BaseObject[] _baseObjects;
-    [SerializeField] private Monster[] _monstersObjects;
     private int _weaponIndex;
 
     private void Awake()
@@ -44,15 +43,25 @@ public class Inventory : MonoBehaviour
 
     private void Init()
     {
-        _itemSlotUIs = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
-        _monsterSlotUIs = monsterContents.GetComponentsInChildren<ItemSlotUI>();
-        _slotCount = _itemSlotUIs.Length;
-        _monsterCount = _monsterSlotUIs.Length;
-        _baseObjects = new BaseObject[_slotCount];
-        _monstersObjects = new Monster[_monsterCount];
+        // _itemSlotUIs = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
+        //  _monsterSlotUIs = monsterContents.GetComponentsInChildren<ItemSlotUI>();
+        ItemSlotUI[] items = inventoryContents.GetComponentsInChildren<ItemSlotUI>();
+        ItemSlotUI[] mons = monsterContents.GetComponentsInChildren<ItemSlotUI>();
+
+        _slotCount = items.Length;
+        _monsterCount = mons.Length;
+        _itemSlotUIs = new ItemSlotUI[_slotCount + _monsterCount];
+
+        for (int i = 0; i < _itemSlotUIs.Length; i++)
+        {
+            if (i < _slotCount) _itemSlotUIs[i] = items[i];
+            else _itemSlotUIs[i] = mons[i - _slotCount];
+        }
+        _baseObjects = new BaseObject[_slotCount + _monsterCount];
     }
 
     bool isWeaponCol(int index) => index % 6 == 5;
+    bool isMonsterInventory(int index) => index >= _slotCount;
 
     bool HasItem(int index)
     {
@@ -61,6 +70,8 @@ public class Inventory : MonoBehaviour
 
     public bool isValidSwap(int from, int to)
     {
+        if(isMonsterInventory(from) || isMonsterInventory(to)) return false;
+
         if (!isWeaponCol(from) && !isWeaponCol(to)) return true;
         if (HasItem(from) && HasItem(to)) return isWeaponObj(from) && isWeaponObj(to);
         return isWeaponObj(from) || isWeaponObj(to);
@@ -80,28 +91,36 @@ public class Inventory : MonoBehaviour
     {
         if (baseObject == null) return;
 
-        if(baseObject is BaseWeapon bs)
+        if (baseObject is BaseWeapon bs)
         {
             Player.Instance.weaponManager.RegisterWeapon(bs);
             Player.Instance.weaponManager.SetWeapon(bs);
         }
-        else if(baseObject is PalSphere ps)
+        else if (baseObject is PalSphere ps)
         {
             ps.SetPalSphere();
         }
     }
 
-    public void SetSphere()
+    public void SetSphere(bool toCaptureMonster)
     {
-        int index = FindSphere();
-        if (index == -1) return;
-
-        BaseObject sphere = _baseObjects[index];
-        if(sphere is PalSphere ps)
+        if(toCaptureMonster) //스피어 투척을 위해 
         {
-            //플레이어가 무기를 들고 있는 경우 -> 스피어로 교체 
-            if (Player.Instance.weaponManager.hasWeapon()) Player.Instance.weaponManager.UnSetWeapon();
-            CreateInstance(_baseObjects[index]);
+            int index = FindItemOfType<SphereData>();
+            if (index == -1) return;
+
+            BaseObject sphere = _baseObjects[index];
+            if (sphere is PalSphere ps)
+            {
+                //플레이어가 무기를 들고 있는 경우 -> 스피어로 교체 
+                if (Player.Instance.weaponManager.hasWeapon()) Player.Instance.weaponManager.UnSetWeapon();
+                CreateInstance(_baseObjects[index]);
+            }
+        }
+        else // 펠 투척을 위해
+        {
+            BaseObject sphere = sphereObject.GetComponent<BaseObject>();
+            if(sphere != null) CreateInstance(sphere);
         }
     }
 
@@ -160,7 +179,7 @@ public class Inventory : MonoBehaviour
                 if (index == -1) return;
 
                 // 새로운 아이템 생성
-                 _baseObjects[index] = baseObject;
+                _baseObjects[index] = baseObject;
 
                 CountableObject co = _baseObjects[index].gameObject.GetComponent<CountableObject>(); ;
                 co.SetAmount(1);
@@ -176,10 +195,12 @@ public class Inventory : MonoBehaviour
         else
         {
             index = FindEmptySlot();
+            if(objData as MonsterData) index = FindEmptyMonsterSlot();
+
             if (index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
         }
 
-        
+
         UpdateSlot(index);
     }
 
@@ -222,7 +243,7 @@ public class Inventory : MonoBehaviour
         List<int> list = CheckWeapon();
 
         if (list.Count == 0) return null;
-       
+
         int index = list.FindIndex(x => x == _weaponIndex);
         if (index + dir < 0) index = list.Count - 1;
         else if (index + dir > list.Count - 1) index = 0;
@@ -244,8 +265,9 @@ public class Inventory : MonoBehaviour
     //비어있는 슬롯 중 첫번째 슬롯 찾기
     int FindEmptySlot()
     {
-        foreach (var slot in _itemSlotUIs)
+        for (int i = 0; i < _slotCount; i++)
         {
+            ItemSlotUI slot = _itemSlotUIs[i];
             if (!slot.HasItem && !isWeaponCol(slot.Index))
             {
                 return slot.Index;
@@ -256,8 +278,9 @@ public class Inventory : MonoBehaviour
 
     int FindEmptyMonsterSlot()
     {
-        foreach (var slot in _monsterSlotUIs)
+        for (int i = _slotCount; i < _itemSlotUIs.Length; i++)
         {
+            ItemSlotUI slot = _itemSlotUIs[i];
             if (!slot.HasItem)
             {
                 return slot.Index;
@@ -266,7 +289,7 @@ public class Inventory : MonoBehaviour
         return -1;
     }
 
-    //인벤토리에 찾고자 하는 아이템이 저장되어 있는지 검사 
+    //인벤토리에 특정 아이템이 저장되어 있는지 검사 
     public int FindItem(ObjectData objectData)
     {
         foreach (var slot in _itemSlotUIs)
@@ -283,15 +306,15 @@ public class Inventory : MonoBehaviour
         return -1;
     }
 
-    //인벤토리에 스피어가 저장되어 있는지 검사 
-    int FindSphere()
+    //인벤토리에 아이템들이 저장되어 있는지 유무 검사 
+    public int FindItemOfType<T>() where T : ObjectData
     {
         foreach (var slot in _itemSlotUIs)
         {
             if (slot.HasItem)
             {
                 int index = slot.Index;
-                if (_baseObjects[index]._objData as SphereData)
+                if (_baseObjects[index]._objData as T)
                 {
                     return index;
                 }
@@ -386,19 +409,6 @@ public class Inventory : MonoBehaviour
         UpdateSlot(indexA);
         UpdateSlot(indexB);
         
-    }
-
-    public void AddMonster(Monster monsterObject, int amount = 1)
-    {
-        ObjectData objData = monsterObject._objData;
-
-        int index = FindEmptyMonsterSlot();
-        Debug.Log("Find Empty: " + index);
-        //if (index >= 0 && baseObject != null) _baseObjects[index] = baseObject;
-        
-
-
-        UpdateSlot(index);
     }
 
 

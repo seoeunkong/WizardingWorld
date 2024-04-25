@@ -43,7 +43,7 @@ public class ItemSlotUI : MonoBehaviour
         HideIcon();
         HideText();
 
-        InitRect();
+       InitRect();
         
     }
 
@@ -61,10 +61,9 @@ public class ItemSlotUI : MonoBehaviour
 
     private void SetIndex()
     {
-       GameObject inventory = transform.parent.gameObject;
-       foreach(ItemSlotUI item in inventory.GetComponentsInChildren<ItemSlotUI>())
+       foreach(ItemSlotUI item in Inventory.Instance.GetComponentsInChildren<ItemSlotUI>())
         {
-            if (item.name == this.name) break;
+            if (item.transform.parent == transform.parent && item.name == this.name) break;
             Index++;
         }
     }
