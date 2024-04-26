@@ -88,7 +88,7 @@ public class PalSphere : CountableObject
                 BaseObject pal = Inventory.Instance.GetCurrentPal();
                 if(pal != null)
                 {
-                    pal.transform.position = transform.position + Vector3.down;
+                    pal.transform.position = transform.position + new Vector3(0,-0.1f,0f);
                     pal.gameObject.SetActive(true);
                     transform.gameObject.SetActive(false);
                 }

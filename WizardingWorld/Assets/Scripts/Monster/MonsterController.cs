@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -13,9 +14,10 @@ public class MonsterController : CharacterController
 
     #region #몬스터 감지 영역
     public const float runRadius = 2;
-    public const float chaseRadius = 3;
-    public const float chaseDist = 3f;
-    public const float attackRadius = 0.1f;
+    public const float chaseRadius = 1.5f;
+    public const float changeToAttackDist = 5f;
+    public const float chasePlayerDist = 15f;
+    public const float attackRadius = 0.2f;
 
     private float _fieldOfView = 90.0f; // 시야각 설정
     #endregion
@@ -37,21 +39,26 @@ public class MonsterController : CharacterController
     #endregion
 
     public void MonsterDead() => transform.gameObject.SetActive(false);
+    public bool Dead { get; private set; }
 
     #region #공격
     [Header("플레이어 공격 속성")]
     [SerializeField] private float _attackCheckDistance;
     public bool IsAttack = false;
+    public Transform attackTargetMonster { get { return _attackTargetMonster; } set { _attackTargetMonster = value; } }
+    private Transform _attackTargetMonster;
     #endregion
+
+    public const float distanceWithPlayer = 30f;
 
     void Awake()
     {
         monsterInfo = GetComponent<Monster>();
     }
 
-    void Start()
+    private void Start()
     {
-        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
+        Dead = false;
     }
 
     protected void ControlGravity()
@@ -66,28 +73,6 @@ public class MonsterController : CharacterController
         monsterInfo.rigid.useGravity = true;
     }
 
-    public bool IsGrounded()
-    {
-        _isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, GROUNDCHECK_DISTANCE, _groundLayer);
-        return _isGrounded;
-    }
-
-    bool IsOnSlope() //경사 지형 체크 
-    {
-        Ray ray = new Ray(transform.position + Vector3.up, Vector3.down);
-        if (Physics.Raycast(ray, out _slopeHit, RAY_DISTANCE, _groundLayer))
-        {
-            var angle = Vector3.Angle(Vector3.up, _slopeHit.normal);
-            return angle != 0f && angle < _maxSlopeAngle;
-        }
-        return false;
-    }
-
-    Vector3 AdjustDirectionToSlope(Vector3 direction) //경사 지형에 맞는 이동 벡터 
-    {
-        return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
-    }
-
 
     public void Patrol()
     {
@@ -95,7 +80,7 @@ public class MonsterController : CharacterController
         Vector3 patrol = Vector3.Scale(_patrolPoint, new Vector3(1, 0, 1));
 
         //PatrolPoint 초기화 
-        if (_patrolPoint == Vector3.zero || Vector3.Distance(monster,patrol) <= 1.5f)
+        if (_patrolPoint == Vector3.zero || Vector3.Distance(monster, patrol) <= 1.5f)
         {
             Vector3 point = UnityEngine.Random.insideUnitSphere * _patrolRadius + transform.position;
             _patrolPoint = new Vector3(point.x, 0, point.z);
@@ -105,19 +90,24 @@ public class MonsterController : CharacterController
         //PatrolPoint을 기준으로 몬스터 이동 및 회전
         Vector3 dir = (_patrolPoint - transform.position).normalized;
         monsterInfo.rigid.velocity = GetDirection(dir) * monsterInfo.CurrentSpeed;
-        
+
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.Scale(dir, new Vector3(1, 0, 1))), Time.deltaTime * monsterInfo.rotateSpeed);
     }
 
-    public Transform CheckPlayer(float size = 1) //감지 영역 내에 플레이어 존재 여부 체크 
+    public Transform CheckTarget(bool isPlayer, float size = 1) //감지 영역 내에 플레이어 존재 여부 체크 
     {
         Collider[] colls = Physics.OverlapSphere(transform.position, _checkDistance * size);
         foreach (Collider coll in colls)
         {
-            if (coll.gameObject.CompareTag("Player"))
+            if (isPlayer && coll.gameObject.CompareTag("Player"))
             {
                 if (monsterInfo.stateMachine.GetState(StateName.IDLE) == monsterInfo.stateMachine.CurrentState && IsPlayerInSight(coll.transform.position)) return coll.transform;
-                if(monsterInfo.stateMachine.GetState(StateName.IDLE) != monsterInfo.stateMachine.CurrentState) return coll.transform;
+                if (monsterInfo.stateMachine.GetState(StateName.IDLE) != monsterInfo.stateMachine.CurrentState) return coll.transform;
+            }
+
+            if (!isPlayer && coll.transform.gameObject == Player.Instance.currentPal.gameObject)
+            {
+                return coll.transform;
             }
         }
         return null;
@@ -144,7 +134,7 @@ public class MonsterController : CharacterController
 
     //ChasePlayer이 true라면, 플레이어를 향해 쫓는다.
     //ChasePlayer이 false라면, 플레이어의 반대 방향으로 도망.
-    public Vector3 CalcRunDir(Transform player, bool ChasePlayer) 
+    public Vector3 CalcRunDir(Transform player, bool ChasePlayer)
     {
         int chase = ChasePlayer ? 1 : -1;
 
@@ -168,37 +158,60 @@ public class MonsterController : CharacterController
         return calculatedDirection;
     }
 
-    public void Attacking(Transform playerPos)
+    private bool IsTargetAttackable(CharacterController target)
     {
-        if (playerPos == null) return;
-        PlayerController player = playerPos.GetComponent<PlayerController>();
+        if (target is MonsterController monster && (monster.monsterInfo.stateMachine.CurrentState == monsterInfo.stateMachine.GetState(StateName.MHIT) ||
+            monster.Dead))
+        {
+            return true;
+        }
+        return false;
+    }
 
-        if (!IsAttack)
+    public override void Attacking(CharacterController targetController)
+    {
+        if (targetController == null) return;
+        if (IsTargetAttackable(targetController)) return;
+
+        if(!IsAttack)
         {
             IsAttack = true;
-            StartCoroutine(AttackingCor(player));
+            StartCoroutine(AttackCoolDown(targetController));
         }
     }
 
-    IEnumerator AttackingCor(PlayerController player)
+    IEnumerator AttackingCor<T>(T target) where T : CharacterController
     {
         monsterInfo.animator.SetBool("isAttack", true);
-        yield return new WaitForSeconds(0.4f);
-        player.Hit(monsterInfo.attackPower);
+
+        if (target is PlayerController ps) ps.Hit(monsterInfo.attackPower);
+        else if (target is MonsterController ms) ms.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
+
         yield return new WaitForSeconds(0.1f);
         monsterInfo.animator.SetBool("isAttack", false);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         IsAttack = false;
     }
 
+    IEnumerator AttackCoolDown(CharacterController targetController)
+    {
+        StartCoroutine(AttackingCor(targetController));
 
+        float coolTime =  UnityEngine.Random.Range(2, 10);
+        
+        while (coolTime > 0)
+        {
+            coolTime -= Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Sphere"))
         {
             PalSphere sphere = collision.gameObject.GetComponent<PalSphere>();
-            if(sphere.isToCaptureMonster()) HitBySphere();
+            if (sphere.isToCaptureMonster()) HitBySphere();
         }
     }
 
@@ -213,11 +226,25 @@ public class MonsterController : CharacterController
 
     private void OnEnable()
     {
-        if(monsterInfo.FriendlyMode)
+        if (monsterInfo.FriendlyMode)
         {
             monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
             Debug.Log("friendlymode");
         }
     }
 
+    public override void Hit(float damage)
+    {
+        if (monsterInfo.CurrentHP > 0)
+        {
+            float hp = monsterInfo.CurrentHP - damage > 0 ? monsterInfo.CurrentHP - damage : 0;
+            monsterInfo.SetHP(hp);
+
+            if (hp == 0)
+            {
+                Dead = true;
+                monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
+            }
+        }
+    }
 }

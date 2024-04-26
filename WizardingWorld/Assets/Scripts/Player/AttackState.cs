@@ -28,6 +28,8 @@ public class AttackState : BaseState<PlayerController>
 
     public override void OnFixedUpdateState()
     {
+        if (_Controller.inputDirection == Vector3.zero) return;
+
         Player.Instance.rigid.velocity = _Controller.calculatedDirection + _Controller.gravity;
         Player.Instance.animator.SetInteger("Move", Player.Instance.rigid.velocity != Vector3.zero ? (int)MoveName.MOVE : 0);
     }

@@ -60,7 +60,6 @@ public class PlayerController : CharacterController
     void Start()
     {
         player = GetComponent<Player>();
-        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
         _camera = Camera.main;
         _currentdashTime = setDashTime;
 
@@ -120,12 +119,6 @@ public class PlayerController : CharacterController
         player.rigid.useGravity = true;
     }
 
-    public bool IsGrounded()
-    {
-        _isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, GROUNDCHECK_DISTANCE, _groundLayer);
-        return _isGrounded;
-    }
-
     public float IsDash()
     {
         if (!IsAttack && Input.GetKey(KeyCode.LeftShift) && _currentdashTime >= 0)
@@ -181,22 +174,6 @@ public class PlayerController : CharacterController
         return calDirection * currentMoveSpeed;
     }
 
-    bool IsOnSlope() //경사 지형 체크 
-    {
-        Ray ray = new Ray(transform.position + Vector3.up, Vector3.down);
-        if (Physics.Raycast(ray, out _slopeHit, RAY_DISTANCE, _groundLayer))
-        {
-            var angle = Vector3.Angle(Vector3.up, _slopeHit.normal);
-            return angle != 0f && angle < _maxSlopeAngle;
-        }
-        return false;
-    }
-
-    Vector3 AdjustDirectionToSlope(Vector3 direction) //경사 지형에 맞는 이동 벡터 
-    {
-        return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
-    }
-
     void OnAttack()
     {
         if (IsAttack ) return;
@@ -237,7 +214,7 @@ public class PlayerController : CharacterController
                 bool canAttack = IsValidTarget((attackFlag ? _angleRange : _throwAngleRange), coll.transform);
                 if(canAttack)
                 {
-                    Attacking(coll.transform);
+                    Attacking(coll.transform.GetComponent<MonsterController>());
                     targets.Add(coll.transform);
                 }
             }
@@ -250,10 +227,12 @@ public class PlayerController : CharacterController
         else closeMonster = null;
     }
 
-    void Attacking(Transform enemy) //몬스터에게 데미지 주기 
+    public override void Attacking(CharacterController characterController) //몬스터에게 데미지 주기 
     {
-        MonsterController monster = enemy.GetComponent<MonsterController>();
+        MonsterController monster = characterController as MonsterController;
         if (monster == null) return;
+
+        sendHuntSign(monster.transform);
         monster.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
 
         IsAttack = false;
@@ -411,7 +390,7 @@ public class PlayerController : CharacterController
         camera.ZoomOut();
     }
 
-    public void Hit(float damage)
+    public override void Hit(float damage)
     {
         float hp = player.CurrentHP - damage;
         if(hp < 0) hp = 0;
@@ -419,6 +398,19 @@ public class PlayerController : CharacterController
         player.SetHPValue(hp);
         player.animator.SetTrigger("onHit");
         player.rigid.AddForce(Vector3.Scale(transform.forward, new Vector3(-1,0,-1)) * 5f, ForceMode.Impulse);
+    }
+
+    public void sendHuntSign(Transform target)
+    {
+        if(player.currentPal == null)  return;
+
+        bool hasPal = player.currentPal.gameObject.activeSelf;
+        if(hasPal)
+        {
+            MonsterController pal = player.currentPal.GetComponent<MonsterController>();
+            pal.attackTargetMonster = target;
+            pal.monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
+        }
     }
 
 }

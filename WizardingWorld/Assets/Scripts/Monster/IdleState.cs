@@ -27,7 +27,7 @@ public class IdleState : BaseState<MonsterController>
 
     public override void OnUpdateState()
     {
-        if(_Controller.CheckPlayer())
+        if(_Controller.CheckTarget(true))
         {
             _Controller.monsterInfo.stateMachine.ChangeState(StateName.MRUN);
         }

@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class MAttackState : BaseState<MonsterController> 
 {
-    Transform playerPos;
+    bool friendlyMode = false;
+
     public MAttackState(MonsterController controller) : base(controller) { }
 
     public override void OnEnterState()
     {
-        CheckToAttack();
-        _Controller.Attacking(playerPos);
+        friendlyMode = _Controller.monsterInfo.FriendlyMode;
+
+        Transform target = whoToAttack();
+        _Controller.transform.LookAt(target);
+        _Controller.Attacking(target.gameObject.GetComponent<CharacterController>());
+
     }
 
     public override void OnExitState()
@@ -29,9 +34,26 @@ public class MAttackState : BaseState<MonsterController>
         if (!_Controller.IsAttack) _Controller.monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
     }
 
-    void CheckToAttack()
+    Transform whoToAttack()
     {
-        playerPos = _Controller.CheckPlayer(MonsterController.attackRadius);
-        if (playerPos == null) _Controller.monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
+        Transform target = null;
+        if (!friendlyMode) //일반 몬스터 
+        {
+            if(Player.Instance.currentPal != null && Player.Instance.currentPal.gameObject.activeSelf) 
+            {
+                target = _Controller.CheckTarget(false, MonsterController.attackRadius * 15); //팰로 공격 대상 설정 
+                if (target == null) target = _Controller.CheckTarget(true, MonsterController.attackRadius); //팰이 없으면 플레이어로 공격 대상 설정
+            }
+            else target = _Controller.CheckTarget(true, MonsterController.attackRadius);
+        }
+        else //팰 
+        {
+            if (_Controller.attackTargetMonster != null) target = _Controller.attackTargetMonster.transform;
+        }
+
+        if (target == null) _Controller.monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
+
+        return target;
     }
+
 }

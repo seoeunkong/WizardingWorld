@@ -200,8 +200,16 @@ public class Inventory : MonoBehaviour
         ObjectData ob = GetObjData(_monsterIndex);
         UIManager uIManager = GetComponent<UIManager>();
 
-        if(ob == null) uIManager.SetPalImg(null); //등록한 팰이 없다면 
-        else uIManager.SetPalImg(ob.IconSprite);
+        if(ob == null) //등록한 팰이 없다면
+        {
+            uIManager.SetPalImg(null); 
+            Player.Instance.currentPal = null;
+        } 
+        else
+        {
+            uIManager.SetPalImg(ob.IconSprite);
+            Player.Instance.currentPal = _baseObjects[_monsterIndex] as Monster;
+        }
     }
 
     public BaseObject SetNextPal(int dir)

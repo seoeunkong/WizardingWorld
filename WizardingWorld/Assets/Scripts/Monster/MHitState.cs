@@ -11,17 +11,7 @@ public class MHitState : BaseState<MonsterController>
     public override void OnEnterState()
     {
         _Controller.monsterInfo.animator.SetTrigger("onHit");
-
-        if (_Controller.monsterInfo.CurrentHP > 0)
-        {
-            float hp = _Controller.monsterInfo.CurrentHP - Player.Instance.CurrentAttackPower > 0 ? _Controller.monsterInfo.CurrentHP - Player.Instance.CurrentAttackPower : 0;
-            _Controller.monsterInfo.SetHP(hp);
-
-            if (hp == 0)
-            {
-                _Controller.monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
-            }
-        }
+        _Controller.Hit(Player.Instance.AttackPower);
     }
 
     public override void OnExitState()

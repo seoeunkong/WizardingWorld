@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
+using UnityEditor.SceneTemplate;
 using UnityEngine;
 
 public class MChaseState : BaseState<MonsterController>
 {
-    Transform playerPos;
     bool friendlyMode;
     public MChaseState(MonsterController controller) : base(controller) { }
 
@@ -39,27 +40,81 @@ public class MChaseState : BaseState<MonsterController>
 
     void CheckToAttack()
     {
-        playerPos = _Controller.CheckPlayer(MonsterController.attackRadius);
-        if (playerPos != null) _Controller.monsterInfo.stateMachine.ChangeState(StateName.MATTACK);
+        Transform targetPos = _Controller.CheckTarget(true, MonsterController.attackRadius);
+        if (targetPos != null) _Controller.monsterInfo.stateMachine.ChangeState(StateName.MATTACK);
+    }
+
+    Transform whoToChase()
+    {
+        Transform target = null;
+        if(!friendlyMode) //일반 몬스터 
+        {
+            target = _Controller.CheckTarget(true, MonsterController.chaseRadius);
+            if (target == null)  _Controller.monsterInfo.stateMachine.ChangeState(StateName.IDLE);
+        }
+        else //팰 
+        {
+            if(_Controller.attackTargetMonster == null) target = Player.Instance.transform; 
+            else
+            {
+                target = _Controller.attackTargetMonster.transform;
+            }
+        }
+
+        return target;
     }
 
     void Chase()
     {
-        playerPos = _Controller.CheckPlayer(MonsterController.chaseRadius * (friendlyMode? 5 : 1));
-        if (playerPos == null) _Controller.monsterInfo.stateMachine.ChangeState(StateName.IDLE);
+        Transform target = whoToChase();
 
         if (friendlyMode)
         {
-            float dist = Vector3.Distance(playerPos.position, _Controller.transform.position);
-            if (dist <= MonsterController.chaseDist)
+            if (_Controller.attackTargetMonster) //Enemy가 있는 경우 
             {
-                _Controller.monsterInfo.rigid.velocity = Vector3.zero;
-                _Controller.monsterInfo.animator.SetFloat("Move", 0f);
-                return;
+                if (StopFollowEnemy())
+                {
+                    _Controller.attackTargetMonster = null;
+                    target = Player.Instance.transform;
+                }
+                if(StartToAttackEnemy(target))
+                {
+                    _Controller.monsterInfo.stateMachine.ChangeState(StateName.MATTACK);
+                    return;
+                }
+            }
+            else
+            {
+                if (TooClose())
+                {
+                    _Controller.monsterInfo.animator.SetFloat("Move", 0f);
+                    _Controller.monsterInfo.rigid.velocity = Vector3.zero;
+
+                    return;
+                }
             }
         }
 
-        _Controller.monsterInfo.rigid.velocity = _Controller.CalcRunDir(playerPos, true) * _Controller.monsterInfo.CurrentSpeed;
+        _Controller.monsterInfo.rigid.velocity = _Controller.CalcRunDir(target, true) * _Controller.monsterInfo.CurrentSpeed;
         _Controller.monsterInfo.animator.SetFloat("Move", Mathf.Clamp(_Controller.monsterInfo.CurrentSpeed * 0.2f, 1, 2.5f));
     }
+
+    bool StopFollowEnemy()
+    {
+        float distPlayerEnemy = Vector3.Distance(Player.Instance.transform.position, _Controller.attackTargetMonster.transform.position);
+        return (distPlayerEnemy > MonsterController.chasePlayerDist);
+    }
+
+    bool StartToAttackEnemy(Transform target)
+    {
+        float distPalEnemy = Vector3.Distance(target.position, _Controller.transform.position);
+        return distPalEnemy <= MonsterController.changeToAttackDist;
+    }
+
+    bool TooClose()
+    {
+        float distPalPlayer = Vector3.Distance(Player.Instance.transform.position, _Controller.transform.position);
+        return distPalPlayer <= 5f;
+    }
+
 }

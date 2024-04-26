@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,6 +12,8 @@ public class Player : MonoBehaviour
     public Animator animator {  get; private set; }
 
     #region #Ä³¸¯ÅÍ ½ºÅÈ
+    private float _currentAttackPower;
+    private float _currentSpeed;
     public float MaxHP { get { return _maxHP; } }
     public float CurrentHP { get { return _currentHP; } }
     public float MoveSpeed { get { return _moveSpeed; } }
@@ -30,8 +33,11 @@ public class Player : MonoBehaviour
     [SerializeField] protected float _throwPower;
     #endregion
 
-    private float _currentAttackPower;
-    private float _currentSpeed;
+
+    //ÇöÀç ÆÓ Á¤º¸ 
+    private Monster _pal;
+    public Monster currentPal { get { return _pal; } set { _pal = value; } }
+
 
     [SerializeField]
     public Transform rightHand;

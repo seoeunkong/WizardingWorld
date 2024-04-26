@@ -27,7 +27,7 @@ public class MRunState : BaseState<MonsterController>
 
     public override void OnFixedUpdateState()
     {
-        playerPos = _Controller.CheckPlayer(MonsterController.runRadius);
+        playerPos = _Controller.CheckTarget(true, MonsterController.runRadius);
         if(playerPos == null ) //플레이어를 감지 영역 내에 못 찾은 경우 
         {
             _Controller.monsterInfo.stateMachine.ChangeState(StateName.IDLE);
