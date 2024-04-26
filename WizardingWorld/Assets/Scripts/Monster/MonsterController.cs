@@ -6,19 +6,15 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
-public class MonsterController : MonoBehaviour
+public class MonsterController : CharacterController
 {
-
-    public StateMachine<MonsterController> stateMachine { get; private set; }
-    public Rigidbody rigid { get; private set; }
-    public Animator animator { get; private set; }
-    public Vector3 gravity { get; private set; }
     public Monster monsterInfo { get; private set; }
 
 
     #region #몬스터 감지 영역
     public const float runRadius = 2;
     public const float chaseRadius = 3;
+    public const float chaseDist = 3f;
     public const float attackRadius = 0.1f;
 
     private float _fieldOfView = 90.0f; // 시야각 설정
@@ -32,24 +28,7 @@ public class MonsterController : MonoBehaviour
     [Header("플레이어 감지 속성")]
     [SerializeField] private float _checkDistance;
 
-    public void ChangeStateToChase() => this.stateMachine.ChangeState(StateName.MCHASE);
-
-    #region #경사 체크 변수
-    [Header("경사 지형 검사")]
-    private float _maxSlopeAngle = 50f;
-
-    private const float RAY_DISTANCE = 2f;
-    private const float GROUNDCHECK_DISTANCE = 1.5f;
-    private RaycastHit _slopeHit;
-    private bool _isOnSlope;
-    #endregion
-
-    #region #바닥 체크 변수
-    [Header("땅 체크")]
-    [SerializeField, Tooltip("캐릭터가 땅에 붙어 있는지 확인하기 위한 CheckBox 시작 지점입니다.")]
-    private int _groundLayer;
-    private bool _isGrounded;
-    #endregion
+    public void ChangeStateToChase() => monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
 
     #region #몬스터 애니메이션
     public bool Sense { get; private set; }
@@ -67,51 +46,24 @@ public class MonsterController : MonoBehaviour
 
     void Awake()
     {
-        rigid = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
         monsterInfo = GetComponent<Monster>();
     }
 
     void Start()
     {
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
-
-        InitStateMachine();
-    }
-
-    void Update()
-    {
-        stateMachine?.UpdateState();
-
-    }
-
-    void FixedUpdate()
-    {
-        stateMachine?.FixedUpdateState();
-    }
-
-
-    void InitStateMachine()
-    {
-        MonsterController controller = GetComponent<MonsterController>();
-        stateMachine = new StateMachine<MonsterController>(StateName.IDLE, new IdleState(controller));
-        stateMachine.AddState(StateName.MRUN, new MRunState(controller));
-        stateMachine.AddState(StateName.MCHASE, new MChaseState(controller));
-        stateMachine.AddState(StateName.MATTACK, new MAttackState(controller));
-        stateMachine.AddState(StateName.MHIT, new MHitState(controller));
-        stateMachine.AddState(StateName.MDEAD, new MDeadState(controller));
     }
 
     protected void ControlGravity()
     {
-        gravity = Vector3.down * MathF.Abs(rigid.velocity.y);
+        gravity = Vector3.down * MathF.Abs(monsterInfo.rigid.velocity.y);
         if (_isGrounded && _isOnSlope)
         {
             gravity = Vector3.zero;
-            rigid.useGravity = false;
+            monsterInfo.rigid.useGravity = false;
             return;
         }
-        rigid.useGravity = true;
+        monsterInfo.rigid.useGravity = true;
     }
 
     public bool IsGrounded()
@@ -152,7 +104,7 @@ public class MonsterController : MonoBehaviour
 
         //PatrolPoint을 기준으로 몬스터 이동 및 회전
         Vector3 dir = (_patrolPoint - transform.position).normalized;
-        rigid.velocity = GetDirection(dir) * monsterInfo.CurrentSpeed;
+        monsterInfo.rigid.velocity = GetDirection(dir) * monsterInfo.CurrentSpeed;
         
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.Scale(dir, new Vector3(1, 0, 1))), Time.deltaTime * monsterInfo.rotateSpeed);
     }
@@ -164,8 +116,8 @@ public class MonsterController : MonoBehaviour
         {
             if (coll.gameObject.CompareTag("Player"))
             {
-                if (stateMachine.GetState(StateName.IDLE) == stateMachine.CurrentState && IsPlayerInSight(coll.transform.position)) return coll.transform;
-                if(stateMachine.GetState(StateName.IDLE) != stateMachine.CurrentState) return coll.transform;
+                if (monsterInfo.stateMachine.GetState(StateName.IDLE) == monsterInfo.stateMachine.CurrentState && IsPlayerInSight(coll.transform.position)) return coll.transform;
+                if(monsterInfo.stateMachine.GetState(StateName.IDLE) != monsterInfo.stateMachine.CurrentState) return coll.transform;
             }
         }
         return null;
@@ -186,7 +138,7 @@ public class MonsterController : MonoBehaviour
     IEnumerator OnDead()
     {
         yield return new WaitForSeconds(0.5f);
-        stateMachine.ChangeState(StateName.MDEAD);
+        monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
     }
 
 
@@ -230,32 +182,42 @@ public class MonsterController : MonoBehaviour
 
     IEnumerator AttackingCor(PlayerController player)
     {
-        animator.SetBool("isAttack", true);
+        monsterInfo.animator.SetBool("isAttack", true);
         yield return new WaitForSeconds(0.4f);
         player.Hit(monsterInfo.attackPower);
         yield return new WaitForSeconds(0.1f);
-        animator.SetBool("isAttack", false);
+        monsterInfo.animator.SetBool("isAttack", false);
         yield return new WaitForSeconds(1.5f);
         IsAttack = false;
     }
+
+
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Sphere"))
         {
             PalSphere sphere = collision.gameObject.GetComponent<PalSphere>();
-            Debug.Log(sphere.isToCaptureMonster());
             if(sphere.isToCaptureMonster()) HitBySphere();
         }
     }
 
     void HitBySphere()
     {
-        Monster mon = GetComponent<Monster>();
-        Inventory.Instance.Add(mon);
+        monsterInfo.FriendlyMode = true;
+        Inventory.Instance.Add(monsterInfo);
 
         transform.gameObject.SetActive(false);
-        Debug.Log("!!");
+    }
+
+
+    private void OnEnable()
+    {
+        if(monsterInfo.FriendlyMode)
+        {
+            monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
+            Debug.Log("friendlymode");
+        }
     }
 
 }

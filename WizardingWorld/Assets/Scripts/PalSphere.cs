@@ -88,11 +88,16 @@ public class PalSphere : CountableObject
                 BaseObject pal = Inventory.Instance.GetCurrentPal();
                 if(pal != null)
                 {
-                    pal.transform.position = transform.position;
+                    pal.transform.position = transform.position + Vector3.down;
                     pal.gameObject.SetActive(true);
+                    transform.gameObject.SetActive(false);
                 }
-               // transform.gameObject.SetActive(false);
             }
+        }
+
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            if(toCaptureMonster) transform.gameObject.SetActive(false);
         }
     }
 

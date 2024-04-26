@@ -10,7 +10,7 @@ public class MDeadState : BaseState<MonsterController>
 
     public override void OnEnterState()
     {
-        _Controller.animator.SetBool("isDead", true);
+        _Controller.monsterInfo.animator.SetBool("isDead", true);
     }
 
     public override void OnExitState()

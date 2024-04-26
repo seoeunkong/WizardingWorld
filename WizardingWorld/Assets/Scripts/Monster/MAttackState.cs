@@ -16,7 +16,7 @@ public class MAttackState : BaseState<MonsterController>
     public override void OnExitState()
     {
         _Controller.IsAttack = false;
-        _Controller.animator.SetBool("isAttack", false);
+        _Controller.monsterInfo.animator.SetBool("isAttack", false);
     }
 
     public override void OnFixedUpdateState()
@@ -26,12 +26,12 @@ public class MAttackState : BaseState<MonsterController>
 
     public override void OnUpdateState()
     {
-        if (!_Controller.IsAttack) _Controller.stateMachine.ChangeState(StateName.MCHASE);
+        if (!_Controller.IsAttack) _Controller.monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
     }
 
     void CheckToAttack()
     {
         playerPos = _Controller.CheckPlayer(MonsterController.attackRadius);
-        if (playerPos == null) _Controller.stateMachine.ChangeState(StateName.MCHASE);
+        if (playerPos == null) _Controller.monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
     }
 }

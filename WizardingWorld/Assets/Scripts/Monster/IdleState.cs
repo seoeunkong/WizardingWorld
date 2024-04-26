@@ -14,14 +14,14 @@ public class IdleState : BaseState<MonsterController>
 
     public override void OnFixedUpdateState()
     {
-        _Controller.animator.SetFloat("Move", _Controller.monsterInfo.CurrentSpeed);
+        _Controller.monsterInfo.animator.SetFloat("Move", _Controller.monsterInfo.CurrentSpeed);
         _Controller.Patrol();
     }
 
     public override void OnExitState()
     {
-        _Controller.animator.SetFloat("Move", 0);
-        _Controller.rigid.velocity = Vector3.zero;
+        _Controller.monsterInfo.animator.SetFloat("Move", 0);
+        _Controller.monsterInfo.rigid.velocity = Vector3.zero;
         _Controller.ResetPatrolPoint();
     }
 
@@ -29,7 +29,7 @@ public class IdleState : BaseState<MonsterController>
     {
         if(_Controller.CheckPlayer())
         {
-            _Controller.stateMachine.ChangeState(StateName.MRUN);
+            _Controller.monsterInfo.stateMachine.ChangeState(StateName.MRUN);
         }
     }
 }

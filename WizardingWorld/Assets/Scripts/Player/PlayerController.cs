@@ -9,30 +9,11 @@ using UnityEngine;
 using static UnityEditor.Progress;
 using static UnityEditor.SceneView;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : CharacterController
 {
     public Player player { get; private set; }
     public Vector3 inputDirection { get; private set; } //키보드 입력으로 들어온 이동방향 
     public Vector3 calculatedDirection { get; private set; } //경사 지형 등을 계산한 방향 
-    public Vector3 gravity { get; private set; }
-
-
-    #region #경사 체크 변수
-    [Header("경사 지형 검사")]
-    private float _maxSlopeAngle = 50f;
-
-    private const float RAY_DISTANCE = 2f;
-    private const float GROUNDCHECK_DISTANCE = 1.0f;
-    private RaycastHit _slopeHit;
-    private bool _isOnSlope;
-    #endregion
-
-    #region #바닥 체크 변수
-    [Header("땅 체크")]
-    [SerializeField, Tooltip("캐릭터가 땅에 붙어 있는지 확인하기 위한 CheckBox 시작 지점입니다.")]
-    private int _groundLayer;
-    private bool _isGrounded;
-    #endregion
 
     #region #카메라 
     public Camera _camera { get; private set; }
@@ -273,7 +254,7 @@ public class PlayerController : MonoBehaviour
     {
         MonsterController monster = enemy.GetComponent<MonsterController>();
         if (monster == null) return;
-        monster.stateMachine.ChangeState(StateName.MHIT);
+        monster.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
 
         IsAttack = false;
     }

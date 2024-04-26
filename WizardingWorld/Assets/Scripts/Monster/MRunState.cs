@@ -13,7 +13,7 @@ public class MRunState : BaseState<MonsterController>
     public override void OnEnterState()
     {
         _Controller.CalcRunDir(Player.Instance.transform, true);
-        _Controller.animator.SetTrigger("onSense");
+        _Controller.monsterInfo.animator.SetTrigger("onSense");
         _Controller.monsterInfo.CurrentSpeed = _Controller.monsterInfo.dashSpeed;
     }
 
@@ -21,8 +21,8 @@ public class MRunState : BaseState<MonsterController>
     {
         _Controller.SenseFalse();
         _Controller.monsterInfo.CurrentSpeed = _Controller.monsterInfo.moveSpeed;
-        _Controller.animator.SetFloat("Move", 0);
-        _Controller.rigid.velocity = Vector3.zero;
+        _Controller.monsterInfo.animator.SetFloat("Move", 0);
+        _Controller.monsterInfo.rigid.velocity = Vector3.zero;
     }
 
     public override void OnFixedUpdateState()
@@ -30,13 +30,13 @@ public class MRunState : BaseState<MonsterController>
         playerPos = _Controller.CheckPlayer(MonsterController.runRadius);
         if(playerPos == null ) //플레이어를 감지 영역 내에 못 찾은 경우 
         {
-            _Controller.stateMachine.ChangeState(StateName.IDLE);
+            _Controller.monsterInfo.stateMachine.ChangeState(StateName.IDLE);
         }
 
         if (_Controller.Sense) //플레이어와 반대 방향으로 도망 
         {
-            _Controller.rigid.velocity = _Controller.CalcRunDir(playerPos, false) * _Controller.monsterInfo.CurrentSpeed;
-            _Controller.animator.SetFloat("Move", Mathf.Clamp(_Controller.monsterInfo.CurrentSpeed * 0.2f, 1, 2.5f));
+            _Controller.monsterInfo.rigid.velocity = _Controller.CalcRunDir(playerPos, false) * _Controller.monsterInfo.CurrentSpeed;
+            _Controller.monsterInfo.animator.SetFloat("Move", Mathf.Clamp(_Controller.monsterInfo.CurrentSpeed * 0.2f, 1, 2.5f));
         }
     }
 

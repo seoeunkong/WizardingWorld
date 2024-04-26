@@ -10,7 +10,7 @@ public class MHitState : BaseState<MonsterController>
 
     public override void OnEnterState()
     {
-        _Controller.animator.SetTrigger("onHit");
+        _Controller.monsterInfo.animator.SetTrigger("onHit");
 
         if (_Controller.monsterInfo.CurrentHP > 0)
         {
@@ -19,7 +19,7 @@ public class MHitState : BaseState<MonsterController>
 
             if (hp == 0)
             {
-                _Controller.stateMachine.ChangeState(StateName.MDEAD);
+                _Controller.monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
             }
         }
     }
