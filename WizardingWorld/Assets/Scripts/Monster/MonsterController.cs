@@ -12,14 +12,16 @@ public class MonsterController : CharacterController
     public Monster monsterInfo { get; private set; }
 
 
-    #region #몬스터 감지 영역
+    #region #반지름 및 거리
     public const float runRadius = 2;
     public const float chaseRadius = 1.5f;
     public const float changeToAttackDist = 5f;
     public const float chasePlayerDist = 15f;
     public const float attackRadius = 0.2f;
-
+    public const float distanceWithPlayer = 30f;
     private float _fieldOfView = 90.0f; // 시야각 설정
+    public const float playerPalDist = 5f;
+    public float checkPlayerPalDist = playerPalDist;
     #endregion
 
     [Header("몬스터 순찰 속성")]
@@ -30,15 +32,14 @@ public class MonsterController : CharacterController
     [Header("플레이어 감지 속성")]
     [SerializeField] private float _checkDistance;
 
-    public void ChangeStateToChase() => monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
-
     #region #몬스터 애니메이션
     public bool Sense { get; private set; }
     public void SenseTrue() => Sense = true;
     public void SenseFalse() => Sense = false;
+    public void ChangeStateToChase() => monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
+    public void MonsterDead() => transform.gameObject.SetActive(false);
     #endregion
 
-    public void MonsterDead() => transform.gameObject.SetActive(false);
     public bool Dead { get; private set; }
 
     #region #공격
@@ -49,7 +50,11 @@ public class MonsterController : CharacterController
     private Transform _attackTargetMonster;
     #endregion
 
-    public const float distanceWithPlayer = 30f;
+    [Header("이팩트")]
+    private TrailController _trailController;
+    private bool _backToPlayer = false;
+    public bool BackToPlayer { get { return _backToPlayer; } set { _backToPlayer= value; } }    
+
 
     void Awake()
     {
@@ -59,6 +64,7 @@ public class MonsterController : CharacterController
     private void Start()
     {
         Dead = false;
+        _trailController = GetComponent<TrailController>();
     }
 
     protected void ControlGravity()
@@ -213,6 +219,11 @@ public class MonsterController : CharacterController
             PalSphere sphere = collision.gameObject.GetComponent<PalSphere>();
             if (sphere.isToCaptureMonster()) HitBySphere();
         }
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            if(checkPlayerPalDist == 0) gameObject.SetActive(false);
+        }
     }
 
     void HitBySphere()
@@ -223,11 +234,22 @@ public class MonsterController : CharacterController
         transform.gameObject.SetActive(false);
     }
 
+    public void backToPlayer()
+    {
+        _trailController.bodyActiveFalse();
+        _trailController.trailActiveTrue();
+        checkPlayerPalDist = 0f;
+        monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
+    }
+
 
     private void OnEnable()
     {
         if (monsterInfo.FriendlyMode)
         {
+            _trailController.trailActiveFalse();
+            _trailController.bodyActiveTrue();
+            checkPlayerPalDist = playerPalDist;
             monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
             Debug.Log("friendlymode");
         }
@@ -247,4 +269,5 @@ public class MonsterController : CharacterController
             }
         }
     }
+
 }

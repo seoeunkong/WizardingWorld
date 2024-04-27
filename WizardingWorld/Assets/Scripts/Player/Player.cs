@@ -37,6 +37,8 @@ public class Player : MonoBehaviour
     //ÇöÀç ÆÓ Á¤º¸ 
     private Monster _pal;
     public Monster currentPal { get { return _pal; } set { _pal = value; } }
+    private bool _unSetPal = false;
+    public bool UnSetPal {  get { return _unSetPal; } set { _unSetPal = value; } }
 
 
     [SerializeField]

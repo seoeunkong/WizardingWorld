@@ -70,7 +70,7 @@ public class MChaseState : BaseState<MonsterController>
 
         if (friendlyMode)
         {
-            if (_Controller.attackTargetMonster) //Enemy가 있는 경우 
+            if (_Controller.attackTargetMonster && _Controller.checkPlayerPalDist != 0) //Enemy가 있고, 팰이 플레이어에게 돌아오는 상황이 아닌 경우 
             {
                 if (StopFollowEnemy())
                 {
@@ -114,7 +114,7 @@ public class MChaseState : BaseState<MonsterController>
     bool TooClose()
     {
         float distPalPlayer = Vector3.Distance(Player.Instance.transform.position, _Controller.transform.position);
-        return distPalPlayer <= 5f;
+        return distPalPlayer <= _Controller.checkPlayerPalDist;
     }
 
 }

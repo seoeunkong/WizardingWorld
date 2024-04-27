@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _palPanel;
     [SerializeField] private Image _palImg;
 
+
     #region #드래그앤드롭
     private GraphicRaycaster _gr;
     private PointerEventData _ped;
@@ -50,9 +51,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-
         InitUI();
-
     }
 
     void Update()
@@ -123,6 +122,7 @@ public class UIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             _inventory.SetActive(_inventoryActive);
+            if (!_inventoryActive) DisappearPal();
         }
     }
 
@@ -276,6 +276,23 @@ public class UIManager : MonoBehaviour
         {
             HideIcon();
         }
+    }
+
+    void DisappearPal()
+    {
+        if (Player.Instance.UnSetPal)
+        {
+            Player.Instance.UnSetPal = false;
+            StartCoroutine(StartTimer());
+        }
+    }
+
+    IEnumerator StartTimer()
+    {
+        yield return new WaitForSeconds(0.7f);
+
+        MonsterController pal = Player.Instance.currentPal.GetComponent<MonsterController>();
+        pal.backToPlayer();
     }
 
 }

@@ -185,9 +185,11 @@ public class PlayerController : CharacterController
         }
     }
 
-    bool IsValidTarget(float angle, Transform enemy) //몬스터가 부채꼴 내부에 있는지 판단 
+    bool IsValidTarget(float angle, MonsterController enemy) //몬스터가 부채꼴 내부에 있는지 판단 
     {
-        Vector3 playerToEnemy = enemy.position - transform.position;
+        if (enemy.monsterInfo.FriendlyMode) return false;
+
+        Vector3 playerToEnemy = enemy.transform.position - transform.position;
         playerToEnemy.Normalize();
 
         float dot = Vector3.Dot(playerToEnemy, transform.forward);
@@ -211,10 +213,11 @@ public class PlayerController : CharacterController
         {
             if (coll.gameObject.CompareTag("Enemy"))
             {
-                bool canAttack = IsValidTarget((attackFlag ? _angleRange : _throwAngleRange), coll.transform);
+                MonsterController monster = coll.gameObject.GetComponent<MonsterController>();
+                bool canAttack = IsValidTarget((attackFlag ? _angleRange : _throwAngleRange), monster);
                 if(canAttack)
                 {
-                    Attacking(coll.transform.GetComponent<MonsterController>());
+                    Attacking(monster);
                     targets.Add(coll.transform);
                 }
             }

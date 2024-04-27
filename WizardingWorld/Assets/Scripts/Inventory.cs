@@ -186,13 +186,20 @@ public class Inventory : MonoBehaviour
     void SetPal()
     {
         List<int> pals = CheckPal();
-        if (pals.Count == 0) _monsterIndex = -1;
+        if (pals.Count == 0) 
+        {
+            if(_monsterIndex != -1) //기존 팰을 인벤토리에 다시 넣는 경우 
+            {
+                Player.Instance.UnSetPal = true;
+            }
+            _monsterIndex = -1;
+        }
         else
         {
             if(!pals.Contains(_monsterIndex))
             {
-                //팰 인덱스 업데이트 
-                _monsterIndex = pals[0];
+                if(_monsterIndex != -1) Player.Instance.UnSetPal = true; //기존 팰을 인벤토리에 다시 넣는 경우 
+                _monsterIndex = pals[0];  //팰 인덱스 업데이트 
             }
         }
 
@@ -202,8 +209,7 @@ public class Inventory : MonoBehaviour
 
         if(ob == null) //등록한 팰이 없다면
         {
-            uIManager.SetPalImg(null); 
-            Player.Instance.currentPal = null;
+            uIManager.SetPalImg(null);
         } 
         else
         {
