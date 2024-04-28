@@ -234,7 +234,7 @@ public class MonsterController : CharacterController
         transform.gameObject.SetActive(false);
     }
 
-    public void backToPlayer()
+    public void backToPlayer() //팰 활성화 -> 비활성화 모드 
     {
         _trailController.bodyActiveFalse();
         _trailController.trailActiveTrue();

@@ -24,6 +24,5 @@ public class TrailController : MonoBehaviour
 
         _trail.SetActive(false);
     }
-
     
 }
