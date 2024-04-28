@@ -13,7 +13,10 @@ public enum StateName
     MCHASE,
     MATTACK,
     MHIT,
-    MDEAD
+    MDEAD,
+    BMIDLE,
+    BMMISSILE
+
 }
 
 public class StateMachine<TController> where TController : MonoBehaviour

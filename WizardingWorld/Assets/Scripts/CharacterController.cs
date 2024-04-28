@@ -16,7 +16,6 @@ public abstract class CharacterController : MonoBehaviour
 
     #region #바닥 체크 변수
     [Header("땅 체크")]
-    [SerializeField, Tooltip("캐릭터가 땅에 붙어 있는지 확인하기 위한 CheckBox 시작 지점입니다.")]
     protected int _groundLayer;
     protected bool _isGrounded;
     #endregion
@@ -49,6 +48,7 @@ public abstract class CharacterController : MonoBehaviour
     {
         return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
     }
+
 
     public abstract void Hit(float damage);
 

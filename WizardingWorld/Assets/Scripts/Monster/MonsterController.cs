@@ -53,7 +53,7 @@ public class MonsterController : CharacterController
     [Header("¿Ã∆—∆Æ")]
     private TrailController _trailController;
     private bool _backToPlayer = false;
-    public bool BackToPlayer { get { return _backToPlayer; } set { _backToPlayer= value; } }    
+    public bool BackToPlayer { get { return _backToPlayer; } set { _backToPlayer= value; } }
 
 
     void Awake()
@@ -164,20 +164,11 @@ public class MonsterController : CharacterController
         return calculatedDirection;
     }
 
-    private bool IsTargetAttackable(CharacterController target)
-    {
-        if (target is MonsterController monster && (monster.monsterInfo.stateMachine.CurrentState == monsterInfo.stateMachine.GetState(StateName.MHIT) ||
-            monster.Dead))
-        {
-            return true;
-        }
-        return false;
-    }
 
     public override void Attacking(CharacterController targetController)
     {
         if (targetController == null) return;
-        if (IsTargetAttackable(targetController)) return;
+        if (monsterInfo.IsTargetAttackable(targetController)) return;
 
         if(!IsAttack)
         {

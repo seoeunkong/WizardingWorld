@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17fcf3a51937d74468c941f82d96883a, type: 3}
+  m_Name: DemonKing
+  m_EditorClassIdentifier: 
+  _id: 12
+  _name: "\uB370\uBAAC\uD0B9"
+  _tooltip: 
+  _iconSprite: {fileID: 21300000, guid: 196a9b842c2d46b4cbcde1f5eb031394, type: 3}
+  _maxHP: 1000
+  _moveSpeed: 5
+  _dashSpeed: 7
+  _attackPower: 20
+  _rotateSpeed: 10
+  _level: 5
