@@ -15,7 +15,8 @@ public enum StateName
     MHIT,
     MDEAD,
     BMIDLE,
-    BMMISSILE
+    BMMISSILE,
+    BMLASER
 
 }
 

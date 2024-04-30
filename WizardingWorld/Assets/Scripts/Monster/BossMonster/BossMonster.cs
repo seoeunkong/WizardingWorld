@@ -30,5 +30,6 @@ public class BossMonster : Enemy
 
         stateMachine = new StateMachine<BossMonsterController>(StateName.BMIDLE, new BMIdleState(controller));
         stateMachine.AddState(StateName.BMMISSILE, new BMMissileState(controller));
+        stateMachine.AddState(StateName.BMLASER, new BMLaserState(controller));
     }
 }

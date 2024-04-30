@@ -19,19 +19,30 @@ public class BossMonsterController : CharacterController
     [SerializeField][Range(0, 10)] private int _palWeight;
 
     [Header("원거리 미사일 공격")]
+    [SerializeField] private GameObject _missile;
     [SerializeField] private int _missileCount;
     [SerializeField] private float _missileAngle;
-    [SerializeField] private GameObject _missile;
     [SerializeField] private float _missileSpeed;
     public Transform missileStartPos;
     public GameObject[] _missileObjects { get; private set; }
 
+    [Header("원거리 레이저 공격")]
+    public GameObject laserObject;
+    [SerializeField] private float _laserRange;
+    [SerializeField] private float _lineTimer;
+    [SerializeField] private float _laserSpeed;
+    public LineRenderer laserLine {  get; private set; }
+    public float lineTimer { get { return _lineTimer;  } }
+    public float laserSpeed { get { return _laserSpeed;  } }
+    public float laserRange { get { return _laserRange; } }
+
     public int missileCount { get { return _missileCount; } }
     #endregion
 
-    #region #쿨타임
+    #region #쿨타임 시스템
+    private BossMonsterAttackManager _attackManager;
     public const float missileCoolTime = 5f;
-    private bool _availableMissile = true;
+    public const float laserCoolTime = 7f;
     #endregion
 
 
@@ -53,14 +64,15 @@ public class BossMonsterController : CharacterController
     {
         yield return new WaitForSeconds(0.1f);
 
-        int action = Random.Range(0, 2);
+        int action = Random.Range(2, 4);
         switch (action)
         {
             case 0:
             case 1:
-                if (!_availableMissile) break;
-                bossMonster.stateMachine.ChangeState(StateName.BMMISSILE);
-                StartCoroutine(MissileAttackCoolTime());
+                _attackManager.TryAttack(AttackName.MISSILE); break;
+            case 2:
+            case 3:
+                _attackManager.TryAttack(AttackName.LASER);
                 break;
         }
     }
@@ -73,6 +85,12 @@ public class BossMonsterController : CharacterController
             _missileObjects[i] = Instantiate(_missile);
             _missileObjects[i].transform.parent = transform;
         }
+
+        laserLine = GetComponent<LineRenderer>();
+        laserLine.enabled = false;
+        laserObject.SetActive(false);
+
+        _attackManager = GetComponent<BossMonsterAttackManager>();
     }
 
     Monster GetPal()
@@ -148,28 +166,13 @@ public class BossMonsterController : CharacterController
         {
             _missileObjects[i].transform.Translate(_missileSpeed * Time.deltaTime * dirs[i]);
         }
-       
-    }
-
-    IEnumerator MissileAttackCoolTime()
-    {
-        _availableMissile = false;
-
-        float timer = missileCoolTime;
-        while (timer > 0)
-        {
-            timer -= Time.deltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        yield return new WaitForFixedUpdate();
-        _availableMissile = true;
     }
 
     public bool allMissileOff()
     {
         foreach (var obj in _missileObjects)
         {
-            if(obj.activeSelf) return false;
+            if (obj.activeSelf) return false;
         }
         return true;
     }
@@ -182,6 +185,49 @@ public class BossMonsterController : CharacterController
             obj.transform.position = missileStartPos.position;
         }
     }
+
+    //public IEnumerator ShootLine()
+    //{
+    //    _availableShoot = false;
+
+    //    Vector3 rayOrigin = missileStartPos.position;
+    //    laserLine.SetPosition(0, missileStartPos.position + Vector3.forward);
+    //    laserLine.enabled = true;
+
+    //    float timer = _lineTimer;
+    //    Vector3 endPoint = Vector3.zero;
+    //    while (timer > 0)
+    //    {
+    //        Vector3 dir = ((Player.Instance.transform.position + Vector3.up) - rayOrigin).normalized;
+    //        RaycastHit hit;
+    //        if (Physics.Raycast(rayOrigin, dir, out hit, _laserRange))
+    //        {
+    //            laserLine.SetPosition(1, hit.point);
+    //            endPoint = hit.point;
+    //        }
+    //        Debug.Log(timer);
+    //        timer -= Time.deltaTime;
+    //        yield return new WaitForFixedUpdate();
+    //    }
+
+    //    laserLine.enabled = false;
+    //    shootLaser(endPoint);
+    //}
+
+
+
+    //public void shootLaser(Vector3 targetPoint)
+    //{
+    //    if (targetPoint == Vector3.zero) return;
+
+    //    GameObject laserObject = Instantiate(_laser);
+    //    laserObject.transform.parent = transform;
+    //    laserObject.transform.position = missileStartPos.position;
+
+    //    Vector3 dir = (missileStartPos.position - targetPoint).normalized;
+    //    laserObject.transform.Translate(_missileSpeed * Time.deltaTime * targetPoint);
+    //    Debug.Log(laserObject.transform.position);
+    //}
 
     private void OnDrawGizmos()
     {
