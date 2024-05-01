@@ -10,15 +10,17 @@ public class BMMissileState : BaseState<BossMonsterController>
 
     public override void OnEnterState()
     {
+        _Controller.bossMonster.animator.SetTrigger("isMissileOn");
+
         missileDir = _Controller.GetMissileDirs(_Controller.missileCount);
         _Controller.resetMissile();
 
-        _Controller.bossMonster.animator.SetTrigger("isMissileOn");
+        _Controller.missiles = missileDir;
     }
 
     public override void OnExitState()
     {
-        
+        _Controller.StartCoolTime(AttackName.MISSILE);
     }
 
     public override void OnFixedUpdateState()
@@ -29,6 +31,9 @@ public class BMMissileState : BaseState<BossMonsterController>
     public override void OnUpdateState()
     {
         _Controller.MissileAttack(missileDir);
-        if (_Controller.allMissileOff()) _Controller.bossMonster.stateMachine.ChangeState(StateName.BMIDLE);
+        if (_Controller.allMissileOff())
+        {
+            _Controller.bossMonster.stateMachine.ChangeState(StateName.BMIDLE);
+        }
     }
 }

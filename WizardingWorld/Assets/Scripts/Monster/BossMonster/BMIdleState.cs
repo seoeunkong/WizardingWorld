@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BMIdleState : BaseState<BossMonsterController>
 {
@@ -24,7 +25,8 @@ public class BMIdleState : BaseState<BossMonsterController>
 
     public override void OnUpdateState()
     {
-       
+        _Controller.StartCoroutine(_Controller.ThinkAction());
+
     }
 
 }

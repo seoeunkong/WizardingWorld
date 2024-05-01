@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Missile : MonoBehaviour
 {
-    [SerializeField] private float MissileDistance = 20f;
+    [SerializeField] private float MissileDistance;
     Vector3 startPos;
 
     void Start()
@@ -13,7 +13,12 @@ public class Missile : MonoBehaviour
         startPos = transform.position;
     }
 
-    
+    private void OnEnable()
+    {
+        if(transform.parent != null) startPos = transform.parent.position;
+    }
+
+
     void Update()
     {
         if(!SetOn())

@@ -399,8 +399,8 @@ public class PlayerController : CharacterController
         if(hp < 0) hp = 0;
 
         player.SetHPValue(hp);
-        player.animator.SetTrigger("onHit");
-        player.rigid.AddForce(Vector3.Scale(transform.forward, new Vector3(-1,0,-1)) * 5f, ForceMode.Impulse);
+        //player.animator.SetTrigger("onHit");
+        //player.rigid.AddForce(Vector3.Scale(transform.forward, new Vector3(-1,0,-1)) * 5f, ForceMode.Impulse);
     }
 
     public void sendHuntSign(Transform target)

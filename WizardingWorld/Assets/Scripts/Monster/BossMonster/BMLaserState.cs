@@ -34,6 +34,8 @@ public class BMLaserState : BaseState<BossMonsterController>
         shootLaser = false;
         timer = 0f;
         endPoint = Vector3.zero;
+
+        _Controller.StartCoolTime(AttackName.LASER);
     }
 
     public override void OnUpdateState()
@@ -70,10 +72,22 @@ public class BMLaserState : BaseState<BossMonsterController>
             Vector3 playerVelocity = Player.Instance.GetComponent<Rigidbody>().velocity;
             Vector3 predictedPosition = playerPosition + playerVelocity * Time.deltaTime;  // 다음 프레임에 대한 위치 예측
 
+            //Vector3 dir = ((Player.Instance.transform.position + Vector3.up) - rayOrigin).normalized;
             Vector3 dir = (predictedPosition - rayOrigin).normalized;
-            _Controller.laserLine.SetPosition(1, playerPosition);
-            endPoint = playerPosition;
-
+            RaycastHit hit;
+            if (Physics.Raycast(rayOrigin, dir, out hit, _Controller.laserRange))
+            {
+                if (hit.collider == Player.Instance)
+                {
+                    endPoint = playerPosition;
+                }
+                else
+                {
+                    endPoint = hit.point;
+                }
+                _Controller.laserLine.SetPosition(1, endPoint);
+            }
+            else _Controller.laserLine.SetPosition(1, _Controller.laserRange * dir);
             timer -= Time.deltaTime;
         }
         else
@@ -89,11 +103,10 @@ public class BMLaserState : BaseState<BossMonsterController>
 
     void ShootLaser(Vector3 targetPoint)
     {
-        //Debug.Log("KeepMoving~");
         if (targetPoint == Vector3.zero) return;
 
         Vector3 dir = (targetPoint - _Controller.missileStartPos.position).normalized;
-        _Controller.laserObject.transform.Translate(_Controller.laserSpeed * Time.deltaTime * dir);
+        _Controller.laserObject.transform.Translate(_Controller.laserSpeed * Time.deltaTime * dir, Space.World);
     }
 
 }

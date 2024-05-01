@@ -5,7 +5,9 @@ using UnityEngine;
 public enum AttackName
 {
     MISSILE,
-    LASER
+    LASER,
+    CHASING,
+    MELEE
 }
 
 public class BossMonsterAttackManager : MonoBehaviour
@@ -19,8 +21,10 @@ public class BossMonsterAttackManager : MonoBehaviour
         _bossMonster = GetComponent<BossMonster>();
 
         // 초기 쿨타임 설정
-        SetCoolTime(AttackName.MISSILE, 5f);
-        SetCoolTime(AttackName.LASER, 5f);
+        SetCoolTime(AttackName.MISSILE, 20f);
+        SetCoolTime(AttackName.LASER, 12f);
+        SetCoolTime(AttackName.CHASING, 5f);
+        
     }
 
     // 쿨타임과 사용 가능 상태 초기화
@@ -51,9 +55,10 @@ public class BossMonsterAttackManager : MonoBehaviour
     // 공격 메서드 예시
     public void TryAttack(AttackName attack)
     {
-        if (_isAvailable[attack])
+        if (_isAvailable[attack] && _bossMonster.currentStateIdle)
         {
-            Debug.Log("Mode " + attack);
+            Debug.Log("Mode " + attack + " " + _isAvailable[attack]);
+
             switch (attack)
             {
                 case AttackName.MISSILE:
@@ -62,12 +67,9 @@ public class BossMonsterAttackManager : MonoBehaviour
                 case AttackName.LASER:
                     _bossMonster.stateMachine.ChangeState(StateName.BMLASER); 
                     break;
+                case AttackName.CHASING:
+                    _bossMonster.stateMachine.ChangeState(StateName.BMCHASE); break;
             }
-            StartCoroutine(AttackCoolTime(attack));
-        }
-        else
-        {
-            //Debug.Log(attack + " is cooling down.");
         }
     }
 }

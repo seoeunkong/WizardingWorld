@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.FilePathAttribute;
 using static UnityEditor.SceneView;
 
 public class BossMonsterController : CharacterController
@@ -31,19 +34,34 @@ public class BossMonsterController : CharacterController
     [SerializeField] private float _laserRange;
     [SerializeField] private float _lineTimer;
     [SerializeField] private float _laserSpeed;
-    public LineRenderer laserLine {  get; private set; }
-    public float lineTimer { get { return _lineTimer;  } }
-    public float laserSpeed { get { return _laserSpeed;  } }
+    public LineRenderer laserLine { get; private set; }
+    public float lineTimer { get { return _lineTimer; } }
+    public float laserSpeed { get { return _laserSpeed; } }
     public float laserRange { get { return _laserRange; } }
 
     public int missileCount { get { return _missileCount; } }
+
+    [Header("근접 공격")]
+    public GameObject effectObject;
+    [SerializeField] private float _fieldOfView;
+    [SerializeField] private float _checkDistance;
+    public void SetOffEffect() => effectObject.SetActive(false);
+    public void SetOnEffect() => effectObject.SetActive(true);
     #endregion
 
     #region #쿨타임 시스템
     private BossMonsterAttackManager _attackManager;
     public const float missileCoolTime = 5f;
     public const float laserCoolTime = 7f;
+    public void StartCoolTime(AttackName attackName) => StartCoroutine(_attackManager.AttackCoolTime(attackName));
     #endregion
+
+    #region #추격 
+    public const float chasingTime = 10f;
+    public const float stopChasingDist = 15f;
+    #endregion
+
+    public Vector3[] missiles;
 
 
     void Start()
@@ -54,17 +72,15 @@ public class BossMonsterController : CharacterController
 
     void Update()
     {
-        if (bossMonster.stateMachine.CurrentState == bossMonster.stateMachine.GetState(StateName.BMIDLE))
-        {
-            StartCoroutine(ThinkAction());
-        }
+        Vector3 dir = Vector3.Scale((Player.Instance.transform.position - transform.position), new Vector3(1, 0, 1)).normalized;
+        transform.rotation = Quaternion.LookRotation(dir);
     }
 
-    IEnumerator ThinkAction()
+    public IEnumerator ThinkAction()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(1f);
 
-        int action = Random.Range(2, 4);
+        int action = Random.Range(0, 7);
         switch (action)
         {
             case 0:
@@ -72,8 +88,11 @@ public class BossMonsterController : CharacterController
                 _attackManager.TryAttack(AttackName.MISSILE); break;
             case 2:
             case 3:
-                _attackManager.TryAttack(AttackName.LASER);
-                break;
+                _attackManager.TryAttack(AttackName.LASER); break;
+            case 4:
+            case 5:
+            case 6:
+                _attackManager.TryAttack(AttackName.CHASING); break;
         }
     }
 
@@ -89,8 +108,33 @@ public class BossMonsterController : CharacterController
         laserLine = GetComponent<LineRenderer>();
         laserLine.enabled = false;
         laserObject.SetActive(false);
+        effectObject.SetActive(false);
 
         _attackManager = GetComponent<BossMonsterAttackManager>();
+    }
+
+
+
+    public Vector3 CalcRunDir(Transform target)
+    {
+        if (target == null) return Vector3.zero; //플레이어를 감지 영역에서 발견하지 못한 경우 
+
+        Vector3 targetPos = target.position;
+
+        Vector3 dir = Vector3.Scale((targetPos - transform.position), new Vector3(1, 0, 1)).normalized;
+        transform.rotation = Quaternion.LookRotation(dir);
+
+        return GetDirection(dir);
+    }
+
+
+    Vector3 GetDirection(Vector3 dir)
+    {
+        _isOnSlope = IsOnSlope();
+        _isGrounded = IsGrounded();
+
+        Vector3 calculatedDirection = (_isOnSlope && _isGrounded) ? AdjustDirectionToSlope(dir) : dir;
+        return calculatedDirection;
     }
 
     Monster GetPal()
@@ -135,7 +179,7 @@ public class BossMonsterController : CharacterController
         }
     }
 
-    Vector3 GetDirToTarget(Vector3 target)
+    public Vector3 GetDirToTarget(Vector3 target)
     {
         if (target == null) return Vector3.zero;
         return (target - transform.position).normalized;
@@ -143,18 +187,18 @@ public class BossMonsterController : CharacterController
 
     public Vector3[] GetMissileDirs(int cnt)
     {
-        Vector3 forward = missileStartPos.forward;
+        Vector3 direction = ((Player.Instance.transform.position) - missileStartPos.transform.position).normalized;
         Vector3[] dirs = new Vector3[cnt];
 
-        float term = _missileAngle / cnt;
-        float angle = _missileAngle / 2;
+        float term = _missileAngle / (cnt - 1);
+        float halfAngle = _missileAngle / 2;
         for (int i = 0; i < cnt; i++)
         {
-            angle -= term;
-            if (angle < 0) angle += 360;
+            float angle = -halfAngle + term * i;
 
-            Quaternion rot = Quaternion.Euler(0, angle, 0);
-            dirs[i] = (rot * forward);
+            // 로컬 좌표계를 고려한 회전 적용
+            Quaternion rotation = Quaternion.Euler(0, angle, 0);
+            dirs[i] = (rotation * direction);
         }
 
         return dirs;
@@ -164,7 +208,7 @@ public class BossMonsterController : CharacterController
     {
         for (int i = 0; i < dirs.Length; i++)
         {
-            _missileObjects[i].transform.Translate(_missileSpeed * Time.deltaTime * dirs[i]);
+            _missileObjects[i].transform.Translate(_missileSpeed * Time.deltaTime * dirs[i], Space.World);
         }
     }
 
@@ -186,48 +230,6 @@ public class BossMonsterController : CharacterController
         }
     }
 
-    //public IEnumerator ShootLine()
-    //{
-    //    _availableShoot = false;
-
-    //    Vector3 rayOrigin = missileStartPos.position;
-    //    laserLine.SetPosition(0, missileStartPos.position + Vector3.forward);
-    //    laserLine.enabled = true;
-
-    //    float timer = _lineTimer;
-    //    Vector3 endPoint = Vector3.zero;
-    //    while (timer > 0)
-    //    {
-    //        Vector3 dir = ((Player.Instance.transform.position + Vector3.up) - rayOrigin).normalized;
-    //        RaycastHit hit;
-    //        if (Physics.Raycast(rayOrigin, dir, out hit, _laserRange))
-    //        {
-    //            laserLine.SetPosition(1, hit.point);
-    //            endPoint = hit.point;
-    //        }
-    //        Debug.Log(timer);
-    //        timer -= Time.deltaTime;
-    //        yield return new WaitForFixedUpdate();
-    //    }
-
-    //    laserLine.enabled = false;
-    //    shootLaser(endPoint);
-    //}
-
-
-
-    //public void shootLaser(Vector3 targetPoint)
-    //{
-    //    if (targetPoint == Vector3.zero) return;
-
-    //    GameObject laserObject = Instantiate(_laser);
-    //    laserObject.transform.parent = transform;
-    //    laserObject.transform.position = missileStartPos.position;
-
-    //    Vector3 dir = (missileStartPos.position - targetPoint).normalized;
-    //    laserObject.transform.Translate(_missileSpeed * Time.deltaTime * targetPoint);
-    //    Debug.Log(laserObject.transform.position);
-    //}
 
     private void OnDrawGizmos()
     {
@@ -239,13 +241,42 @@ public class BossMonsterController : CharacterController
         //{
         //    Gizmos.DrawRay(missileStartPos.position, this.transform.localRotation * ang * 50.0f);
         //}
+        //int cnt = 0;
+        //foreach (Vector3 ang in GetMissileDirs(10))
+        //{
+        //    Gizmos.DrawRay(missileStartPos.position, ang * 50f);
+        //    cnt++;
+        //}
+    }
 
+    bool IsTargetInSight(Vector3 targetPos)    // 계산된 각도를 통해 플레이어가 시야각 범위 내에 있는지 확인
+    {
+        Vector3 enemyToPlayer = targetPos - transform.position;
+        enemyToPlayer.Normalize();
 
+        float angle = Vector3.Angle(transform.forward, enemyToPlayer);
+
+        if (angle < _fieldOfView * 0.5f) return true;
+        else return false;
+    }
+
+    public Transform CheckTarget(float size = 1) //감지 영역 내에 플레이어 존재 여부 체크 
+    {
+        Collider[] colls = Physics.OverlapSphere(transform.position, _checkDistance * size);
+        foreach (Collider coll in colls)
+        {
+            if (coll.gameObject.CompareTag("Player") ||
+                coll.gameObject.CompareTag("Enemy") && (Player.Instance.PlayerHasPal && coll.transform.gameObject == Player.Instance.currentPal.gameObject))
+            {
+                if (IsTargetInSight(coll.transform.position)) return coll.transform;
+            }
+        }
+        return null;
     }
 
     public override void Attacking(CharacterController characterController)
     {
-        throw new System.NotImplementedException();
+        characterController.Hit(bossMonster.attackPower);
     }
 
     public override void Hit(float damage)

@@ -6,6 +6,8 @@ public class BossMonster : Enemy
 {
     public StateMachine<BossMonsterController> stateMachine { get; private set; }
 
+    public bool currentStateIdle => stateMachine.CurrentState == stateMachine.GetState(StateName.BMIDLE);
+
     void Start()
     {
         rigid = GetComponent<Rigidbody>();
@@ -31,5 +33,7 @@ public class BossMonster : Enemy
         stateMachine = new StateMachine<BossMonsterController>(StateName.BMIDLE, new BMIdleState(controller));
         stateMachine.AddState(StateName.BMMISSILE, new BMMissileState(controller));
         stateMachine.AddState(StateName.BMLASER, new BMLaserState(controller));
+        stateMachine.AddState(StateName.BMMELEE, new BMMeleeState(controller));
+        stateMachine.AddState(StateName.BMCHASE, new BMChaseState(controller));
     }
 }
