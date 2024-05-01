@@ -10,6 +10,11 @@ public class MDeadState : BaseState<MonsterController>
 
     public override void OnEnterState()
     {
+        //if(Player.Instance.currentPal == _Controller.transform)
+        //{
+        //    Player.Instance.currentPal = null;
+
+        //}
         _Controller.monsterInfo.animator.SetTrigger("onDead");
     }
 
@@ -26,5 +31,15 @@ public class MDeadState : BaseState<MonsterController>
     public override void OnUpdateState()
     {
         
+    }
+
+    void PalDie()
+    {
+        if (Player.Instance.currentPal == _Controller.transform)
+        {
+            //Inventory.Instance
+            //Player.Instance.currentPal = null;
+
+        }
     }
 }

@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
     [SerializeField] protected float _throwPower;
     #endregion
 
+    public delegate void HealthChanged(float newHealth);
+    public event HealthChanged OnHealthChanged;
 
     //ÇöÀç ÆÓ Á¤º¸ 
     private Monster _pal;
@@ -46,7 +48,11 @@ public class Player : MonoBehaviour
     public Transform rightHand;
     public Transform NotUsingWeapons;
 
-    public void SetHPValue(float hp) {  _currentHP = hp; }
+    public void SetHPValue(float hp)
+    {
+        _currentHP = hp;
+        OnHealthChanged?.Invoke(_currentHP); ;
+    }
     public void SetAttackPower(float attackPower) { _currentAttackPower = attackPower; }
 
     void Awake()

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public abstract class CharacterController : MonoBehaviour
@@ -9,7 +11,7 @@ public abstract class CharacterController : MonoBehaviour
     protected float _maxSlopeAngle = 50f;
 
     protected const float RAY_DISTANCE = 2f;
-    protected const float GROUNDCHECK_DISTANCE = 1.5f;
+    protected const float GROUNDCHECK_DISTANCE = 3f;
     protected RaycastHit _slopeHit;
     protected bool _isOnSlope;
     #endregion
@@ -22,15 +24,22 @@ public abstract class CharacterController : MonoBehaviour
 
     public Vector3 gravity { get; protected set; }
 
-    private void Start()
-    {
-        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
-    }
-
     public bool IsGrounded()
     {
         _isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, GROUNDCHECK_DISTANCE, _groundLayer);
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, GROUNDCHECK_DISTANCE))
+        {
+            //if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground")) Debug.Log("?????");
+            
+        }
         return _isGrounded;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(this.transform.position + Vector3.up, Vector3.down * GROUNDCHECK_DISTANCE);
     }
 
     protected bool IsOnSlope() //경사 지형 체크 

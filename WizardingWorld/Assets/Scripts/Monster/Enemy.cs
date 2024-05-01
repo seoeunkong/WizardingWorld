@@ -20,10 +20,17 @@ public abstract class Enemy : BaseObject
     public float CurrentHP { get { return _currentHP; } }
     public float CurrentSpeed { get { return _currentSpeed; } set { _currentSpeed = value; } }
 
-    public void SetHP(float hp) => this._currentHP = hp; //이 부분도 이후에 수정
+    public void SetHP(float hp)
+    {
+        this._currentHP = hp;
+        OnHealthChanged?.Invoke(this._currentHP); ;
+    }
 
     [Header("몬스터 생성"), Tooltip("몬스터 스탯 정보")]
     [SerializeField] protected MonsterData monsterData;
+
+    public delegate void HealthChanged(float newHealth);
+    public event HealthChanged OnHealthChanged;
 
     private void Awake()
     {

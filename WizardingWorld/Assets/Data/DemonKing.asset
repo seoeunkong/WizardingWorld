@@ -19,6 +19,6 @@ MonoBehaviour:
   _maxHP: 1000
   _moveSpeed: 7
   _dashSpeed: 10
-  _attackPower: 20
+  _attackPower: 15
   _rotateSpeed: 10
   _level: 5

@@ -67,6 +67,8 @@ public class BossMonsterController : CharacterController
     void Start()
     {
         bossMonster = GetComponent<BossMonster>();
+        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
+
         Init();
     }
 
@@ -80,7 +82,7 @@ public class BossMonsterController : CharacterController
     {
         yield return new WaitForSeconds(1f);
 
-        int action = Random.Range(0, 7);
+        int action = Random.Range(2, 4);
         switch (action)
         {
             case 0:
@@ -104,6 +106,7 @@ public class BossMonsterController : CharacterController
             _missileObjects[i] = Instantiate(_missile);
             _missileObjects[i].transform.parent = transform;
         }
+        _missile.SetActive(false);
 
         laserLine = GetComponent<LineRenderer>();
         laserLine.enabled = false;

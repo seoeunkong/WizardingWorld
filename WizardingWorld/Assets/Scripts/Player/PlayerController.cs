@@ -40,7 +40,7 @@ public class PlayerController : CharacterController
     public bool canAttackCombo { get; private set; }
     #endregion
 
-    public Transform closeMonster{  get; private set; }
+    public Transform closeMonster { get; private set; }
 
     [Header("스피어볼 던지기 속성")]
     [SerializeField] private float _throwAngleRange;
@@ -64,6 +64,10 @@ public class PlayerController : CharacterController
         _currentdashTime = setDashTime;
 
         _detect = new List<Transform>();
+
+
+        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
+
     }
 
     void Update()
@@ -176,7 +180,7 @@ public class PlayerController : CharacterController
 
     void OnAttack()
     {
-        if (IsAttack ) return;
+        if (IsAttack) return;
 
         if (IsLookFoward() && Input.GetMouseButtonDown(0))
         {
@@ -215,7 +219,7 @@ public class PlayerController : CharacterController
             {
                 MonsterController monster = coll.gameObject.GetComponent<MonsterController>();
                 bool canAttack = IsValidTarget((attackFlag ? _angleRange : _throwAngleRange), monster);
-                if(canAttack)
+                if (canAttack)
                 {
                     Attacking(monster);
                     targets.Add(coll.transform);
@@ -246,7 +250,7 @@ public class PlayerController : CharacterController
         if (canAttackCombo || !IsAttack) yield return null;
 
         canAttackCombo = true;
-        yield return new WaitForSeconds(_attackComboTime); 
+        yield return new WaitForSeconds(_attackComboTime);
         canAttackCombo = false;
     }
 
@@ -372,17 +376,20 @@ public class PlayerController : CharacterController
     void ThrowMonster() //펠 투척 
     {
         CameraMove cameraMove = _camera.GetComponentInParent<CameraMove>();
-        if (Input.GetKey("e"))
-        {
-            int index = Inventory.Instance.FindItemOfType<MonsterData>();
-            if (index == -1) return; //인벤토리에 몬스터 없는 경우 
-            Inventory.Instance.SetSphere(false);
-            cameraMove.ZoomIn();
-        }
+        int index = Inventory.Instance.FindItemOfType<MonsterData>();
 
-        if (Input.GetKeyUp("e"))
+        if (index != -1) //인벤토리에 몬스터 있는 경우 
         {
-            StartCoroutine(ZoomOut(cameraMove));
+            if (Input.GetKey("e"))
+            {
+                Inventory.Instance.SetSphere(false);
+                cameraMove.ZoomIn();
+            }
+
+            if (Input.GetKeyUp("e"))
+            {
+                StartCoroutine(ZoomOut(cameraMove));
+            }
         }
     }
 
@@ -396,7 +403,7 @@ public class PlayerController : CharacterController
     public override void Hit(float damage)
     {
         float hp = player.CurrentHP - damage;
-        if(hp < 0) hp = 0;
+        if (hp < 0) hp = 0;
 
         player.SetHPValue(hp);
         //player.animator.SetTrigger("onHit");
@@ -405,10 +412,10 @@ public class PlayerController : CharacterController
 
     public void sendHuntSign(Transform target)
     {
-        if(player.currentPal == null)  return;
+        if (player.currentPal == null) return;
 
         bool hasPal = player.currentPal.gameObject.activeSelf;
-        if(hasPal)
+        if (hasPal)
         {
             MonsterController pal = player.currentPal.GetComponent<MonsterController>();
             pal.attackTargetMonster = target;

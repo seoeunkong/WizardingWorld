@@ -21,6 +21,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _palPanel;
     [SerializeField] private Image _palImg;
 
+    [Header("플레이어 HP UI")]
+    [SerializeField] private GameObject _playerHp;
+    private Slider _playerHpBar;
+
+    [Header("팰 HP UI")]
+    private Slider _palSliderBar;
+    void UpdatePlayerHp(float hp) => _playerHpBar.value = hp / Player.Instance.MaxHP;
+    void UpdatePalHp(float hp) => _palSliderBar.value = hp / Player.Instance.currentPal.maxHP;
+
 
     #region #드래그앤드롭
     private GraphicRaycaster _gr;
@@ -52,6 +61,8 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         InitUI();
+
+        Player.Instance.OnHealthChanged += UpdatePlayerHp;
     }
 
     void Update()
@@ -71,8 +82,16 @@ public class UIManager : MonoBehaviour
 
     void ShowPalPanel()
     {
-        if (_inventory.activeSelf) _palPanel.SetActive(false);
-        else _palPanel.SetActive(true);
+        if (_inventory.activeSelf)
+        {
+            _palPanel.SetActive(false);
+            _playerHp.SetActive(false);
+        }
+        else
+        {
+            _palPanel.SetActive(true);
+            _playerHp.SetActive(true);
+        }
     }
 
     private T RaycastAndGetFirstComponent<T>() where T : Component
@@ -105,6 +124,9 @@ public class UIManager : MonoBehaviour
         InitializeDashSlider();
         HideIcon();
 
+        _playerHpBar = _playerHp.GetComponentInChildren<Slider>();
+        _palSliderBar = _palPanel.GetComponentInChildren<Slider>();
+        _palSliderBar.gameObject.SetActive(false);
     }
 
     void InitializeDashSlider()
@@ -270,6 +292,8 @@ public class UIManager : MonoBehaviour
         if (itemSprite != null)
         {
             _palImg.sprite = itemSprite;
+            Player.Instance.currentPal.OnHealthChanged += UpdatePalHp;
+            if (!_palSliderBar.gameObject.activeSelf) _palSliderBar.gameObject.SetActive(true);
             ShowIcon();
         }
         else

@@ -65,6 +65,7 @@ public class MonsterController : CharacterController
     {
         Dead = false;
         _trailController = GetComponent<TrailController>();
+        _groundLayer = 1 << LayerMask.NameToLayer("Ground");
     }
 
     protected void ControlGravity()
@@ -184,9 +185,8 @@ public class MonsterController : CharacterController
         if (target is PlayerController ps) ps.Hit(monsterInfo.attackPower);
         else if (target is MonsterController ms) ms.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(1.5f);
         monsterInfo.animator.SetBool("isAttack", false);
-        yield return new WaitForSeconds(1f);
         IsAttack = false;
     }
 
@@ -220,6 +220,7 @@ public class MonsterController : CharacterController
     void HitBySphere()
     {
         monsterInfo.FriendlyMode = true;
+        monsterInfo.SetHP(monsterInfo.maxHP);
         Inventory.Instance.Add(monsterInfo);
 
         transform.gameObject.SetActive(false);
@@ -231,6 +232,8 @@ public class MonsterController : CharacterController
         _trailController.trailActiveTrue();
         checkPlayerPalDist = 0f;
         monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
+
+        Player.Instance.currentPal = null;
     }
 
 

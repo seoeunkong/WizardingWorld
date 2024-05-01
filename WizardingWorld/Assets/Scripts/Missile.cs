@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class Missile : MonoBehaviour
 {
-    [SerializeField] private float MissileDistance;
+    [SerializeField] private float _missileDistance;
+    [SerializeField] private float _missileDamage;
     Vector3 startPos;
 
     void Start()
@@ -18,7 +19,6 @@ public class Missile : MonoBehaviour
         if(transform.parent != null) startPos = transform.parent.position;
     }
 
-
     void Update()
     {
         if(!SetOn())
@@ -30,7 +30,18 @@ public class Missile : MonoBehaviour
     bool SetOn()
     {
         float dist = Vector3.Distance(startPos, transform.position);
-        return dist < MissileDistance;
+        return dist < _missileDistance;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        CharacterController controller = other.GetComponent<CharacterController>();
+        if (controller != null)
+        {
+            controller.Hit(_missileDamage);
+        }
+
+        if(other != transform.parent) transform.gameObject.SetActive(false);
     }
 
 

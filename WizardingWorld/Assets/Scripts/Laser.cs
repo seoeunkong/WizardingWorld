@@ -4,22 +4,18 @@ using UnityEngine;
 
 public class Laser : MonoBehaviour
 {
+    [SerializeField] private float _laserDamage;
     public bool Active = true;
-
-    void Start()
-    {
-        
-    }
-
-    
-    void Update()
-    {
-        
-    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.transform != transform.parent)
+        CharacterController controller = other.GetComponent<CharacterController>();
+        if (controller != null)
+        {
+            controller.Hit(_laserDamage);
+        }
+
+        if (other.transform != transform.parent)
         {
             transform.gameObject.SetActive(false);
         }

@@ -213,8 +213,8 @@ public class Inventory : MonoBehaviour
         } 
         else
         {
-            uIManager.SetPalImg(ob.IconSprite);
             Player.Instance.currentPal = _baseObjects[_monsterIndex] as Monster;
+            uIManager.SetPalImg(ob.IconSprite);
         }
     }
 
