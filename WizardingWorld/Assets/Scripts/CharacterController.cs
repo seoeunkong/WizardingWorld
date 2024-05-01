@@ -11,7 +11,7 @@ public abstract class CharacterController : MonoBehaviour
     protected float _maxSlopeAngle = 50f;
 
     protected const float RAY_DISTANCE = 2f;
-    protected const float GROUNDCHECK_DISTANCE = 3f;
+    protected const float GROUNDCHECK_DISTANCE = 1.7f;
     protected RaycastHit _slopeHit;
     protected bool _isOnSlope;
     #endregion
@@ -27,13 +27,6 @@ public abstract class CharacterController : MonoBehaviour
     public bool IsGrounded()
     {
         _isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, GROUNDCHECK_DISTANCE, _groundLayer);
-
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, GROUNDCHECK_DISTANCE))
-        {
-            //if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground")) Debug.Log("?????");
-            
-        }
         return _isGrounded;
     }
 

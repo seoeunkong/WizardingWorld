@@ -224,7 +224,7 @@ public class UIManager : MonoBehaviour
     private void OnPointerDown()
     {
         // Left Click : Begin Drag
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && _inventory.activeSelf)
         {
             _beginDragSlot = RaycastAndGetFirstComponent<ItemSlotUI>();
 

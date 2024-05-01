@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17fcf3a51937d74468c941f82d96883a, type: 3}
+  m_Name: CactusMonster
+  m_EditorClassIdentifier: 
+  _id: 13
+  _name: "\uCE90\uD130\uC2A4"
+  _tooltip: 
+  _iconSprite: {fileID: -1501406788, guid: 6b27d6fdf5df87846901d9add9af4817, type: 3}
+  _maxHP: 100
+  _moveSpeed: 2.5
+  _dashSpeed: 4
+  _attackPower: 5
+  _rotateSpeed: 10
+  _level: 1

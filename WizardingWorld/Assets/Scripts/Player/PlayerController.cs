@@ -113,7 +113,7 @@ public class PlayerController : CharacterController
 
     protected void ControlGravity()
     {
-        gravity = Vector3.down * MathF.Abs(player.rigid.velocity.y);
+        gravity = Vector3.down * MathF.Abs(player.rigid.velocity.y) * 7f;
         if (_isGrounded && _isOnSlope)
         {
             gravity = Vector3.zero;
@@ -182,7 +182,8 @@ public class PlayerController : CharacterController
     {
         if (IsAttack) return;
 
-        if (IsLookFoward() && Input.GetMouseButtonDown(0) && !Inventory.Instance.gameObject.activeSelf)
+        if (!Inventory.Instance.inventoryContents.gameObject.activeSelf) return;
+        if (IsLookFoward() && Input.GetMouseButtonDown(0))
         {
             if (!player.weaponManager.hasWeapon()) player.stateMachine.ChangeState(StateName.PUNCHATTACK); //플레이어한테 무기가 없는 경우 
             else player.stateMachine.ChangeState(StateName.ATTACK); //무기가 있는 경우     

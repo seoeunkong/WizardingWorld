@@ -44,7 +44,6 @@ public class MonsterController : CharacterController
 
     #region #공격
     [Header("플레이어 공격 속성")]
-    [SerializeField] private float _attackCheckDistance;
     public bool IsAttack = false;
     public Transform attackTargetMonster { get { return _attackTargetMonster; } set { _attackTargetMonster = value; } }
     private Transform _attackTargetMonster;
@@ -70,6 +69,11 @@ public class MonsterController : CharacterController
         Dead = false;
         _trailController = GetComponent<TrailController>();
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
+    }
+
+    private void Update()
+    {
+        //Debug.Log(monsterInfo.stateMachine.CurrentState.ToString());
     }
 
     protected void ControlGravity()
