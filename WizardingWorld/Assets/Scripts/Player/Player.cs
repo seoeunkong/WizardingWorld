@@ -51,7 +51,8 @@ public class Player : MonoBehaviour
     public void SetHPValue(float hp)
     {
         _currentHP = hp;
-        OnHealthChanged?.Invoke(_currentHP); ;
+        OnHealthChanged?.Invoke(_currentHP); 
+
     }
     public void SetAttackPower(float attackPower) { _currentAttackPower = attackPower; }
 

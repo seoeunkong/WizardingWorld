@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEditor.Progress;
 
 public class Inventory : MonoBehaviour
 {
     public static Inventory Instance { get; private set; }
+    public static event Action<Sprite> OnPalChanged;
 
     [Header("인벤토리 설정")]
     public GameObject inventoryContents; //인벤토리 UI 
@@ -23,6 +25,8 @@ public class Inventory : MonoBehaviour
     [SerializeField] private BaseObject[] _baseObjects;
     private int _weaponIndex;
     private int _monsterIndex = -1;
+
+    public void UpdateSlotColor() => _itemSlotUIs[_monsterIndex].ChangeSlotColor(Color.black);
 
     private void Awake()
     {
@@ -57,6 +61,7 @@ public class Inventory : MonoBehaviour
             else _itemSlotUIs[i] = mons[i - _slotCount];
         }
         _baseObjects = new BaseObject[_slotCount + _monsterCount];
+
     }
 
     bool isWeaponCol(int index) => index % 6 == 5;
@@ -205,16 +210,17 @@ public class Inventory : MonoBehaviour
 
         //팰 이미지 새롭게 등록 
         ObjectData ob = GetObjData(_monsterIndex);
-        UIManager uIManager = GetComponent<UIManager>();
 
         if(ob == null) //등록한 팰이 없다면
         {
-            uIManager.SetPalImg(null);
+            //UIManager.SetPalImg(null);
+            OnPalChanged?.Invoke(null); // 팰이 없어질 때 이벤트 발생
         } 
         else
         {
             Player.Instance.currentPal = _baseObjects[_monsterIndex] as Monster;
-            uIManager.SetPalImg(ob.IconSprite);
+           // UIManager.SetPalImg(ob.IconSprite);
+            OnPalChanged?.Invoke(ob.IconSprite); // 팰이 없어질 때 이벤트 발생
         }
     }
 
@@ -474,6 +480,4 @@ public class Inventory : MonoBehaviour
         UpdateSlot(indexB);
         
     }
-
-
 }

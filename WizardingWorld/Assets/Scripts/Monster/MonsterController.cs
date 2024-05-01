@@ -55,6 +55,10 @@ public class MonsterController : CharacterController
     private bool _backToPlayer = false;
     public bool BackToPlayer { get { return _backToPlayer; } set { _backToPlayer= value; } }
 
+    #region #Die
+    public delegate void PalDie();
+    public static event PalDie OnPalDie;
+    #endregion
 
     void Awake()
     {
@@ -259,6 +263,7 @@ public class MonsterController : CharacterController
             if (hp == 0)
             {
                 Dead = true;
+                if(monsterInfo.FriendlyMode) OnPalDie.Invoke();
                 monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
             }
         }

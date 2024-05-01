@@ -20,6 +20,8 @@ public class UIManager : MonoBehaviour
     [Header("팰 UI")]
     [SerializeField] private GameObject _palPanel;
     [SerializeField] private Image _palImg;
+    private Image _palPanelOutline;
+    void PalDeadUI() => _palPanelOutline.color = new Color(Color.red.r, Color.red.g, Color.red.b, Color.red.a);
 
     [Header("플레이어 HP UI")]
     [SerializeField] private GameObject _playerHp;
@@ -63,6 +65,8 @@ public class UIManager : MonoBehaviour
         InitUI();
 
         Player.Instance.OnHealthChanged += UpdatePlayerHp;
+        MonsterController.OnPalDie += PalDeadUI;
+        _palPanelOutline = _palImg.transform.parent.GetComponent<Image>();
     }
 
     void Update()
@@ -80,15 +84,27 @@ public class UIManager : MonoBehaviour
         ShowPalPanel();
     }
 
+    private void OnEnable()
+    {
+        Inventory.OnPalChanged += SetPalImg;
+    }
+
+    private void OnDisable()
+    {
+        Inventory.OnPalChanged -= SetPalImg;
+    }
+
     void ShowPalPanel()
     {
         if (_inventory.activeSelf)
         {
+            Time.timeScale = 0;
             _palPanel.SetActive(false);
             _playerHp.SetActive(false);
         }
         else
         {
+            Time.timeScale = 1;
             _palPanel.SetActive(true);
             _playerHp.SetActive(true);
         }
@@ -274,16 +290,15 @@ public class UIManager : MonoBehaviour
     //두 슬롯의 아이템 교환 
     private void TrySwapItems(ItemSlotUI from, ItemSlotUI to)
     {
-        Inventory inv = GetComponent<Inventory>();
 
-        if (from == to || !inv.isValidSwap(from.Index, to.Index))
+        if (from == to || !Inventory.Instance.isValidSwap(from.Index, to.Index))
         {
             return;
         }
 
         from.SwapOrMoveIcon(to);
 
-        inv.Swap(from.Index, to.Index);
+        Inventory.Instance.Swap(from.Index, to.Index);
     }
 
     //팰 등록
@@ -317,6 +332,15 @@ public class UIManager : MonoBehaviour
 
         MonsterController pal = Player.Instance.currentPal.GetComponent<MonsterController>();
         pal.backToPlayer();
+    }
+
+
+    void UpdateSlotColor()
+    {
+        if(_palPanelOutline.color == Color.red)
+        {
+            Inventory.Instance.UpdateSlotColor();
+        }
     }
 
 }

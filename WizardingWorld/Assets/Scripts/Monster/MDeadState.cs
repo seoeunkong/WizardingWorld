@@ -32,14 +32,4 @@ public class MDeadState : BaseState<MonsterController>
     {
         
     }
-
-    void PalDie()
-    {
-        if (Player.Instance.currentPal == _Controller.transform)
-        {
-            //Inventory.Instance
-            //Player.Instance.currentPal = null;
-
-        }
-    }
 }

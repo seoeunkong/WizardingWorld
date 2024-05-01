@@ -21,6 +21,7 @@ public class ItemSlotUI : MonoBehaviour
     [SerializeField] private float _highlightFadeDuration = 0.2f;
 
     private Button _btn;
+    public Color _slotColor { get; private set; }
 
     //ΩΩ∑‘¿« ¿Œµ¶Ω∫
     public int Index { get; private set; }
@@ -44,13 +45,16 @@ public class ItemSlotUI : MonoBehaviour
         HideText();
 
        InitRect();
-        
+       
+        _slotColor = GetComponent<Image>().color;
     }
 
     private void ShowIcon() => _iconImage.gameObject.SetActive(true);
     private void HideIcon() => _iconImage.gameObject.SetActive(false);
     private void ShowText() => _amountText.gameObject.SetActive(true);
     private void HideText() => _amountText.gameObject.SetActive(false);
+    public void ChangeSlotColor(Color color) => _slotColor = color;
+
 
     void InitRect()
     {

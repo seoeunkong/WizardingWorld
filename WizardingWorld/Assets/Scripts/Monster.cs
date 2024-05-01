@@ -13,9 +13,8 @@ public class Monster : Enemy
     [Header("Ã¼·Â")]
     [SerializeField] private float _dangerHpWeight = 0.3f;
     public bool dangerState => maxHP * _dangerHpWeight >= CurrentHP;
-
  
-    public bool FriendlyMode { get { return _friendlyMode; } set { _friendlyMode = value; } }
+    public bool FriendlyMode { get { return _friendlyMode; } set { _friendlyMode = value; } } 
 
 
     private void Start()
