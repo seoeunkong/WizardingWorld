@@ -248,25 +248,6 @@ public class BossMonsterController : CharacterController, IStateChangeable
         }
     }
 
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        //Gizmos.DrawRay(this.transform.position, this.transform.localRotation * right45 * 50.0f);
-        //Gizmos.DrawRay(this.transform.position, this.transform.localRotation * left45 * 50.0f);
-
-        //foreach (Vector3 ang in GetMissileDirs(10))
-        //{
-        //    Gizmos.DrawRay(missileStartPos.position, this.transform.localRotation * ang * 50.0f);
-        //}
-        //int cnt = 0;
-        //foreach (Vector3 ang in GetMissileDirs(10))
-        //{
-        //    Gizmos.DrawRay(missileStartPos.position, ang * 50f);
-        //    cnt++;
-        //}
-    }
-
     bool IsTargetInSight(Vector3 targetPos)    // 계산된 각도를 통해 플레이어가 시야각 범위 내에 있는지 확인
     {
         Vector3 enemyToPlayer = targetPos - transform.position;

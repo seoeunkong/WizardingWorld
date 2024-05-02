@@ -35,6 +35,7 @@ public class Monster : Enemy
         stateMachine?.FixedUpdateState();
     }
 
+
     void InitStateMachine()
     {
         MonsterController controller = GetComponent<MonsterController>();
@@ -57,7 +58,4 @@ public class Monster : Enemy
         }
         return false;
     }
-
-
-
 }

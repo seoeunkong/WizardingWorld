@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class Enemy : BaseObject
 {
+
     public Rigidbody rigid { get; protected set; }
     public Animator animator { get; protected set; }
 
