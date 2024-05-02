@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     //ÇöÀç ÆÓ Á¤º¸ 
     private Monster _pal;
     public Monster currentPal { get { return _pal; } set { _pal = value; } }
-    public bool PlayerHasPal => _pal != null;
+    public bool PlayerHasPal => _pal != null && _pal.gameObject.activeSelf;
     private bool _unSetPal = false;
     public bool UnSetPal {  get { return _unSetPal; } set { _unSetPal = value; } }
 

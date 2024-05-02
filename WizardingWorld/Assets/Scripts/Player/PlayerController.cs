@@ -182,7 +182,8 @@ public class PlayerController : CharacterController
     {
         if (IsAttack) return;
 
-        if (!Inventory.Instance.inventoryContents.gameObject.activeSelf) return;
+        if (Time.timeScale == 0) return;
+
         if (IsLookFoward() && Input.GetMouseButtonDown(0))
         {
             if (!player.weaponManager.hasWeapon()) player.stateMachine.ChangeState(StateName.PUNCHATTACK); //플레이어한테 무기가 없는 경우 
@@ -190,9 +191,9 @@ public class PlayerController : CharacterController
         }
     }
 
-    bool IsValidTarget(float angle, MonsterController enemy) //몬스터가 부채꼴 내부에 있는지 판단 
+    bool IsValidTarget(float angle, CharacterController enemy) //몬스터가 부채꼴 내부에 있는지 판단 
     {
-        if (enemy.monsterInfo.FriendlyMode) return false;
+        if (enemy is MonsterController mon && mon.monsterInfo.FriendlyMode) return false;
 
         Vector3 playerToEnemy = enemy.transform.position - transform.position;
         playerToEnemy.Normalize();
@@ -218,7 +219,7 @@ public class PlayerController : CharacterController
         {
             if (coll.gameObject.CompareTag("Enemy"))
             {
-                MonsterController monster = coll.gameObject.GetComponent<MonsterController>();
+                CharacterController monster = coll.gameObject.GetComponent<CharacterController>();
                 bool canAttack = IsValidTarget((attackFlag ? _angleRange : _throwAngleRange), monster);
                 if (canAttack)
                 {
@@ -235,15 +236,15 @@ public class PlayerController : CharacterController
         else closeMonster = null;
     }
 
-    public override void Attacking(CharacterController characterController) //몬스터에게 데미지 주기 
+    public override void Attacking(CharacterController characterController)
     {
-        MonsterController monster = characterController as MonsterController;
-        if (monster == null) return;
-
-        sendHuntSign(monster.transform);
-        monster.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
-
-        IsAttack = false;
+        if (characterController is IStateChangeable stateChangeable)
+        {
+            sendHuntSign(characterController.transform);
+            characterController.Hit(player.CurrentAttackPower);
+            stateChangeable.ChangeState(GetHitState(characterController));
+            IsAttack = false;
+        }
     }
 
     IEnumerator IsAttackCombo()

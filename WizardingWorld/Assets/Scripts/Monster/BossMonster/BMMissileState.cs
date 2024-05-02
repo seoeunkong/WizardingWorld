@@ -16,6 +16,7 @@ public class BMMissileState : BaseState<BossMonsterController>
         _Controller.resetMissile();
 
         _Controller.missiles = missileDir;
+
     }
 
     public override void OnExitState()

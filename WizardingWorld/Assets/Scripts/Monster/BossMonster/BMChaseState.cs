@@ -18,6 +18,8 @@ public class BMChaseState : BaseState<BossMonsterController>
     {
         startFollow = true;
         timer = BossMonsterController.chasingTime;
+
+        Debug.Log("Chase " + _Controller.attackTarget);
     }
 
     public override void OnExitState()
@@ -44,13 +46,13 @@ public class BMChaseState : BaseState<BossMonsterController>
     {
         if (timer > 0f)
         {
-            if (stopFollowingTarget(Player.Instance.transform.position))
+            if (stopFollowingTarget(_Controller.attackTarget.position))
             {
                 _Controller.bossMonster.stateMachine.ChangeState(StateName.BMMELEE);
                 return;
             }
             _Controller.bossMonster.animator.SetFloat("Move", Mathf.Clamp(_Controller.bossMonster.CurrentSpeed * 0.2f, 1, 2.5f));
-            _Controller.bossMonster.rigid.velocity = _Controller.CalcRunDir(Player.Instance.transform) * _Controller.bossMonster.CurrentSpeed;
+            _Controller.bossMonster.rigid.velocity = _Controller.CalcRunDir(_Controller.attackTarget) * _Controller.bossMonster.CurrentSpeed;
 
             timer -= Time.deltaTime;
         }

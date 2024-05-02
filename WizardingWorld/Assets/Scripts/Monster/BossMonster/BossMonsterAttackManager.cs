@@ -14,11 +14,11 @@ public class BossMonsterAttackManager : MonoBehaviour
 {
     private Dictionary<AttackName, float> _coolTimes = new Dictionary<AttackName, float>();
     private Dictionary<AttackName, bool> _isAvailable = new Dictionary<AttackName, bool>();
-    private BossMonster _bossMonster;
+    private BossMonsterController _bossMonsterController;
 
     void Start()
     {
-        _bossMonster = GetComponent<BossMonster>();
+        _bossMonsterController = GetComponent<BossMonsterController>();
 
         // 초기 쿨타임 설정
         SetCoolTime(AttackName.MISSILE, 20f);
@@ -55,20 +55,21 @@ public class BossMonsterAttackManager : MonoBehaviour
     // 공격 메서드 예시
     public void TryAttack(AttackName attack)
     {
-        if (_isAvailable[attack] && _bossMonster.currentStateIdle)
+        if (_isAvailable[attack] && _bossMonsterController.bossMonster.currentStateIdle)
         {
             Debug.Log("Mode " + attack + " " + _isAvailable[attack]);
+            _bossMonsterController.WhoToAttack();
 
             switch (attack)
             {
                 case AttackName.MISSILE:
-                    _bossMonster.stateMachine.ChangeState(StateName.BMMISSILE);
+                    _bossMonsterController.bossMonster.stateMachine.ChangeState(StateName.BMMISSILE);
                     break;
                 case AttackName.LASER:
-                    _bossMonster.stateMachine.ChangeState(StateName.BMLASER); 
+                    _bossMonsterController.bossMonster.stateMachine.ChangeState(StateName.BMLASER); 
                     break;
                 case AttackName.CHASING:
-                    _bossMonster.stateMachine.ChangeState(StateName.BMCHASE); break;
+                    _bossMonsterController.bossMonster.stateMachine.ChangeState(StateName.BMCHASE); break;
             }
         }
     }

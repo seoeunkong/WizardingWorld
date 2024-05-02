@@ -4,6 +4,11 @@ using System.Net;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 
+public interface IStateChangeable
+{
+    void ChangeState(StateName state);
+}
+
 public abstract class CharacterController : MonoBehaviour
 {
     #region #경사 체크 변수
@@ -49,6 +54,14 @@ public abstract class CharacterController : MonoBehaviour
     protected Vector3 AdjustDirectionToSlope(Vector3 direction) //경사 지형에 맞는 이동 벡터 
     {
         return Vector3.ProjectOnPlane(direction, _slopeHit.normal).normalized;
+    }
+
+    protected StateName GetHitState(CharacterController character)
+    {
+        if (character is BossMonsterController)
+            return StateName.BMHIT;
+        else
+            return StateName.MHIT;
     }
 
 

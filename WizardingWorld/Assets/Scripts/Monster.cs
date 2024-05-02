@@ -51,7 +51,7 @@ public class Monster : Enemy
     public bool IsTargetAttackable(CharacterController target)
     {
         if (target is MonsterController monster && (monster.monsterInfo.stateMachine.CurrentState == stateMachine.GetState(StateName.MHIT) ||
-            monster.Dead))
+            monster.monsterInfo.stateMachine.CurrentState == stateMachine.GetState(StateName.MDEAD)))
         {
             return true;
         }

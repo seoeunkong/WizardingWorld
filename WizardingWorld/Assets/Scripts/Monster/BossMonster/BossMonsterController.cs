@@ -1,22 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
+using static MonsterController;
 using static UnityEditor.FilePathAttribute;
 using static UnityEditor.SceneView;
 
-public class BossMonsterController : CharacterController
+public class BossMonsterController : CharacterController, IStateChangeable
 {
     public BossMonster bossMonster { get; private set; }
 
-    #region #플레이어의 팰 정보 
-    public bool playerHasPal => Player.Instance.currentPal != null && Player.Instance.currentPal.gameObject.activeSelf;
-    #endregion
-
     #region #공격 
-    public Transform attackeTarget { get; private set; }
+    public Transform attackTarget { get; private set; }
     [Header("공격 확률")]
     [SerializeField][Range(0, 10)] private int _playerWeight;
     [SerializeField][Range(0, 10)] private int _palWeight;
@@ -26,6 +24,7 @@ public class BossMonsterController : CharacterController
     [SerializeField] private int _missileCount;
     [SerializeField] private float _missileAngle;
     [SerializeField] private float _missileSpeed;
+    public Vector3[] missiles;
     public Transform missileStartPos;
     public GameObject[] _missileObjects { get; private set; }
 
@@ -61,28 +60,44 @@ public class BossMonsterController : CharacterController
     public const float stopChasingDist = 15f;
     #endregion
 
-    public Vector3[] missiles;
+    #region #Hp
+    public Slider _bossSliderBar; //임시
+    void UpdateBossHp(float hp) => _bossSliderBar.value = hp / bossMonster.maxHP;
+    #endregion
 
+    public bool Dead { get; private set; }
 
     void Start()
     {
         bossMonster = GetComponent<BossMonster>();
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
+        bossMonster.OnHealthChanged += UpdateBossHp;
+
 
         Init();
     }
 
     void Update()
     {
-        Vector3 dir = Vector3.Scale((Player.Instance.transform.position - transform.position), new Vector3(1, 0, 1)).normalized;
-        transform.rotation = Quaternion.LookRotation(dir);
+        if(attackTarget != null)
+        {
+            Vector3 dir = Vector3.Scale((attackTarget.position - transform.position), new Vector3(1, 0, 1)).normalized;
+            //transform.rotation = Quaternion.LookRotation(dir);
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 50f);
+        }
+    }
+
+    public void ChangeState(StateName state)
+    {
+        bossMonster.stateMachine.ChangeState(state);
     }
 
     public IEnumerator ThinkAction()
     {
         yield return new WaitForSeconds(1f);
 
-        int action = Random.Range(2, 4);
+        int action = UnityEngine.Random.Range(4, 7);
         switch (action)
         {
             case 0:
@@ -142,7 +157,7 @@ public class BossMonsterController : CharacterController
 
     Monster GetPal()
     {
-        if (playerHasPal) return Player.Instance.currentPal;
+        if (Player.Instance.PlayerHasPal) return Player.Instance.currentPal;
         else return null;
     }
 
@@ -160,24 +175,24 @@ public class BossMonsterController : CharacterController
             characterControllers[i] = pal.gameObject.GetComponent<MonsterController>();
         }
 
-        int index = Random.Range(0, characterControllers.Length);
+        int index = UnityEngine.Random.Range(0, characterControllers.Length);
         return characterControllers[index];
     }
 
-    Transform WhoToAttack() //공격 대상 지정
+    public void WhoToAttack() //공격 대상 지정
     {
         Monster pal = GetPal();
-        if (pal == null) return Player.Instance.transform;
+        if (pal == null) attackTarget = Player.Instance.transform;
         else
         {
             if (pal.dangerState)
             {
-                return pal.transform;
+                attackTarget =  pal.transform;
             }
             else
             {
                 CharacterController controller = CalculateWeight();
-                return controller.transform;
+                attackTarget = controller.transform;
             }
         }
     }
@@ -190,7 +205,7 @@ public class BossMonsterController : CharacterController
 
     public Vector3[] GetMissileDirs(int cnt)
     {
-        Vector3 direction = ((Player.Instance.transform.position) - missileStartPos.transform.position).normalized;
+        Vector3 direction = ((attackTarget.position + Vector3.up) - missileStartPos.transform.position).normalized;
         Vector3[] dirs = new Vector3[cnt];
 
         float term = _missileAngle / (cnt - 1);
@@ -280,10 +295,21 @@ public class BossMonsterController : CharacterController
     public override void Attacking(CharacterController characterController)
     {
         characterController.Hit(bossMonster.attackPower);
+        if (characterController is MonsterController mon) mon.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
     }
 
     public override void Hit(float damage)
     {
-        throw new System.NotImplementedException();
+        if (bossMonster.CurrentHP > 0)
+        {
+            float hp = bossMonster.CurrentHP - damage > 0 ? bossMonster.CurrentHP - damage : 0;
+            bossMonster.SetHP(hp);
+
+            if (hp == 0)
+            {
+                Dead = true;
+                bossMonster.stateMachine.ChangeState(StateName.BMDEAD);
+            }
+        }
     }
 }

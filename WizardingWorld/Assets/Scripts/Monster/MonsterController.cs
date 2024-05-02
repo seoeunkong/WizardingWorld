@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
-public class MonsterController : CharacterController
+public class MonsterController : CharacterController, IStateChangeable
 {
     public Monster monsterInfo { get; private set; }
 
@@ -40,8 +40,6 @@ public class MonsterController : CharacterController
     public void MonsterDead() => transform.gameObject.SetActive(false);
     #endregion
 
-    public bool Dead { get; private set; }
-
     #region #공격
     [Header("플레이어 공격 속성")]
     public bool IsAttack = false;
@@ -66,14 +64,13 @@ public class MonsterController : CharacterController
 
     private void Start()
     {
-        Dead = false;
         _trailController = GetComponent<TrailController>();
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
     }
 
-    private void Update()
+    public void ChangeState(StateName state)
     {
-        //Debug.Log(monsterInfo.stateMachine.CurrentState.ToString());
+        monsterInfo.stateMachine.ChangeState(state);
     }
 
     protected void ControlGravity()
@@ -139,14 +136,6 @@ public class MonsterController : CharacterController
         else return false;
     }
 
-
-    IEnumerator OnDead()
-    {
-        yield return new WaitForSeconds(0.5f);
-        monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
-    }
-
-
     //ChasePlayer이 true라면, 플레이어를 향해 쫓는다.
     //ChasePlayer이 false라면, 플레이어의 반대 방향으로 도망.
     public Vector3 CalcRunDir(Transform player, bool ChasePlayer)
@@ -191,7 +180,11 @@ public class MonsterController : CharacterController
         monsterInfo.animator.SetBool("isAttack", true);
 
         if (target is PlayerController ps) ps.Hit(monsterInfo.attackPower);
-        else if (target is MonsterController ms) ms.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
+        if (target is IStateChangeable stateChangeable)
+        {
+            target.Hit(monsterInfo.attackPower);
+            stateChangeable.ChangeState(GetHitState(target));
+        }
 
         yield return new WaitForSeconds(1.5f);
         monsterInfo.animator.SetBool("isAttack", false);
@@ -266,11 +259,9 @@ public class MonsterController : CharacterController
 
             if (hp == 0)
             {
-                Dead = true;
                 if(monsterInfo.FriendlyMode) OnPalDie.Invoke();
                 monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
             }
         }
     }
-
 }

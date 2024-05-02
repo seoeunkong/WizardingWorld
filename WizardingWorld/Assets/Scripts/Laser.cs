@@ -13,6 +13,7 @@ public class Laser : MonoBehaviour
         if (controller != null)
         {
             controller.Hit(_laserDamage);
+            if (controller is MonsterController mon) mon.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
         }
 
         if (other.transform != transform.parent)

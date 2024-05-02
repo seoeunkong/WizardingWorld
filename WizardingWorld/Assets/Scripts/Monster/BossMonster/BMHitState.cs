@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MDeadState : BaseState<MonsterController>
+public class BMHitState : BaseState<BossMonsterController>
 {
-    public MDeadState(MonsterController controller) : base(controller) { }
-
+    public BMHitState(BossMonsterController controller) : base(controller) { }
 
 
     public override void OnEnterState()
     {
-        _Controller.monsterInfo.animator.SetTrigger("onDead");
+        _Controller.bossMonster.animator.SetTrigger("onHit");
     }
 
     public override void OnExitState()
@@ -20,7 +19,7 @@ public class MDeadState : BaseState<MonsterController>
 
     public override void OnFixedUpdateState()
     {
-        
+       
     }
 
     public override void OnUpdateState()

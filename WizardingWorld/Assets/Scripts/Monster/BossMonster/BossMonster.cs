@@ -35,5 +35,7 @@ public class BossMonster : Enemy
         stateMachine.AddState(StateName.BMLASER, new BMLaserState(controller));
         stateMachine.AddState(StateName.BMMELEE, new BMMeleeState(controller));
         stateMachine.AddState(StateName.BMCHASE, new BMChaseState(controller));
+        stateMachine.AddState(StateName.BMHIT, new BMHitState(controller));
+        stateMachine.AddState(StateName.BMDEAD, new BMDeadState(controller));
     }
 }

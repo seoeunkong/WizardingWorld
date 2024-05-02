@@ -65,6 +65,7 @@ public class UIManager : MonoBehaviour
         InitUI();
 
         Player.Instance.OnHealthChanged += UpdatePlayerHp;
+        
         MonsterController.OnPalDie += PalDeadUI;
         _palPanelOutline = _palImg.transform.parent.GetComponent<Image>();
     }
@@ -77,9 +78,12 @@ public class UIManager : MonoBehaviour
 
         ActivateFPopUp();
 
-        OnPointerDown();
-        OnPointerDrag();
-        OnPointerUp();
+        if(_inventory.activeSelf)
+        {
+            OnPointerDown();
+            OnPointerDrag();
+            OnPointerUp();
+        }
 
         ShowPalPanel();
     }
@@ -224,7 +228,7 @@ public class UIManager : MonoBehaviour
     private void OnPointerDown()
     {
         // Left Click : Begin Drag
-        if (Input.GetMouseButtonDown(0) && _inventory.activeSelf)
+        if (Input.GetMouseButtonDown(0))
         {
             _beginDragSlot = RaycastAndGetFirstComponent<ItemSlotUI>();
 

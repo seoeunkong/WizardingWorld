@@ -39,6 +39,7 @@ public class Missile : MonoBehaviour
         if (controller != null)
         {
             controller.Hit(_missileDamage);
+            if (controller is MonsterController mon) mon.monsterInfo.stateMachine.ChangeState(StateName.MHIT);
         }
 
         if(other != transform.parent) transform.gameObject.SetActive(false);

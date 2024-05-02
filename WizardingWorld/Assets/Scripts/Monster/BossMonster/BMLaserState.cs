@@ -34,6 +34,8 @@ public class BMLaserState : BaseState<BossMonsterController>
         shootLaser = false;
         timer = 0f;
         endPoint = Vector3.zero;
+        _Controller.laserLine.enabled = false;
+        _Controller.laserObject.SetActive(false);
 
         _Controller.StartCoolTime(AttackName.LASER);
     }
@@ -67,17 +69,22 @@ public class BMLaserState : BaseState<BossMonsterController>
         if (timer > 0)
         {
             // 플레이어의 현재 위치와 이동 방향을 사용하여 예측 위치 계산
-            Vector3 playerPosition = Player.Instance.transform.position + Vector3.up;
-            Vector3 playerVelocity = Player.Instance.GetComponent<Rigidbody>().velocity;
-            Vector3 predictedPosition = playerPosition + playerVelocity * Time.deltaTime;  // 다음 프레임에 대한 위치 예측
+            Vector3 targetPosition = _Controller.attackTarget.position + Vector3.up;
+
+            Monster monster = _Controller.attackTarget.GetComponent<Monster>();
+            Vector3 targetVelocity = Vector3.zero;
+            if (monster != null) targetVelocity = monster.rigid.velocity;
+            else targetVelocity = Player.Instance.GetComponent<Rigidbody>().velocity;
+            
+            Vector3 predictedPosition = targetPosition + targetVelocity * Time.deltaTime;  // 다음 프레임에 대한 위치 예측
 
             Vector3 dir = (predictedPosition - rayOrigin).normalized;
             RaycastHit hit;
             if (Physics.Raycast(rayOrigin, dir, out hit, _Controller.laserRange))
             {
-                if (hit.collider == Player.Instance)
+                if (hit.collider == _Controller.attackTarget)
                 {
-                    endPoint = playerPosition;
+                    endPoint = targetPosition;
                 }
                 else
                 {
