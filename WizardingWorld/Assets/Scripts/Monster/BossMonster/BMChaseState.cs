@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class BMChaseState : BaseState<BossMonsterController>
 {
-    bool startFollow = true;
+    bool meleeAttack = false;
     float timer = 0f;
-
-    bool isAvailableFollow() => startFollow && timer > 0f && !stopFollowingTarget(Player.Instance.transform.position);
 
     bool stopFollowingTarget(Vector3 target) => Vector3.Distance(target, _Controller.transform.position) < BossMonsterController.stopChasingDist;
 
@@ -16,15 +14,13 @@ public class BMChaseState : BaseState<BossMonsterController>
 
     public override void OnEnterState()
     {
-        startFollow = true;
+        meleeAttack = false;
         timer = BossMonsterController.chasingTime;
-
-        Debug.Log("Chase " + _Controller.attackTarget);
     }
 
     public override void OnExitState()
     {
-        if(!startFollow) _Controller.StartCoolTime(AttackName.CHASING);
+        if(!meleeAttack) _Controller.StartCoolTime(AttackName.CHASING);
         _Controller.bossMonster.animator.SetFloat("Move", 0f);
         _Controller.bossMonster.rigid.velocity = Vector3.zero;
     }
@@ -36,7 +32,7 @@ public class BMChaseState : BaseState<BossMonsterController>
 
     public override void OnUpdateState()
     {
-        if (startFollow)
+        if (!meleeAttack)
         {
             followTarget();
         }
@@ -48,6 +44,7 @@ public class BMChaseState : BaseState<BossMonsterController>
         {
             if (stopFollowingTarget(_Controller.attackTarget.position))
             {
+                meleeAttack = true;
                 _Controller.bossMonster.stateMachine.ChangeState(StateName.BMMELEE);
                 return;
             }
@@ -58,7 +55,6 @@ public class BMChaseState : BaseState<BossMonsterController>
         }
         else
         {
-            startFollow = false;
             _Controller.bossMonster.stateMachine.ChangeState(StateName.BMIDLE);
         }
     }

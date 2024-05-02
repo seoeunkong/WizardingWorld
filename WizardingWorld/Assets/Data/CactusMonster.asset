@@ -17,7 +17,7 @@ MonoBehaviour:
   _tooltip: 
   _iconSprite: {fileID: -1501406788, guid: 6b27d6fdf5df87846901d9add9af4817, type: 3}
   _maxHP: 100
-  _moveSpeed: 2.5
+  _moveSpeed: 1.3
   _dashSpeed: 4
   _attackPower: 5
   _rotateSpeed: 10

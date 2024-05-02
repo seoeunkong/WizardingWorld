@@ -48,6 +48,8 @@ public class BossMonsterController : CharacterController, IStateChangeable
     public void SetOnEffect() => effectObject.SetActive(true);
     #endregion
 
+    public void ChangeStateToIdle() => bossMonster.stateMachine.ChangeState(StateName.BMIDLE);
+
     #region #쿨타임 시스템
     private BossMonsterAttackManager _attackManager;
     public const float missileCoolTime = 5f;
@@ -97,7 +99,7 @@ public class BossMonsterController : CharacterController, IStateChangeable
     {
         yield return new WaitForSeconds(1f);
 
-        int action = UnityEngine.Random.Range(4, 7);
+        int action = UnityEngine.Random.Range(0, 7);
         switch (action)
         {
             case 0:

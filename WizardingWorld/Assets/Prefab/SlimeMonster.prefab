@@ -534,7 +534,7 @@ Rigidbody:
   m_GameObject: {fileID: 5281085239441193942}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 5
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -585,11 +585,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4c15e898d8f10d48a30b5ad9806c632, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _groundLayer: 0
   checkPlayerPalDist: 5
   _patrolRadius: 15
   _checkDistance: 20
-  _attackCheckDistance: 0
   IsAttack: 0
 --- !u!114 &6059507712546401824
 MonoBehaviour:
@@ -603,9 +601,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 570c29baebb506d4493cca03580571f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterData: {fileID: 11400000, guid: bcdc668fa7dcbe7428b7d37288370c12, type: 2}
   _currentHP: 0
   _currentSpeed: 0
+  monsterData: {fileID: 11400000, guid: bcdc668fa7dcbe7428b7d37288370c12, type: 2}
+  _dangerHpWeight: 0.3
 --- !u!114 &3246657193842692603
 MonoBehaviour:
   m_ObjectHideFlags: 0
