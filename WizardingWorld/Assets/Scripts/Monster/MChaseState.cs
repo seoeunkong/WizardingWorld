@@ -83,7 +83,7 @@ public class MChaseState : BaseState<MonsterController>
                     return;
                 }
             }
-            else
+            else //공격할 대상이 없는 경우
             {
                 if (TooClose())
                 {

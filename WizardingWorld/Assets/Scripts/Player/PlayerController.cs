@@ -34,7 +34,7 @@ public class PlayerController : CharacterController
     [SerializeField] private float _maxDistance;
     [SerializeField] private float _angleRange;
     private const float _attackComboTime = 3f;
-    private RaycastHit hit;
+    //private RaycastHit hit;
     public static bool startAttackAni = false;
     public static bool IsAttack = false;
     public bool canAttackCombo { get; private set; }
@@ -62,12 +62,9 @@ public class PlayerController : CharacterController
         player = GetComponent<Player>();
         _camera = Camera.main;
         _currentdashTime = setDashTime;
-
         _detect = new List<Transform>();
 
-
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
-
     }
 
     void Update()
@@ -408,8 +405,6 @@ public class PlayerController : CharacterController
         if (hp < 0) hp = 0;
 
         player.SetHPValue(hp);
-        //player.animator.SetTrigger("onHit");
-        //player.rigid.AddForce(Vector3.Scale(transform.forward, new Vector3(-1,0,-1)) * 5f, ForceMode.Impulse);
     }
 
     public void sendHuntSign(Transform target)

@@ -13,14 +13,6 @@ public class ItemSlotUI : MonoBehaviour
     [Tooltip("아이템 개수 텍스트")]
     [SerializeField] private Text _amountText;
 
-    [Space]
-    [Tooltip("하이라이트 이미지 알파 값")]
-    [SerializeField] private float _highlightAlpha = 0.5f;
-
-    [Tooltip("하이라이트 소요 시간")]
-    [SerializeField] private float _highlightFadeDuration = 0.2f;
-
-    private Button _btn;
     public Color _slotColor { get; private set; }
 
     //슬롯의 인덱스

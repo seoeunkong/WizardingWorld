@@ -1,0 +1,473 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BaseObject" Collapsed="true">
+    <Position X="30" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAACAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BaseWeapon">
+    <Position X="26.75" Y="16.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAgAAAAAAAAiBAAAIAAAAIAhCgAEAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\BaseWeapon.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CameraMove" Collapsed="true">
+    <Position X="45.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AESAAEIEACAAAAIEAAgBIAAAAQIEAACAABQEAAAAAAg=</HashCode>
+      <FileName>Assets\Scripts\CameraMove.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CharacterController" Collapsed="true">
+    <Position X="16.25" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEEAAgAAAAAAAIABQMAACAEAAAAAwAAAAAACAgCAAA=</HashCode>
+      <FileName>Assets\Scripts\CharacterController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ColiderOff" Collapsed="true">
+    <Position X="47.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\ColiderOff.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CountableObject">
+    <Position X="30" Y="16.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AGBAAAAAAAAABAAAAAAAAACAAAAAAAAAAAgAAAIAAEA=</HashCode>
+      <FileName>Assets\Scripts\CountableObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CountableData" Collapsed="true">
+    <Position X="9.5" Y="16.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAIAAAA=</HashCode>
+      <FileName>Assets\Scripts\Data\CountableData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterData" Collapsed="true">
+    <Position X="4" Y="16.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAABQAAAAAHQBAAAAAAAABBAAAAgAAAEA=</HashCode>
+      <FileName>Assets\Scripts\Data\MonsterData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObjectData" Collapsed="true">
+    <Position X="7.25" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAgAAAAABABAQAAIAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Assets\Scripts\Data\ObjectData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PortionData" Collapsed="true">
+    <Position X="8.5" Y="18.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Data\PortionData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SphereData" Collapsed="true">
+    <Position X="10.75" Y="18.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAgAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Data\SphereData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WeaponData" Collapsed="true">
+    <Position X="6.25" Y="16.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAgAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Data\WeaponData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DropItem" Collapsed="true">
+    <Position X="49.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAECAAAAAAAAABAAAAEAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\DropItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Inventory" Collapsed="true">
+    <Position X="44" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AMJBBgIAACAADogQQABgBgAIYAEBAIAAQCICKCIQAOA=</HashCode>
+      <FileName>Assets\Scripts\Inventory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ItemSlotUI" Collapsed="true">
+    <Position X="45.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAgAAgAQoKABQAAEAAEAAAQgJEACAAAEAAHQAkAAAAA=</HashCode>
+      <FileName>Assets\Scripts\ItemSlotUI.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Laser" Collapsed="true">
+    <Position X="47.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAgQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Laser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MeleeStick">
+    <Position X="25.75" Y="18.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\MeleeStick.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Missile" Collapsed="true">
+    <Position X="49.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAoAAAAAAAAAAAgAAQAAAAAAACAI=</HashCode>
+      <FileName>Assets\Scripts\Missile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BMChaseState" Collapsed="true">
+    <Position X="28" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAAAAAAAAAAACAgAAAAAAAAAACAAAAAAQQABAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BMChaseState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BMDeadState" Collapsed="true">
+    <Position X="25.75" Y="1.25" Width="1.5" />
+    <InheritanceLine Type="BaseState&lt;TController&gt;" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="24.375" Y="2.562" />
+        <Point X="24.375" Y="2.797" />
+        <Point X="25.43" Y="2.797" />
+        <Point X="25.43" Y="2.375" />
+        <Point X="25.75" Y="2.375" />
+        <Point X="25.75" Y="1.596" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BMDeadState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BMHitState" Collapsed="true">
+    <Position X="30" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BMHitState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BMIdleState" Collapsed="true">
+    <Position X="29.75" Y="1.25" Width="1.5" />
+    <InheritanceLine Type="BaseState&lt;TController&gt;" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="24.375" Y="2.562" />
+        <Point X="24.375" Y="2.838" />
+        <Point X="25.461" Y="2.838" />
+        <Point X="25.461" Y="2.375" />
+        <Point X="29.75" Y="2.375" />
+        <Point X="29.75" Y="1.596" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BMIdleState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BMLaserState" Collapsed="true">
+    <Position X="31.75" Y="2" Width="1.5" />
+    <InheritanceLine Type="BaseState&lt;TController&gt;" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="24.375" Y="2.562" />
+        <Point X="24.375" Y="2.838" />
+        <Point X="25.483" Y="2.838" />
+        <Point X="25.483" Y="2.364" />
+        <Point X="31.516" Y="2.364" />
+        <Point X="31.516" Y="2.188" />
+        <Point X="31.75" Y="2.188" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AIQAIAAAACAAAAAAgEAAAAAAAAAAAAAAEAQQABAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BMLaserState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BMMeleeState" Collapsed="true">
+    <Position X="25.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAAAABAAAAAAAAoAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BMMeleeState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BMMissileState" Collapsed="true">
+    <Position X="27.75" Y="1.25" Width="1.5" />
+    <InheritanceLine Type="BaseState&lt;TController&gt;" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="24.375" Y="2.562" />
+        <Point X="24.375" Y="2.785" />
+        <Point X="25.452" Y="2.785" />
+        <Point X="25.452" Y="2.375" />
+        <Point X="27.75" Y="2.375" />
+        <Point X="27.75" Y="1.596" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAgAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BMMissileState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BossMonster" Collapsed="true">
+    <Position X="32.25" Y="18" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAACiCAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BossMonster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BossMonsterAttackManager" Collapsed="true">
+    <Position X="44" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AkAAAAAAACAAAAAACABAAADAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BossMonsterAttackManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BossMonsterController" Collapsed="true">
+    <Position X="16" Y="16.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAcIUBIAADENRAAgCBoEAEAQgFADCpgIAAmyTQALAJA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BossMonsterController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Enemy" Collapsed="true">
+    <Position X="33.5" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAABAFAAABAAAAIAEAAAAEBVAAAAAAAwACAAAIEA=</HashCode>
+      <FileName>Assets\Scripts\Monster\Enemy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IdleState" Collapsed="true">
+    <Position X="26.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\IdleState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MAttackState" Collapsed="true">
+    <Position X="16.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAECAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\MAttackState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MChaseState" Collapsed="true">
+    <Position X="20.5" Y="1.25" Width="1.5" />
+    <InheritanceLine Type="BaseState&lt;TController&gt;" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="24.375" Y="2.562" />
+        <Point X="24.375" Y="2.813" />
+        <Point X="23.25" Y="2.813" />
+        <Point X="23.25" Y="2.375" />
+        <Point X="22" Y="2.375" />
+        <Point X="22" Y="1.596" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>CKAABAAAgACAAAEAgAAAAABAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\MChaseState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MDeadState" Collapsed="true">
+    <Position X="18.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\MDeadState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MHitState" Collapsed="true">
+    <Position X="20.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\MHitState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterController" Collapsed="true">
+    <Position X="13.75" Y="16.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>oEFAgAMAQWAMBQAgAQIAAAABAAA3AAgYAlAwQCSACEE=</HashCode>
+      <FileName>Assets\Scripts\Monster\MonsterController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MRunState" Collapsed="true">
+    <Position X="18.25" Y="1.25" Width="1.5" />
+    <InheritanceLine Type="BaseState&lt;TController&gt;" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="24.375" Y="2.562" />
+        <Point X="24.375" Y="2.789" />
+        <Point X="23.25" Y="2.789" />
+        <Point X="23.25" Y="2.375" />
+        <Point X="19" Y="2.375" />
+        <Point X="19" Y="1.941" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAIAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\MRunState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Monster" Collapsed="true">
+    <Position X="34.5" Y="18" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAQAACiCgAAAAgAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PalSphere">
+    <Position X="30" Y="18.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQKAAAAAAAAAAAAAQCAAAAAALgAgCAAAAAEg=</HashCode>
+      <FileName>Assets\Scripts\PalSphere.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AttackState" Collapsed="true">
+    <Position X="22.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Player\AttackState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BaseState&lt;TController&gt;" Collapsed="true">
+    <Position X="23.5" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAEAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Player\BaseState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MoveState" Collapsed="true">
+    <Position X="24.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAEAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Player\MoveState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Player" Collapsed="true">
+    <Position X="44" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BIQAAAEAGiCAFBCgIIIEHACAEQBAAAAGVAQAAgApIEA=</HashCode>
+      <FileName>Assets\Scripts\Player\Player.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerAniEvents" Collapsed="true">
+    <Position X="45.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAECAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Player\PlayerAniEvents.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerController" Collapsed="true">
+    <Position X="18.5" Y="16.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IgUCAGDAECAIA4DQAgICYUBAABYwgQCFAgAAFGAAAAI=</HashCode>
+      <FileName>Assets\Scripts\Player\PlayerController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PunchAttackState" Collapsed="true">
+    <Position X="28.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Player\PunchAttackState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StateMachine&lt;TController&gt;" Collapsed="true">
+    <Position X="47.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAEAAAAAABAAAAAAAADAAAAAAAAAAAAAABAAACAg=</HashCode>
+      <FileName>Assets\Scripts\Player\StateMachine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ThrowState" Collapsed="true">
+    <Position X="20" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CIAAAAAAAAAAAAIAgAAAAAAAAAAQAAAAAAQQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Player\ThrowState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sword">
+    <Position X="27.75" Y="18.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Sword.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TrailController" Collapsed="true">
+    <Position X="49.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAACAAAAgAAABAAAAAAABAAAACAAAAAAAAEAA=</HashCode>
+      <FileName>Assets\Scripts\TrailController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UIManager" Collapsed="true">
+    <Position X="44" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAeAIgMARqIZAKAMgQEgAhACQFEACACoBB4AEwRACMQ=</HashCode>
+      <FileName>Assets\Scripts\UIManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WeaponManager" Collapsed="true">
+    <Position X="45.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABgAAAIAAAAAACAAAAIgAAGBBEAAAACA=</HashCode>
+      <FileName>Assets\Scripts\WeaponManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="IStateChangeable" Collapsed="true">
+    <Position X="44" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\CharacterController.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="AttackName" Collapsed="true">
+    <Position X="44" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAQAAAAAQAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Monster\BossMonster\BossMonsterAttackManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MoveName" Collapsed="true">
+    <Position X="45.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAIA=</HashCode>
+      <FileName>Assets\Scripts\Player\MoveState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="StateName" Collapsed="true">
+    <Position X="47.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAFAAACACAAAAQUAAAAgAAAAAABAAAEIAICCIQAAIA=</HashCode>
+      <FileName>Assets\Scripts\Player\StateMachine.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>

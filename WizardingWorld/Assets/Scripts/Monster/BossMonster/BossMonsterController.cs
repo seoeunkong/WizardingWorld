@@ -99,7 +99,7 @@ public class BossMonsterController : CharacterController, IStateChangeable
     {
         yield return new WaitForSeconds(1f);
 
-        int action = UnityEngine.Random.Range(0, 7);
+        int action = UnityEngine.Random.Range(4, 7);
         switch (action)
         {
             case 0:

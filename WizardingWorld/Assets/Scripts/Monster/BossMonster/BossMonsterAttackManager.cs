@@ -52,12 +52,10 @@ public class BossMonsterAttackManager : MonoBehaviour
         }
     }
 
-    // 공격 메서드 예시
     public void TryAttack(AttackName attack)
     {
         if (_isAvailable[attack] && _bossMonsterController.bossMonster.currentStateIdle)
         {
-            Debug.Log("Mode " + attack + " " + _isAvailable[attack]);
             _bossMonsterController.WhoToAttack();
 
             switch (attack)

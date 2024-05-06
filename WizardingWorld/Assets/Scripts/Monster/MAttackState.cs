@@ -42,9 +42,10 @@ public class MAttackState : BaseState<MonsterController>
             if(Player.Instance.PlayerHasPal) 
             {
                 target = _Controller.CheckTarget(false, MonsterController.attackRadius * 15); //팰로 공격 대상 설정 
-                if (target == null) target = _Controller.CheckTarget(true, MonsterController.attackRadius); //팰이 없으면 플레이어로 공격 대상 설정
             }
-            else target = _Controller.CheckTarget(true, MonsterController.attackRadius);
+
+            //팰이 주위에 없거나 플레이어가 팰을 소유 x -> 플레이어로 공격 대상 설정
+            if (target == null || !Player.Instance.PlayerHasPal) target = _Controller.CheckTarget(true, MonsterController.attackRadius); 
         }
         else //팰 
         {

@@ -18,7 +18,7 @@ public class WeaponManager
     private List<BaseWeapon> weapons = new List<BaseWeapon>();
     private List<ObjectData> weaponsData = new List<ObjectData>();
 
-    public bool hasWeapon() => weaponObject != null;
+    public bool hasWeapon() => weaponObject != null; //플레이어가 무기를 들고 있는지 
 
     public WeaponManager(Transform hand)
     {
