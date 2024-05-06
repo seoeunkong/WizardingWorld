@@ -16,11 +16,11 @@
 - 엔진 : Unity
 - 버전 및 이슈관리 : Github
 
-
+ 
 ## 개발 기간
 2024.02.29 ~ 
 
-
+ 
 ## 프로젝트 구조 
 - 인벤토리에 담길 아이템 
   ![BaseObject 관련 다이어그램~](https://github.com/seoeunkong/WizardingWorld/assets/87869785/fbd1ee4e-ab59-42d1-bf7e-9071ebcdee21)
