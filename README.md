@@ -17,6 +17,8 @@
 - 버전 및 이슈관리 : Github
 
 
+## 개발 기간
+2024.02.29 ~ 
 
 
 ## 프로젝트 구조 
@@ -36,6 +38,3 @@
   ![CharacterController 다이어그램](https://github.com/seoeunkong/WizardingWorld/assets/87869785/c480c57b-8d95-4ac4-8b93-016b328171a7)
 
 
-
-## 개발 기간
-2024.02.29 ~ 
