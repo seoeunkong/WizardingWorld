@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEditor.Progress;
 using static UnityEditor.SceneView;
 
@@ -53,6 +54,12 @@ public class PlayerController : CharacterController
     private List<Transform> _detect = new List<Transform>();
     #endregion
 
+    #region #µ¥¹ÌÁö 
+    [SerializeField]private GameObject _FloatingTextPrefab;
+    [SerializeField]private GameObject _playerBody;
+    private Material _playerMat;
+    #endregion
+
     public bool IsLookFoward() => (inputDirection.x == 0 && inputDirection.z >= 0);
     public void CountAttackCombo() => StartCoroutine(IsAttackCombo());
     public void StopCountAttackCombo() => StopCoroutine(IsAttackCombo());
@@ -63,6 +70,7 @@ public class PlayerController : CharacterController
         _camera = Camera.main;
         _currentdashTime = setDashTime;
         _detect = new List<Transform>();
+        _playerMat = _playerBody.GetComponent<Renderer>().material;
 
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
     }
@@ -110,7 +118,7 @@ public class PlayerController : CharacterController
 
     protected void ControlGravity()
     {
-        gravity = Vector3.down * MathF.Abs(player.rigid.velocity.y) * 7f;
+        gravity = Vector3.down * MathF.Abs(player.rigid.velocity.y);
         if (_isGrounded && _isOnSlope)
         {
             gravity = Vector3.zero;
@@ -238,10 +246,16 @@ public class PlayerController : CharacterController
         if (characterController is IStateChangeable stateChangeable)
         {
             sendHuntSign(characterController.transform);
-            characterController.Hit(player.CurrentAttackPower);
-            stateChangeable.ChangeState(GetHitState(characterController));
+            StartCoroutine(StartAttack(characterController, stateChangeable));
             IsAttack = false;
         }
+    }
+
+    IEnumerator StartAttack(CharacterController character, IStateChangeable stateChangeable)
+    {
+        yield return new WaitForSeconds(0.7f);
+        stateChangeable.ChangeState(GetHitState(character));
+        character.Hit(player.CurrentAttackPower);
     }
 
     IEnumerator IsAttackCombo()
@@ -405,6 +419,25 @@ public class PlayerController : CharacterController
         if (hp < 0) hp = 0;
 
         player.SetHPValue(hp);
+        StartCoroutine(ChangeBodyColor());
+
+        if (_FloatingTextPrefab)
+        {
+            ShowFloatingText(damage);
+        }
+    }
+
+    IEnumerator ChangeBodyColor()
+    {
+        _playerMat.color = new UnityEngine.Color(1, 0.7f, 0.7f);
+        yield return new WaitForSeconds(0.15f);
+        _playerMat.color = UnityEngine.Color.white;
+    }
+
+    void ShowFloatingText(float damage)
+    {
+        var go = Instantiate(_FloatingTextPrefab, transform.position, _camera.transform.rotation, _camera.transform.parent);
+        go.GetComponent<TextMesh>().text = damage.ToString();
     }
 
     public void sendHuntSign(Transform target)

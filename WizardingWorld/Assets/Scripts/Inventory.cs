@@ -25,6 +25,7 @@ public class Inventory : MonoBehaviour
     [SerializeField] private BaseObject[] _baseObjects;
     private int _weaponIndex;
     private int _monsterIndex = -1;
+    public int Index { get;  private set; }     //½½·ÔÀÇ ÀÎµ¦½º
 
     public void UpdateSlotColor() => _itemSlotUIs[_monsterIndex].ChangeSlotColor(Color.black);
 
@@ -44,6 +45,7 @@ public class Inventory : MonoBehaviour
     void Start()
     {
         Init();
+        SetIndex();
     }
 
     private void Init()
@@ -105,6 +107,21 @@ public class Inventory : MonoBehaviour
         else if (baseObject is PalSphere ps)
         {
             ps.SetPalSphere();
+        }
+    }
+
+    private void SetIndex()
+    {
+        foreach (ItemSlotUI item in inventoryContents.GetComponentsInChildren<ItemSlotUI>())
+        {
+            item.Index = Index;
+            Index++;
+        }
+
+        foreach (ItemSlotUI item in monsterContents.GetComponentsInChildren<ItemSlotUI>())
+        {
+            item.Index = Index;
+            Index++;
         }
     }
 
@@ -337,8 +354,9 @@ public class Inventory : MonoBehaviour
         for (int i = 0; i < _slotCount; i++)
         {
             ItemSlotUI slot = _itemSlotUIs[i];
-            if (!slot.HasItem && !isWeaponCol(slot.Index))
+            if (!slot.HasItem && !isWeaponCol(i))
             {
+                //Debug.Log(slot.Index + " " + i);
                 return slot.Index;
             }
         }

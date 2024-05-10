@@ -15,7 +15,7 @@ public class MHitState : BaseState<MonsterController>
 
     public override void OnExitState()
     {
-        
+        _Controller.monsterInfo.animator.ResetTrigger("onHit");
     }
 
     public override void OnFixedUpdateState()

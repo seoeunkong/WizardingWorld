@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditorInternal;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -50,7 +52,7 @@ public class MonsterController : CharacterController, IStateChangeable
     [Header("ÀÌÆÑÆ®")]
     private TrailController _trailController;
     private bool _backToPlayer = false;
-    public bool BackToPlayer { get { return _backToPlayer; } set { _backToPlayer= value; } }
+    public bool BackToPlayer { get { return _backToPlayer; } set { _backToPlayer = value; } }
 
     #region #Die
     public delegate void PalDie();
@@ -166,9 +168,9 @@ public class MonsterController : CharacterController, IStateChangeable
     public override void Attacking(CharacterController targetController)
     {
         if (targetController == null) return;
-        if (monsterInfo.IsTargetAttackable(targetController)) return;
+        if (!monsterInfo.IsTargetAttackable(targetController)) return;
 
-        if(!IsAttack)
+        if (!IsAttack)
         {
             IsAttack = true;
             StartCoroutine(AttackCoolDown(targetController));
@@ -195,8 +197,8 @@ public class MonsterController : CharacterController, IStateChangeable
     {
         StartCoroutine(AttackingCor(targetController));
 
-        float coolTime =  UnityEngine.Random.Range(2, 10);
-        
+        float coolTime = UnityEngine.Random.Range(2, 10);
+
         while (coolTime > 0)
         {
             coolTime -= Time.deltaTime;
@@ -214,7 +216,7 @@ public class MonsterController : CharacterController, IStateChangeable
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            if(checkPlayerPalDist == 0) gameObject.SetActive(false);
+            if (checkPlayerPalDist == 0) gameObject.SetActive(false);
         }
     }
 
@@ -246,20 +248,20 @@ public class MonsterController : CharacterController, IStateChangeable
             _trailController.bodyActiveTrue();
             checkPlayerPalDist = playerPalDist;
             monsterInfo.stateMachine.ChangeState(StateName.MCHASE);
-            Debug.Log("friendlymode");
         }
     }
-
     public override void Hit(float damage)
     {
+        if (monsterInfo.stateMachine.CurrentState == monsterInfo.stateMachine.GetState(StateName.MDEAD)) return;
+
         if (monsterInfo.CurrentHP > 0)
         {
             float hp = monsterInfo.CurrentHP - damage > 0 ? monsterInfo.CurrentHP - damage : 0;
             monsterInfo.SetHP(hp);
 
-            if (hp == 0)
+            if (hp <= 0)
             {
-                if(monsterInfo.FriendlyMode) OnPalDie.Invoke();
+                if (monsterInfo.FriendlyMode) OnPalDie.Invoke();
                 monsterInfo.stateMachine.ChangeState(StateName.MDEAD);
             }
         }

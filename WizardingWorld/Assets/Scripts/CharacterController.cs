@@ -16,7 +16,7 @@ public abstract class CharacterController : MonoBehaviour
     protected float _maxSlopeAngle = 50f;
 
     protected const float RAY_DISTANCE = 2f;
-    protected const float GROUNDCHECK_DISTANCE = 1.7f;
+    protected const float GROUNDCHECK_DISTANCE = 0.6f;
     protected RaycastHit _slopeHit;
     protected bool _isOnSlope;
     #endregion
@@ -31,13 +31,13 @@ public abstract class CharacterController : MonoBehaviour
 
     public bool IsGrounded()
     {
-        _isGrounded = Physics.Raycast(transform.position + Vector3.up, Vector3.down, GROUNDCHECK_DISTANCE, _groundLayer);
+        _isGrounded = Physics.Raycast(transform.position + new Vector3(0,0.5f,0), Vector3.down, GROUNDCHECK_DISTANCE, _groundLayer);
         return _isGrounded;
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawRay(this.transform.position + Vector3.up, Vector3.down * GROUNDCHECK_DISTANCE);
+        Gizmos.DrawRay(this.transform.position + new Vector3(0, 0.5f, 0), Vector3.down * GROUNDCHECK_DISTANCE);
     }
 
     protected bool IsOnSlope() //경사 지형 체크 

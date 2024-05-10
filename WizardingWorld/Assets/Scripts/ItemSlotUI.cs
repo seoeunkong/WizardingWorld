@@ -16,7 +16,7 @@ public class ItemSlotUI : MonoBehaviour
     public Color _slotColor { get; private set; }
 
     //슬롯의 인덱스
-    public int Index { get; private set; }
+    public int Index;
 
     //슬롯이 아이템을 보유하고 있는지 여부
 
@@ -32,7 +32,7 @@ public class ItemSlotUI : MonoBehaviour
 
     void Start()
     {
-        SetIndex(); 
+        
         HideIcon();
         HideText();
 
@@ -53,15 +53,6 @@ public class ItemSlotUI : MonoBehaviour
         _slotRect = GetComponent<RectTransform>();
         _iconRect = _iconImage.GetComponent<RectTransform>();
 
-    }
-
-    private void SetIndex()
-    {
-       foreach(ItemSlotUI item in Inventory.Instance.GetComponentsInChildren<ItemSlotUI>())
-        {
-            if (item.transform.parent == transform.parent && item.name == this.name) break;
-            Index++;
-        }
     }
 
     //슬롯에 아이템 등록

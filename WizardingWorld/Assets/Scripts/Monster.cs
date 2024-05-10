@@ -35,7 +35,6 @@ public class Monster : Enemy
         stateMachine?.FixedUpdateState();
     }
 
-
     void InitStateMachine()
     {
         MonsterController controller = GetComponent<MonsterController>();
@@ -51,11 +50,15 @@ public class Monster : Enemy
 
     public bool IsTargetAttackable(CharacterController target)
     {
-        if (target is MonsterController monster && (monster.monsterInfo.stateMachine.CurrentState == stateMachine.GetState(StateName.MHIT) ||
-            monster.monsterInfo.stateMachine.CurrentState == stateMachine.GetState(StateName.MDEAD)))
+        if (!target.gameObject.activeSelf) return false;
+
+        if(target is MonsterController monster)
         {
-            return true;
+            if (monster.monsterInfo.stateMachine.CurrentState == stateMachine.GetState(StateName.MHIT) || monster.monsterInfo.stateMachine.CurrentState == stateMachine.GetState(StateName.MDEAD))
+            {
+                return false;
+            }
         }
-        return false;
+        return true;
     }
 }
