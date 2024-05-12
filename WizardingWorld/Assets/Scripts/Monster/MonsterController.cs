@@ -216,7 +216,10 @@ public class MonsterController : CharacterController, IStateChangeable
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            if (checkPlayerPalDist == 0) gameObject.SetActive(false);
+            if (checkPlayerPalDist == 0)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 
